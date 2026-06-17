@@ -1,4 +1,4 @@
-based on Trio dev 0.8.1.7
+based on Trio dev 0.8.2
 checkout new shortcuts for Profiles and scheduling a TT
 Apple Watch fixes
 fix middleware for JS algo path

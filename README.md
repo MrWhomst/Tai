@@ -32,6 +32,67 @@ autoISF adjusts ISF depending on 4 different effects in glucose behaviour that a
 
 ![Bildschirmfoto 2025-01-31 um 13 40 11](https://github.com/user-attachments/assets/dfb4d0b8-b0bc-491d-b391-7e6f645ead0b)
 
+# Update v0.8.2
+
+## SwiftOref Algorithm Port
+
+Tai ships the **SwiftOref** port from upstream Trio, adapted for Tai. The classic JavaScript oref engine is still available and selectable from *Settings > Algorithm > Advanced*:
+
+* **Use Swift Oref** — switch the active algorithm between JS oref and the Swift port.
+* **Compare Swift vs JS Algorithm** — run both algorithms in parallel on the same inputs each loop, log paired timings and any value differences. The collected runs are reviewable under *Algo Compare Analysis*.
+
+You are encouraged to enable Swift Oref together with Compare Swift vs JS, run it for about one pod's worth of data, then send me your logs. The two engines can differ by 1–2 of the smallest basal/bolus increments your pump supports (rounding-only divergence — both end up at the same dosing intent). The extensive comparison logging and persistence is dev-only and will be removed once the port is considered stable.
+
+<img src="swift-oref-toggle.png" width="300">
+
+## autoISF Overrides
+
+Every relevant autoISF parameter can now be carried by a regular **Override**, not just the standard Trio fields (percentage, target, SMB, duration). The override form exposes the full autoISF surface, including:
+
+* `iobThresholdPercent`
+* Enable BG acceleration (`enableBGacceleration`)
+* All weights: higher-/lower-ISF range, post-meal, BG-accel, BG-brake, DuraISF
+* `autoISFmin` / `autoISFmax`
+* SMB delivery ratio (and its BG-range / min / max variants)
+
+A single override preset can therefore carry a complete autoISF configuration — e.g. an "exercise" preset that loosens `autoISFmax` and disables BG acceleration, separate from your default profile.
+
+| Overrides tab | Override form (autoISF section) |
+| --- | --- |
+| <img src="overrides-tab.png" width="300"> | <img src="override-autoisf.png" width="300"> |
+
+## Profiles & Schedules
+
+**Profiles** let you create named copies of your *full* therapy + algorithm settings (not just the override-style subset). Creating a profile starts from the currently active configuration, applies a therapy-percentage adjustment, and then lets you tweak individual settings on top.
+
+Profiles can be:
+
+* **Activated manually**, either *indefinitely* (in which case the basal profile is written to the pump) or *temporarily* (basal stays on the pump, profile reverts when the window ends).
+* **Scheduled** — one-shot or repeating (daily / weekly / monthly). Scheduled activations are always temporary; the profile reverts after the configured duration.
+
+| Profiles tab | Schedules |
+| --- | --- |
+| <img src="profiles.png" width="300"> | <img src="schedules.png" width="300"> |
+
+## Shortcuts
+
+* **Activate / schedule profile** intents — drive the Profile system from Apple Shortcuts and automations.
+* **Apply Temp Target preset** intent with an optional scheduled start. Use this for pre-emptive lows: e.g. an automation that fires daily at 02:00, checks whether your "MorningRun" alarm is set for that day, and if so activates your pre-exercise TT preset 90 minutes before the alarm. You just set the wake-up alarm; the TT is queued automatically.
+
+<img src="shortcut-trekking.png" width="300">
+
+## UI Extras
+
+* **Dynamic glucose colors** on the main chart — gradient by range instead of flat colors.
+* **Bars for bolus and carbs** — replaces the default circles/triangles with vertical bars; toggle in *Settings > User Interface*. Plus per-bolus label thresholds to keep small SMBs from cluttering the chart.
+* **Show Glucose Peaks** highlights peaks on the chart.
+
+| Main chart (dynamic colors + bars) | User Interface settings |
+| --- | --- |
+| <img src="main-chart.png" width="300"> | <img src="user-interface.png" width="300"> |
+
+# Other features from earlier releases
+
 ## Insulin Concentrations
 
 Tai can handle dosing of insulin in the following concentrations:
