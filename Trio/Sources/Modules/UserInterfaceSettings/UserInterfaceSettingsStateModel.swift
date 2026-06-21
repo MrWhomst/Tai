@@ -9,12 +9,12 @@ extension UserInterfaceSettings {
         @Published var showCobIobChart: Bool = true
         @Published var rulerMarks: Bool = true
         @Published var showGlucosePeaks: Bool = false
-        @Published var useChartBars: Bool = false
+        @Published var useChartBars: Bool = true
         @Published var bolusDisplayThreshold: BolusDisplayThreshold = .allUnits
         @Published var forecastDisplayType: ForecastDisplayType = .cone
         @Published var showCarbsRequiredBadge: Bool = true
         @Published var carbsRequiredThreshold: Decimal = 0
-        @Published var glucoseColorScheme: GlucoseColorScheme = .staticColor
+        @Published var glucoseColorScheme: GlucoseColorScheme = .dynamicColor
         @Published var eA1cDisplayUnit: EstimatedA1cDisplayUnit = .percent
         @Published var timeInRangeType: TimeInRangeType = .timeInTightRange
         @Published var requireAdjustmentsConfirmation: Bool = false

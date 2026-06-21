@@ -88,15 +88,6 @@ enum DosingEngine {
         return false
     }
 
-    /// helper function for reason string glucose output
-    static func convertGlucose(profile: Profile, glucose: Decimal) -> Decimal {
-        let units = profile.outUnits ?? .mgdL
-        switch units {
-        case .mgdL: return glucose.jsRounded()
-        case .mmolL: return glucose.asMmolL
-        }
-    }
-
     /// Top level smb enabling logic
     ///
     /// This function includes both the profile / customOrefVariable checks from JS `enable_smb` as

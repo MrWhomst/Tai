@@ -25,13 +25,19 @@ for project in ${TRIO_PROJECTS}; do
 
   cd "$repo_root/$dir"
 
-  git fetch origin "$branch"
+  if git remote get-url "$user" >/dev/null 2>&1; then
+    remote="$user"
+  else
+    remote="origin"
+  fi
+
+  git fetch "$remote" "$branch"
 
   before=$(git rev-parse HEAD)
-  after=$(git rev-parse "origin/$branch")
+  after=$(git rev-parse "$remote/$branch")
 
   if [ "$before" = "$after" ]; then
-    echo "  $dir already at origin/$branch ($after), no change"
+    echo "  $dir already at $remote/$branch ($after), no change"
     continue
   fi
 

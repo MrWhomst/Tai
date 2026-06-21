@@ -54,6 +54,7 @@ import Testing
             preferences: determineBasalInput.preferences,
             basalProfile: determineBasalInput.basalProfile,
             trioCustomOrefVariables: determineBasalInput.trioCustomOrefVariables,
+            units: .mgdL,
             clock: determineBasalInput.clock
         )
 
@@ -130,6 +131,7 @@ import Testing
             preferences: determineBasalInput.preferences,
             basalProfile: determineBasalInput.basalProfile,
             trioCustomOrefVariables: determineBasalInput.trioCustomOrefVariables,
+            units: .mgdL,
             clock: determineBasalInput.clock
         )
 

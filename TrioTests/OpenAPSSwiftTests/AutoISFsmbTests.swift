@@ -15,8 +15,7 @@ import Testing
         smbDeliveryRatioBGrange: Decimal = 0,
         smbDeliveryRatioMin: Decimal = 0.4,
         smbDeliveryRatioMax: Decimal = 0.8,
-        smbMaxRangeExtension: Decimal = 1,
-        targetUnits: GlucoseUnits = .mgdL
+        smbMaxRangeExtension: Decimal = 1
     ) -> Profile {
         var profile = Profile()
         profile.autoisf = autoisf
@@ -28,7 +27,6 @@ import Testing
         profile.smbDeliveryRatioMin = smbDeliveryRatioMin
         profile.smbDeliveryRatioMax = smbDeliveryRatioMax
         profile.smbMaxRangeExtension = smbMaxRangeExtension
-        profile.targetUnits = targetUnits
         return profile
     }
 
@@ -40,6 +38,7 @@ import Testing
         let result = AutoISFsmb.evaluate(
             profile: profile,
             targetBG: 100,
+            units: .mgdL,
             microBolusAllowed: true,
             iob: 0,
             b30IsActive: false,
@@ -56,6 +55,7 @@ import Testing
         let result = AutoISFsmb.evaluate(
             profile: profile,
             targetBG: 100,
+            units: .mgdL,
             microBolusAllowed: true,
             iob: 0,
             b30IsActive: false,
@@ -73,6 +73,7 @@ import Testing
         let result = AutoISFsmb.evaluate(
             profile: profile,
             targetBG: 100,
+            units: .mgdL,
             microBolusAllowed: true,
             iob: 0,
             b30IsActive: true,
@@ -90,6 +91,7 @@ import Testing
         let result = AutoISFsmb.evaluate(
             profile: profile,
             targetBG: 100,
+            units: .mgdL,
             microBolusAllowed: false,
             iob: 0,
             b30IsActive: false,
@@ -107,6 +109,7 @@ import Testing
         let result = AutoISFsmb.evaluate(
             profile: profile,
             targetBG: 100,
+            units: .mgdL,
             microBolusAllowed: true,
             iob: 8,
             b30IsActive: false,
@@ -124,6 +127,7 @@ import Testing
         let result = AutoISFsmb.evaluate(
             profile: profile,
             targetBG: 101, // odd — would block if toggle were on
+            units: .mgdL,
             microBolusAllowed: true,
             iob: 0,
             b30IsActive: false,
@@ -140,6 +144,7 @@ import Testing
         let result = AutoISFsmb.evaluate(
             profile: profile,
             targetBG: 101,
+            units: .mgdL,
             microBolusAllowed: true,
             iob: 0,
             b30IsActive: false,
@@ -156,6 +161,7 @@ import Testing
         let result = AutoISFsmb.evaluate(
             profile: profile,
             targetBG: 100,
+            units: .mgdL,
             microBolusAllowed: true,
             iob: 0,
             b30IsActive: false,
@@ -172,6 +178,7 @@ import Testing
         let result = AutoISFsmb.evaluate(
             profile: profile,
             targetBG: 80,
+            units: .mgdL,
             microBolusAllowed: true,
             iob: 0,
             b30IsActive: false,
@@ -189,6 +196,7 @@ import Testing
         let result = AutoISFsmb.evaluate(
             profile: profile,
             targetBG: 100,
+            units: .mgdL,
             microBolusAllowed: true,
             iob: 0,
             b30IsActive: false,
@@ -200,13 +208,17 @@ import Testing
         #expect(result.smbEnabled)
     }
 
-    @Test("evaluate detects even target in mmol/L units") func evaluateEvenTargetMmolL() throws {
-        // 5.6 mmol/L → 56 (×10) → even
-        let profile = makeProfile(targetUnits: .mmolL)
+    @Test("evaluate detects even target in mmol/L units (108 mg/dL → 6.0 mmol/L)") func evaluateEvenTargetMmolL() throws {
+        // targetBG is always supplied in mg/dL (profile.minBg storage). The mmol/L
+        // branch must first convert to mmol/L (the reciprocal of asMgdL, 1-dec rounded)
+        // before doing the *10 %2 parity check, mirroring JS convert_bg.
+        // 108 mg/dL * 0.0555 = 5.994 → round 1dp → 6.0 → 60 → even.
+        let profile = makeProfile()
 
         let result = AutoISFsmb.evaluate(
             profile: profile,
-            targetBG: Decimal(string: "5.6")!,
+            targetBG: 108,
+            units: .mmolL,
             microBolusAllowed: true,
             iob: 0,
             b30IsActive: false,
@@ -214,8 +226,142 @@ import Testing
             overrideSmbIsOff: false
         )!
 
-        // 5.6 < 100 → fullLoop branch (mmol/L value compared against 100 mg/dL constant)
-        #expect(result.loopMode == .fullLoop)
+        #expect(result.loopMode == .enforced)
+        #expect(result.smbEnabled)
+    }
+
+    @Test("evaluate blocks SMB on odd mmol/L target (99 mg/dL → 5.5 mmol/L)") func evaluateOddTargetMmolL() throws {
+        // Regression test for the mg/dL-vs-mmol/L parity bug: the previous
+        // implementation did `(targetBG * 10) % 2` on the raw mg/dL integer,
+        // which is always even. JS does the parity check on the displayed
+        // tenths digit of the mmol/L value: 99 mg/dL * 0.0555 = 5.4945 → 5.5 → 55 → odd.
+        let profile = makeProfile()
+
+        let result = AutoISFsmb.evaluate(
+            profile: profile,
+            targetBG: 99,
+            units: .mmolL,
+            microBolusAllowed: true,
+            iob: 0,
+            b30IsActive: false,
+            exerciseRatio: 1,
+            overrideSmbIsOff: false
+        )!
+
+        #expect(result.loopMode == .blocked)
+        #expect(!result.smbEnabled)
+    }
+
+    @Test("evaluate blocks SMB on odd mmol/L target (110 mg/dL → 6.1 mmol/L)") func evaluateOddTargetMmolLHigh() throws {
+        // 110 mg/dL * 0.0555 = 6.105 → 6.1 → 61 → odd.
+        // Under the old code this would have been (110 * 10) % 2 = 0 (even) → not blocked.
+        let profile = makeProfile()
+
+        let result = AutoISFsmb.evaluate(
+            profile: profile,
+            targetBG: 110,
+            units: .mmolL,
+            microBolusAllowed: true,
+            iob: 0,
+            b30IsActive: false,
+            exerciseRatio: 1,
+            overrideSmbIsOff: false
+        )!
+
+        #expect(result.loopMode == .blocked)
+        #expect(!result.smbEnabled)
+    }
+
+    @Test("evaluate flips parity when units flip: 92 mg/dL is even, 5.1 mmol/L is odd") func evaluateParityFlipsAcrossUnits92() throws {
+        // 92 mg/dL is even → mg/dL branch enforces SMB.
+        // 92 * 0.0555 = 5.106 → 5.1 → tenths digit 1 → odd → mmol/L branch blocks.
+        // Same physical target, opposite verdict — verifies the unit conversion happens
+        // before the parity check (the previous bug skipped this conversion).
+        let mgdlProfile = makeProfile()
+        let mmolProfile = makeProfile()
+
+        let mgdlResult = AutoISFsmb.evaluate(
+            profile: mgdlProfile,
+            targetBG: 92,
+            units: .mgdL,
+            microBolusAllowed: true,
+            iob: 0,
+            b30IsActive: false,
+            exerciseRatio: 1,
+            overrideSmbIsOff: false
+        )!
+
+        let mmolResult = AutoISFsmb.evaluate(
+            profile: mmolProfile,
+            targetBG: 92,
+            units: .mmolL,
+            microBolusAllowed: true,
+            iob: 0,
+            b30IsActive: false,
+            exerciseRatio: 1,
+            overrideSmbIsOff: false
+        )!
+
+        // 92 mg/dL < 100 → even branch routes to fullLoop in mg/dL mode.
+        #expect(mgdlResult.loopMode == .fullLoop)
+        #expect(mgdlResult.smbEnabled)
+        // mmol/L mode: odd tenths digit → blocked.
+        #expect(mmolResult.loopMode == .blocked)
+        #expect(!mmolResult.smbEnabled)
+    }
+
+    @Test("evaluate flips parity when units flip: 93 mg/dL is odd, 5.2 mmol/L is even") func evaluateParityFlipsAcrossUnits93() throws {
+        // 93 mg/dL is odd → mg/dL branch blocks SMB.
+        // 93 * 0.0555 = 5.1615 → 5.2 → tenths digit 2 → even → mmol/L branch enforces.
+        let mgdlProfile = makeProfile()
+        let mmolProfile = makeProfile()
+
+        let mgdlResult = AutoISFsmb.evaluate(
+            profile: mgdlProfile,
+            targetBG: 93,
+            units: .mgdL,
+            microBolusAllowed: true,
+            iob: 0,
+            b30IsActive: false,
+            exerciseRatio: 1,
+            overrideSmbIsOff: false
+        )!
+
+        let mmolResult = AutoISFsmb.evaluate(
+            profile: mmolProfile,
+            targetBG: 93,
+            units: .mmolL,
+            microBolusAllowed: true,
+            iob: 0,
+            b30IsActive: false,
+            exerciseRatio: 1,
+            overrideSmbIsOff: false
+        )!
+
+        #expect(mgdlResult.loopMode == .blocked)
+        #expect(!mgdlResult.smbEnabled)
+        // 93 mg/dL < 100 → even branch routes to fullLoop in mmol/L mode.
+        #expect(mmolResult.loopMode == .fullLoop)
+        #expect(mmolResult.smbEnabled)
+    }
+
+    @Test("evaluate detects even target in mmol/L units (100 mg/dL → 5.6 mmol/L)") func evaluateEvenTargetMmolL100() throws {
+        // 100 mg/dL * 0.0555 = 5.55 → round 1dp .plain → 5.6 → 56 → even.
+        let profile = makeProfile()
+
+        let result = AutoISFsmb.evaluate(
+            profile: profile,
+            targetBG: 100,
+            units: .mmolL,
+            microBolusAllowed: true,
+            iob: 0,
+            b30IsActive: false,
+            exerciseRatio: 1,
+            overrideSmbIsOff: false
+        )!
+
+        #expect(result.loopMode == .enforced)
+        #expect(result.smbEnabled)
     }
 
     // MARK: - iobTHValues()

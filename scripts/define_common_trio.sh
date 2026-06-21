@@ -31,4 +31,5 @@ TRIO_PROJECTS=( \
     loopandlearn:DanaKit:dev \
     loopandlearn:MedtrumKit:dev \
     loopandlearn:EversenseKit:dev \
+    loopandlearn:OmnipodKit:main \
 )

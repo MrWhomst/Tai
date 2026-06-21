@@ -118,6 +118,7 @@ enum AutoISF {
         adjustedSensitivity: Decimal,
         profileSens: Decimal,
         targetBG: Decimal,
+        units: GlucoseUnits,
         currentGlucose: Decimal,
         sensitivityRatio: Decimal,
         originalSensitivity _: Decimal,
@@ -147,6 +148,7 @@ enum AutoISF {
             AutoISFsmb.evaluate(
                 profile: profile,
                 targetBG: targetBG,
+                units: units,
                 microBolusAllowed: microBolusAllowed,
                 iob: iob,
                 b30IsActive: b30IsActive,
@@ -259,6 +261,7 @@ enum AutoISF {
         safetyInputs: B30SafetyInputs,
         profile: Profile,
         targetBG: Decimal,
+        units: GlucoseUnits,
         currentGlucose: Decimal,
         microBolusAllowed: Bool,
         iob: Decimal,
@@ -281,6 +284,7 @@ enum AutoISF {
             let updatedSmb = AutoISFsmb.evaluate(
                 profile: profile,
                 targetBG: targetBG,
+                units: units,
                 microBolusAllowed: microBolusAllowed,
                 iob: iob,
                 b30IsActive: false,

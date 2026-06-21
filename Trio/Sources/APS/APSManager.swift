@@ -546,6 +546,7 @@ final class BaseAPSManager: APSManager, Injectable {
                 currentTemp: await currentTemp,
                 shouldSmoothGlucose: settingsManager.settings.smoothGlucose,
                 useSwiftOref: settings.useSwiftOref,
+                units: settingsManager.settings.units,
                 clock: now
             )
             iobFileDidUpdate.send(())
@@ -593,6 +594,7 @@ final class BaseAPSManager: APSManager, Injectable {
                 currentTemp: temp,
                 shouldSmoothGlucose: settingsManager.settings.smoothGlucose,
                 useSwiftOref: settings.useSwiftOref,
+                units: settingsManager.settings.units,
                 clock: Date(),
                 simulatedCarbsAmount: simulatedCarbsAmount,
                 simulatedBolusAmount: simulatedBolusAmount,

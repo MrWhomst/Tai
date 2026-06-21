@@ -3,6 +3,7 @@ import Combine
 import CoreData
 import DanaKit
 import Foundation
+import HealthKit
 import LoopKit
 import LoopKitUI
 import MedtrumKit
@@ -112,6 +113,25 @@ final class BaseDeviceDataManager: DeviceDataManager, Injectable {
                     .deviceManager,
                     "Concentration U\(Int(truncating: NSDecimalNumber(decimal: concentration * 100))), Bolus increment set to: \(settingsManager.preferences.bolusIncrement), supported Pump Increment = \(filteredSupportedIncrement)"
                 )
+
+                // Ensure the pump manager's delivery limits always reflect the user's
+                // current settings. Without this, the active pump manager instance
+                // may use a stale or default value from deserialized state
+                // — silently rejecting temp basals that oref correctly
+                // determines are within the user's configured maxBasal.
+                let pumpSettings = settingsManager.pumpSettings
+                let deliveryLimits = DeliveryLimits(
+                    maximumBasalRate: HKQuantity(unit: .internationalUnitsPerHour, doubleValue: Double(pumpSettings.maxBasal)),
+                    maximumBolus: HKQuantity(unit: .internationalUnit(), doubleValue: Double(pumpSettings.maxBolus))
+                )
+
+                processQueue.async {
+                    pumpManager.syncDeliveryLimits(limits: deliveryLimits) { result in
+                        if case let .failure(error) = result {
+                            debug(.deviceManager, "syncDeliveryLimits on pump manager init failed: \(error)")
+                        }
+                    }
+                }
 
                 if let medtrumPump = pumpManager as? MedtrumPumpManager {
                     guard let endTime = medtrumPump.state.patchExpiresAt else {

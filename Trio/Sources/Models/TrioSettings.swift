@@ -66,7 +66,7 @@ struct TrioSettings: JSON, Equatable, Encodable {
     var eA1cDisplayUnit: EstimatedA1cDisplayUnit = .percent
     var high: Decimal = 180
     var low: Decimal = 70
-    var glucoseColorScheme: GlucoseColorScheme = .staticColor
+    var glucoseColorScheme: GlucoseColorScheme = .dynamicColor
     var xGridLines: Bool = true
     var yGridLines: Bool = true
     var hideInsulinBadge: Bool = false
@@ -95,7 +95,7 @@ struct TrioSettings: JSON, Equatable, Encodable {
     var showGlucosePeaks: Bool = false
     var useSwiftOref: Bool = false
     var algoShadowCompare: Bool = false
-    var useChartBars: Bool = false
+    var useChartBars: Bool = true
     var requireAdjustmentsConfirmation: Bool = false
 
     /// Selected Garmin watchface (Trio or SwissAlpine)

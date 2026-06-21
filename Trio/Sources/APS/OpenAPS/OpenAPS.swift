@@ -410,6 +410,7 @@ final class OpenAPS {
         currentTemp: TempBasal,
         shouldSmoothGlucose: Bool,
         useSwiftOref: Bool,
+        units: GlucoseUnits,
         clock: Date = Date(),
         simulatedCarbsAmount: Decimal? = nil,
         simulatedBolusAmount: Decimal? = nil,
@@ -565,6 +566,7 @@ final class OpenAPS {
             preferences: preferences,
             basalProfile: basalProfile,
             trioCustomOrefVariables: trioCustomOrefVariables,
+            units: units,
             useSwiftOref: useSwiftOref,
             timingCtx: determineTimingCtx
         )
@@ -1214,6 +1216,7 @@ final class OpenAPS {
         preferences: JSON,
         basalProfile: JSON,
         trioCustomOrefVariables: JSON,
+        units: GlucoseUnits,
         useSwiftOref: Bool,
         timingCtx: LoopTimingContext? = nil
     ) async throws -> RawJSON {
@@ -1238,6 +1241,7 @@ final class OpenAPS {
                     preferences: preferences,
                     basalProfile: basalProfile,
                     trioCustomOrefVariables: trioCustomOrefVariables,
+                    units: units,
                     clock: clock
                 )
             }
@@ -1308,6 +1312,7 @@ final class OpenAPS {
                         preferences: preferences,
                         basalProfile: basalProfile,
                         trioCustomOrefVariables: trioCustomOrefVariables,
+                        units: units,
                         clock: clock
                     )
                 }

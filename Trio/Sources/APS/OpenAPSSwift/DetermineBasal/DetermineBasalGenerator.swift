@@ -15,6 +15,7 @@ enum DeterminationGenerator {
     static func generate(
         profile: Profile,
         preferences: Preferences,
+        units: GlucoseUnits,
         currentTemp: TempBasal,
         iobData: [IobResult],
         mealData: ComputedCarbs,
@@ -54,6 +55,7 @@ enum DeterminationGenerator {
             try determineBasal(
                 profile: profile,
                 preferences: preferences,
+                units: units,
                 currentTemp: currentTemp,
                 iobData: iobData,
                 mealData: mealData,
@@ -75,6 +77,7 @@ enum DeterminationGenerator {
     static func determineBasal(
         profile: Profile,
         preferences: Preferences,
+        units: GlucoseUnits,
         currentTemp: TempBasal,
         iobData: [IobResult],
         mealData: ComputedCarbs,
@@ -272,6 +275,7 @@ enum DeterminationGenerator {
                 adjustedSensitivity: adjustedSensitivity,
                 profileSens: originalSensitivity,
                 targetBG: adjustedGlucoseTargets.targetGlucose,
+                units: units,
                 currentGlucose: currentGlucose,
                 sensitivityRatio: sensitivityRatio,
                 originalSensitivity: originalSensitivity,
@@ -581,6 +585,7 @@ enum DeterminationGenerator {
                 safetyInputs: safetyInputs,
                 profile: profile,
                 targetBG: adjustedGlucoseTargets.targetGlucose,
+                units: units,
                 currentGlucose: currentGlucose,
                 microBolusAllowed: microBolusAllowed,
                 iob: iobData.first?.iob ?? 0,

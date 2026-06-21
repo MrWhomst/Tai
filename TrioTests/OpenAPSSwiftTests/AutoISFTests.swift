@@ -73,6 +73,7 @@ import Testing
             adjustedSensitivity: 50,
             profileSens: 50,
             targetBG: targetBG,
+            units: .mgdL,
             currentGlucose: currentGlucose,
             sensitivityRatio: 1,
             originalSensitivity: 50,

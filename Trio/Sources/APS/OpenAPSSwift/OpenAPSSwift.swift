@@ -55,6 +55,7 @@ struct OpenAPSSwift {
         preferences: JSON,
         basalProfile: JSON,
         trioCustomOrefVariables: JSON,
+        units: GlucoseUnits,
         clock: Date
     ) -> (OrefFunctionResult) {
         do {
@@ -78,6 +79,7 @@ struct OpenAPSSwift {
             let rawDetermination = try DeterminationGenerator.generate(
                 profile: profile,
                 preferences: preferences,
+                units: units,
                 currentTemp: currentTemp,
                 iobData: iob,
                 mealData: mealData,

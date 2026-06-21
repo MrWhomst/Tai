@@ -154,6 +154,7 @@ import Testing
             _ = try DeterminationGenerator.determineBasal(
                 profile: profile,
                 preferences: preferences,
+                units: .mgdL,
                 currentTemp: currentTemp,
                 iobData: iobData,
                 mealData: mealData,
@@ -199,6 +200,7 @@ import Testing
         let result = try DeterminationGenerator.determineBasal(
             profile: profile,
             preferences: preferences,
+            units: .mgdL,
             currentTemp: currentTemp,
             iobData: iobData,
             mealData: mealData,
@@ -248,6 +250,7 @@ import Testing
         let result = try DeterminationGenerator.determineBasal(
             profile: profile,
             preferences: preferences,
+            units: .mgdL,
             currentTemp: currentTemp,
             iobData: iobData,
             mealData: mealData,
@@ -297,6 +300,7 @@ import Testing
         let result = try DeterminationGenerator.determineBasal(
             profile: profile,
             preferences: preferences,
+            units: .mgdL,
             currentTemp: currentTemp,
             iobData: iobData,
             mealData: mealData,
@@ -335,6 +339,7 @@ import Testing
             _ = try DeterminationGenerator.determineBasal(
                 profile: profile,
                 preferences: preferences,
+                units: .mgdL,
                 currentTemp: currentTemp,
                 iobData: iobData,
                 mealData: mealData,
@@ -381,6 +386,7 @@ import Testing
         let result = try DeterminationGenerator.determineBasal(
             profile: profile,
             preferences: preferences,
+            units: .mgdL,
             currentTemp: currentTemp,
             iobData: mutableIobData,
             mealData: mealData,
@@ -435,6 +441,7 @@ import Testing
         let result = try DeterminationGenerator.determineBasal(
             profile: profile,
             preferences: preferences,
+            units: .mgdL,
             currentTemp: currentTemp,
             iobData: mutableIobData,
             mealData: mealData,
@@ -477,6 +484,7 @@ import Testing
             _ = try DeterminationGenerator.determineBasal(
                 profile: profile,
                 preferences: preferences,
+                units: .mgdL,
                 currentTemp: currentTemp,
                 iobData: iobData,
                 mealData: mealData,
@@ -521,6 +529,7 @@ import Testing
         let result = try DeterminationGenerator.determineBasal(
             profile: profile,
             preferences: preferences,
+            units: .mgdL,
             currentTemp: currentTemp,
             iobData: iobData,
             mealData: mealData,
@@ -564,6 +573,7 @@ import Testing
         let result = try DeterminationGenerator.determineBasal(
             profile: profile,
             preferences: preferences,
+            units: .mgdL,
             currentTemp: currentTemp,
             iobData: iobData,
             mealData: mealData,

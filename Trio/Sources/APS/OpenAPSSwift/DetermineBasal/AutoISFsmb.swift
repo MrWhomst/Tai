@@ -38,6 +38,7 @@ enum AutoISFsmb {
     static func evaluate(
         profile: Profile,
         targetBG: Decimal,
+        units: GlucoseUnits,
         microBolusAllowed: Bool,
         iob: Decimal,
         b30IsActive: Bool,
@@ -100,8 +101,11 @@ enum AutoISFsmb {
         }
 
         let evenTarget: Bool
-        if profile.targetUnits == .mmolL {
-            evenTarget = Int(NSDecimalNumber(decimal: (targetBG * 10).jsRounded()).doubleValue) % 2 == 0
+        // Targets are always stored as mg/dL integers. For mmol/L users, convert to
+        // mmol/L (1-decimal rounded) then check tenths-digit parity — mirrors JS
+        // convert_bg + *10 %2.
+        if units == .mmolL {
+            evenTarget = Int(NSDecimalNumber(decimal: (targetBG.asMmolL * 10).jsRounded()).doubleValue) % 2 == 0
         } else {
             evenTarget = Int(NSDecimalNumber(decimal: targetBG).doubleValue) % 2 == 0
         }

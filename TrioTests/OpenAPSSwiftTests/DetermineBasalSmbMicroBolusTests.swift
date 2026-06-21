@@ -141,6 +141,7 @@ import Testing
         let determination = try DeterminationGenerator.determineBasal(
             profile: inputs.profile,
             preferences: inputs.preferences,
+            units: .mgdL,
             currentTemp: inputs.currentTemp,
             iobData: inputs.iobData,
             mealData: inputs.mealData,
@@ -163,6 +164,7 @@ import Testing
         let determination = try DeterminationGenerator.determineBasal(
             profile: inputs.profile,
             preferences: inputs.preferences,
+            units: .mgdL,
             currentTemp: inputs.currentTemp,
             iobData: inputs.iobData,
             mealData: inputs.mealData,
@@ -177,5 +179,62 @@ import Testing
 
         #expect(determination?.units == nil || determination?.units == 0)
         #expect(determination?.reason.contains("Waiting") ?? false)
+    }
+
+    /// Regression test: `units:` threaded into `determineBasal` must reach the autoISF
+    /// even/odd parity check. Same profile + same `targetBG` (92 mg/dL = 5.1 mmol/L)
+    /// flips the SMB verdict purely on the units argument:
+    ///   - .mgdL: 92 is even → SMB enforced, reason has no "odd Target"
+    ///   - .mmolL: 5.1 has odd tenths digit → SMB blocked, reason contains "odd Target"
+    /// If `units` is ever re-sourced from the profile (or anything not the parameter),
+    /// both calls produce the same verdict and this test fails.
+    @Test("autoISF even/odd parity follows the passed units, not the profile") func testParityFollowsUnitsParameter() throws {
+        var inputs = buildInputs(lastBolusOffsetMinutes: 10)
+        inputs.profile.autoisf = true
+        inputs.profile.enableSMBEvenOnOddOffAlways = true
+        inputs.profile.minBg = 92
+        inputs.profile.targetBg = 92
+
+        // autoISFStatus must be non-nil so AutoISF.run takes the full path that
+        // bakes the SMB reason fragment into isfReason → determination.reason.
+        let autoISFStatus = AutoISFGlucoseStatus(
+            glucoseStatus: inputs.glucoseStatus,
+            cgmFlatMinutes: 0,
+            dura_ISF_minutes: 0,
+            dura_ISF_average: 0,
+            dura_p: 0,
+            delta_pl: 0,
+            delta_pn: 0,
+            bg_acceleration: 0,
+            r_squ: 0,
+            a_0: 0,
+            a_1: 0,
+            a_2: 0,
+            debugInfo: ""
+        )
+
+        func run(units: GlucoseUnits) throws -> Determination? {
+            try DeterminationGenerator.determineBasal(
+                profile: inputs.profile,
+                preferences: inputs.preferences,
+                units: units,
+                currentTemp: inputs.currentTemp,
+                iobData: inputs.iobData,
+                mealData: inputs.mealData,
+                autosensData: inputs.autosensData,
+                reservoirData: inputs.reservoirData,
+                glucoseStatus: inputs.glucoseStatus,
+                microBolusAllowed: inputs.microBolusAllowed,
+                autoISFStatus: autoISFStatus,
+                trioCustomOrefVariables: inputs.trioCustomOrefVariables,
+                currentTime: inputs.currentTime
+            )
+        }
+
+        let mgdl = try run(units: .mgdL)
+        let mmol = try run(units: .mmolL)
+
+        #expect(!(mgdl?.reason.contains("odd Target") ?? true))
+        #expect(mmol?.reason.contains("odd Target") ?? false)
     }
 }
