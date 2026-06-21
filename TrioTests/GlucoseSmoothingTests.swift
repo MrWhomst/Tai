@@ -41,6 +41,7 @@ import Testing
     @Test(
         "Exponential smoothing writes smoothed glucose for CGM values when enough data exists"
     ) func testExponentialSmoothingStoresSmoothedValues() async throws {
+        try await deleteAllGlucose()
         let glucoseValues: [Int16] = [100, 105, 110, 115, 120, 125]
         await createGlucoseSequence(values: glucoseValues, interval: 5 * 60, isManual: false)
 
@@ -122,6 +123,7 @@ import Testing
     @Test(
         "Exponential smoothing stops at gaps >= 12 minutes and only updates the most recent window"
     ) func testExponentialSmoothingGapStopsWindow() async throws {
+        try await deleteAllGlucose()
         let now = Date()
 
         var dates: [Date] = []
@@ -149,42 +151,26 @@ import Testing
         let ascending = try await fetchAndSortGlucose()
         #expect(ascending.count == values.count)
 
-        // Split into:
-        // - older block (before gap)
-        // - recent block (after gap)
-        let olderBlock = ascending.prefix(10)
-        let recentBlock = ascending.suffix(3)
-
-        // --- ASSERT 1: Older values should NOT be overwritten ---
-        for (index, obj) in olderBlock.enumerated() {
-            #expect(
-                obj.smoothedGlucose == nil,
-                "Older value at index \(index) should remain untouched (no fallback overwrite)."
-            )
-        }
-
-        // --- ASSERT 2: Recent values should be filled by fallback ---
-        for (index, obj) in recentBlock.enumerated() {
+        // After 0fa593695 "try to always smooth", the smoother sets fallback
+        // smoothed = max(raw, 39) on every reading regardless of gap or window
+        // size. With a 15-minute gap and only 3 readings after it, the valid
+        // window (3) is below minimumWindowSize (4), so the smoother returns
+        // after the fallback pass — every entry should carry a smoothed value
+        // equal to its raw glucose.
+        for (index, obj) in ascending.enumerated() {
             guard let smoothed = obj.smoothedGlucose?.decimalValue else {
-                #expect(false, "Recent value at index \(index) should have smoothedGlucose set.")
+                #expect(Bool(false), "Entry at index \(index) should have a fallback smoothedGlucose set.")
                 continue
             }
-
-            #expect(
-                smoothed >= 39,
-                "Fallback smoothed glucose must be clamped to >= 39, got \(smoothed)."
-            )
-
-            #expect(
-                smoothed == smoothed.rounded(toPlaces: 0),
-                "Fallback smoothed glucose must be rounded to integer, got \(smoothed)."
-            )
+            #expect(smoothed >= 39, "Smoothed glucose must be clamped to >= 39, got \(smoothed).")
+            #expect(smoothed == Decimal(Int(obj.glucose)), "Fallback should equal raw glucose at index \(index).")
         }
     }
 
     @Test(
         "Exponential smoothing treats 38 mg/dL as xDrip error and clamps stored smoothed glucose"
     ) func testExponentialSmoothingXDrip38StopsWindow() async throws {
+        try await deleteAllGlucose()
         // GIVEN
         let values: [Int16] = [100, 105, 110, 38, 120, 125]
         await createGlucoseSequence(values: values, interval: 5 * 60, isManual: false)
@@ -264,6 +250,7 @@ import Testing
     @Test(
         "Exponential smoothing writes a smoothed value for the current BG when 24h holds more than 350 readings"
     ) func testExponentialSmoothingCoversCurrentBGAboveLimit() async throws {
+        try await deleteAllGlucose()
         // GIVEN: 360 contiguous CGM readings within the last 24h (3 min spacing, no gaps).
         let count = 360
         let values: [Int16] = (0 ..< count).map { _ in Int16(120) }
@@ -386,6 +373,27 @@ import Testing
         let now = Date()
         let dates = values.indices.map { now.addingTimeInterval(Double($0) * interval) }
         await createGlucoseSequence(values: values, dates: dates, isManual: isManual)
+    }
+
+    /// Removes any pre-existing GlucoseStored rows. State can leak between tests
+    /// in this suite (Swift Testing reuses suite instances in `.serialized` runs
+    /// even though `init()` reassigns the stack), and `BaseFetchGlucoseManager.init`
+    /// may seed a reading via the restored cgmManager. Call at the start of any
+    /// test that asserts on the total fetched count.
+    private func deleteAllGlucose() async throws {
+        try await testContext.perform {
+            let request: NSFetchRequest<NSFetchRequestResult> = GlucoseStored.fetchRequest()
+            let batchDelete = NSBatchDeleteRequest(fetchRequest: request)
+            batchDelete.resultType = .resultTypeObjectIDs
+            let result = try self.testContext.execute(batchDelete) as? NSBatchDeleteResult
+            if let ids = result?.result as? [NSManagedObjectID], !ids.isEmpty {
+                NSManagedObjectContext.mergeChanges(
+                    fromRemoteContextSave: [NSDeletedObjectsKey: ids],
+                    into: [self.testContext]
+                )
+            }
+            self.testContext.reset()
+        }
     }
 
     private func fetchAndSortGlucose() async throws -> [GlucoseStored] {

@@ -687,6 +687,8 @@ import Testing
     @Test("should not bolus if within SMB interval") func testSMBInterval() throws {
         var profile = Profile()
         profile.currentBasal = 1.0
+        profile.maxDailyBasal = 1.5
+        profile.maxBasal = 3.0
         profile.maxSMBBasalMinutes = 30
         profile.smbDeliveryRatio = 0.5
         profile.bolusIncrement = 0.1
@@ -954,6 +956,8 @@ import Testing
     @Test("should set 30m zero temp if durationReq is between 30 and 45") func testSet30mZeroTemp() throws {
         var profile = Profile()
         profile.currentBasal = 1.0
+        profile.maxDailyBasal = 1.5
+        profile.maxBasal = 3.0
         profile.maxSMBBasalMinutes = 30
         profile.smbDeliveryRatio = 0.5
         profile.bolusIncrement = 0.1
@@ -1002,6 +1006,8 @@ import Testing
     @Test("should set 60m zero temp if durationReq is > 45") func testSet60mZeroTemp() throws {
         var profile = Profile()
         profile.currentBasal = 1.0
+        profile.maxDailyBasal = 1.5
+        profile.maxBasal = 3.0
         profile.maxSMBBasalMinutes = 30
         profile.smbDeliveryRatio = 0.5
         profile.bolusIncrement = 0.1
@@ -1050,6 +1056,8 @@ import Testing
     @Test("should cap zero temp duration at 60m") func testCapZeroTempAt60m() throws {
         var profile = Profile()
         profile.currentBasal = 1.0
+        profile.maxDailyBasal = 1.5
+        profile.maxBasal = 3.0
         profile.maxSMBBasalMinutes = 30
         profile.smbDeliveryRatio = 0.5
         profile.bolusIncrement = 0.1
@@ -1098,6 +1106,8 @@ import Testing
     @Test("should set low temp if durationReq < 30") func testSetLowTemp() throws {
         var profile = Profile()
         profile.currentBasal = 1.0
+        profile.maxDailyBasal = 1.5
+        profile.maxBasal = 3.0
         profile.maxSMBBasalMinutes = 30
         profile.smbDeliveryRatio = 0.5
         profile.bolusIncrement = 0.1

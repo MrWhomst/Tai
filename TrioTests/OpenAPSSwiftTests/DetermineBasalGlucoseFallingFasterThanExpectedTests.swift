@@ -125,6 +125,7 @@ import Testing
         let profile = defaultProfile()
         let currentTemp = TempBasal(duration: 20, rate: profile.currentBasal!, temp: .absolute, timestamp: Date())
         let (shouldSet, determination) = try callGlucoseFallingFasterThanExpected(
+            minDelta: -1,
             currentTemp: currentTemp,
             basal: profile.currentBasal!,
             profile: profile
@@ -139,6 +140,7 @@ import Testing
         let currentTemp = TempBasal(duration: 10, rate: 1.0, temp: .absolute, timestamp: Date())
         let basal: Decimal = 1.2
         let (shouldSet, determination) = try callGlucoseFallingFasterThanExpected(
+            minDelta: -1,
             currentTemp: currentTemp,
             basal: basal,
             profile: profile
