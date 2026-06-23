@@ -1,6 +1,2 @@
-based on Trio dev 0.8.3
-last update on testflight, thx a lot for testing closed beta
-pleasse build Dev
-if you want to keep the app, change to BUNDLE_IDENTIFIER = org.nightscout.$(DEVELOPMENT_TEAM).trio
-either in ConfigOverride.xcconfig if you only build xcode, otherwise you need to directly change in
-Config.xcconfig
+based on Trio dev 0.8.3.5
+

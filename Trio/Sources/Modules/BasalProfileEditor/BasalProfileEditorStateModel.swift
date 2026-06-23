@@ -194,7 +194,8 @@ extension BasalProfileEditor {
             }
             provider.saveProfile(profile)
                 .receive(on: DispatchQueue.main)
-                .sink { completion in
+                .sink { [weak self] completion in
+                    guard let self else { return }
                     self.syncInProgress = false
                     switch completion {
                     case .finished:
@@ -203,13 +204,14 @@ extension BasalProfileEditor {
                         self.roundingHint = false
                         self.originalRates.removeAll()
 
-                        DispatchQueue.main.async {
-                            self.broadcaster.notify(BasalProfileObserver.self, on: .main) {
+                        DispatchQueue.main.async { [weak self] in
+                            self?.broadcaster.notify(BasalProfileObserver.self, on: .main) {
                                 $0.basalProfileDidChange(profile)
                             }
                         }
 
-                        Task.detached(priority: .low) {
+                        Task.detached(priority: .low) { [weak self] in
+                            guard let self else { return }
                             do {
                                 debug(.nightscout, "Attempting to upload basal rates to Nightscout")
                                 try await self.nightscout.uploadProfiles()
@@ -218,8 +220,8 @@ extension BasalProfileEditor {
                             }
                         }
 
-                        Task.detached(priority: .low) {
-                            await self.tidepoolManager.uploadSettings()
+                        Task.detached(priority: .low) { [weak self] in
+                            await self?.tidepoolManager.uploadSettings()
                         }
                     case .failure:
                         // Handle the error, show error message
