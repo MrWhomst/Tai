@@ -43,8 +43,7 @@ extension AutoISFHistory {
                     onContext: context,
                     predicate: NSPredicate.determinationPeriod(from: startTime, to: endTime),
                     key: "deliverAt",
-                    ascending: false,
-                    fetchLimit: intervalHours * 15
+                    ascending: false
                 )
 
                 return try await context.perform {

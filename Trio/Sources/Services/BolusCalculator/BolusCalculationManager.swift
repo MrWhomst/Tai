@@ -198,8 +198,7 @@ final class BaseBolusCalculationManager: BolusCalculationManager, Injectable {
             onContext: glucoseFetchContext,
             predicate: NSPredicate.glucose,
             key: "date",
-            ascending: false,
-            fetchLimit: 288
+            ascending: false
         )
 
         return try await glucoseFetchContext.perform {
