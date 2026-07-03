@@ -5,14 +5,6 @@ import SwiftDate
 import SwiftUI
 import Swinject
 
-struct TimePicker: Identifiable {
-    let label: String
-    let number: String
-    var active: Bool
-    let hours: Int16
-    var id: String { label }
-}
-
 extension Home {
     struct RootView: BaseView {
         let resolver: Resolver
@@ -43,38 +35,6 @@ extension Home {
         @State var showCGMSelection: Bool = false
         @State var showSnoozeSheet: Bool = false
         @State var notificationsDisabled = false
-        @State var timeButtons: [TimePicker] = [
-            TimePicker(
-                label: String(localized: "2 hours", comment: "Time range button on Home chart — show last 2 hours"),
-                number: "2",
-                active: false,
-                hours: 2
-            ),
-            TimePicker(
-                label: String(localized: "4 hours", comment: "Time range button on Home chart — show last 4 hours"),
-                number: "4",
-                active: false,
-                hours: 4
-            ),
-            TimePicker(
-                label: String(localized: "6 hours", comment: "Time range button on Home chart — show last 6 hours"),
-                number: "6",
-                active: false,
-                hours: 6
-            ),
-            TimePicker(
-                label: String(localized: "12 hours", comment: "Time range button on Home chart — show last 12 hours"),
-                number: "12",
-                active: false,
-                hours: 12
-            ),
-            TimePicker(
-                label: String(localized: "24 hours", comment: "Time range button on Home chart — show last 24 hours"),
-                number: "24",
-                active: false,
-                hours: 24
-            )
-        ]
 
         let buttonFont = Font.custom("TimeButtonFont", size: 14)
 
@@ -441,43 +401,6 @@ extension Home {
             return components.isEmpty ? nil : components.joined(separator: ", ")
         }
 
-        var timeIntervalButtons: some View {
-            let buttonColor = (colorScheme == .dark ? Color.white : Color.black).opacity(0.8)
-
-            return HStack(alignment: .center) {
-                ForEach(timeButtons) { button in
-                    Button(action: {
-                        state.hours = button.hours
-                    }) {
-                        Group {
-                            if button.active {
-                                Text(
-                                    button.hours.description + "\u{00A0}" +
-                                        String(localized: "h", comment: "h")
-                                )
-                            } else {
-                                Text(button.hours.description)
-                            }
-                        }
-                        .font(.footnote)
-                        .fontWeight(button.active ? .semibold : .regular)
-                        .padding(.vertical, 5)
-                        .padding(.horizontal, 10)
-                        .foregroundColor(
-                            button
-                                .active ? (colorScheme == .dark ? Color.bgDarkerDarkBlue : Color.white) : buttonColor
-                        )
-                        .background(button.active ? buttonColor.opacity(colorScheme == .dark ? 1 : 0.8) : Color.clear)
-                        .clipShape(Capsule())
-                        .overlay(
-                            Capsule()
-                                .stroke(button.active ? buttonColor.opacity(0.4) : Color.clear, lineWidth: 2)
-                        )
-                    }
-                }
-            }
-        }
-
         var statsIconString: String {
             if #available(iOS 18, *) {
                 return "chart.line.text.clipboard"
@@ -535,25 +458,6 @@ extension Home {
                         state.showModal(for: .statistics)
                     }
                 Spacer()
-                ForEach(timeButtons) { button in
-                    Text(button.active ? button.label : button.number).onTapGesture {
-                        state.hours = button.hours
-                    }
-                    .foregroundStyle(button.active ? (colorScheme == .dark ? Color.white : Color.black).opacity(0.9) : .secondary)
-                    .frame(maxHeight: 30).padding(.horizontal, 8)
-                    .background(
-                        button.active ?
-                            // RGB(30, 60, 95)
-                            (
-                                colorScheme == .dark ? Color(red: 0.1176470588, green: 0.2352941176, blue: 0.3725490196) :
-                                    Color.white
-                            ) :
-                            Color
-                            .clear
-                    )
-                    .cornerRadius(20)
-                }
-                Spacer()
                 Button(action: {
                     state.isLegendPresented.toggle()
                 }) {
@@ -582,12 +486,10 @@ extension Home {
                     geo: geo,
                     safeAreaSize: notificationsDisabled == true ? safeAreaSize : 0,
                     units: state.units,
-                    hours: state.filteredHours,
                     highGlucose: state.highGlucose,
                     lowGlucose: state.lowGlucose,
                     currentGlucoseTarget: state.currentGlucoseTarget,
                     glucoseColorScheme: state.glucoseColorScheme,
-                    screenHours: state.hours,
                     displayXgridLines: state.displayXgridLines,
                     displayYgridLines: state.displayYgridLines,
                     thresholdLines: state.thresholdLines,
@@ -596,12 +498,6 @@ extension Home {
                 )
             }
             .padding(.bottom, UIDevice.adjustPadding(min: 0, max: nil))
-        }
-
-        func highlightButtons() {
-            for i in 0 ..< timeButtons.count {
-                timeButtons[i].active = timeButtons[i].hours == state.hours
-            }
         }
 
         @ViewBuilder func rightHeaderPanel(_: GeometryProxy) -> some View {
@@ -1304,13 +1200,8 @@ extension Home {
             GeometryReader { geo in
                 mainViewElements(geo)
             }
-            .onChange(of: state.hours) {
-                highlightButtons()
-            }
             .onAppear {
-                configureView {
-                    highlightButtons()
-                }
+                configureView()
             }
             .navigationTitle("Home")
             .navigationBarHidden(true)

@@ -44,10 +44,18 @@ extension Home.StateModel {
     @MainActor private func updateGlucoseArray(with objects: [GlucoseStored]) {
         glucoseFromPersistence = objects
         latestTwoGlucoseValues = Array(objects.suffix(2))
+        updateGlucosePeaks()
+    }
 
-        // Compute glucose turning points if enabled
+    /// Re-picks the glucose turning points for the current data and zoom. The picker
+    /// window scales with the committed pinch-zoom span (`chartVisibleHours / 4`), the
+    /// same ratio the old time-range buttons used.
+    func updateGlucosePeaks() {
         if showGlucosePeaks {
-            glucosePeaks = PeakPicker.pick(data: objects, windowHours: Double(hours) / 4)
+            glucosePeaks = PeakPicker.pick(
+                data: glucoseFromPersistence,
+                windowHours: chartVisibleHours / 4
+            )
         } else {
             glucosePeaks = []
         }

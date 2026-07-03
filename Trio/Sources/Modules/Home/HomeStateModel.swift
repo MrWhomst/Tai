@@ -33,8 +33,7 @@ extension Home {
         }
 
         private let timer = DispatchTimer(timeInterval: 30)
-        private(set) var filteredHours = 24
-        var startMarker = Date(timeIntervalSinceNow: TimeInterval(hours: -24))
+        var startMarker = Date(timeIntervalSinceNow: -MainChartHelper.Config.chartHistorySeconds)
         var endMarker = Date(timeIntervalSinceNow: TimeInterval(hours: 3))
         var manualGlucose: [BloodGlucose] = []
         var uploadStats = false
@@ -87,9 +86,11 @@ extension Home {
         var thresholdLines: Bool = false
         var showGlucosePeaks: Bool = false
         var glucosePeaks: [(date: Date, glucose: Int16, type: ExtremumType)] = []
+        /// Committed pinch-zoom window in hours, fed back by the chart shell so the
+        /// peak picker granularity follows the zoom (successor of the time buttons).
+        var chartVisibleHours: Double = MainChartHelper.Config.defaultVisibleSeconds / 3600
         var useChartBars: Bool = false
         var bolusDisplayThreshold: BolusDisplayThreshold = .allUnits
-        var hours: Int16 = 6
         var totalBolus: Decimal = 0
         var isStatusPopupPresented: Bool = false
         var statusTitlePopup = ""
@@ -979,14 +980,7 @@ extension Home.StateModel:
         displayYgridLines = settingsManager.settings.yGridLines
         thresholdLines = settingsManager.settings.rulerMarks
         showGlucosePeaks = settingsManager.settings.showGlucosePeaks
-        if showGlucosePeaks {
-            glucosePeaks = PeakPicker.pick(
-                data: glucoseFromPersistence,
-                windowHours: Double(hours) / 4
-            )
-        } else {
-            glucosePeaks = []
-        }
+        updateGlucosePeaks()
         useChartBars = settingsManager.settings.useChartBars
         bolusDisplayThreshold = settingsManager.settings.bolusDisplayThreshold
         showCarbsRequiredBadge = settingsManager.settings.showCarbsRequiredBadge
