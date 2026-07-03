@@ -30,6 +30,10 @@ extension Main {
         /// tab injects its own instance, which overrides this one inside that subtree.
         @State private var defaultSettingsSearchHighlight = SettingsSearchHighlight()
 
+        private var modalScheduler: TrioModalAlertScheduler {
+            resolver.resolve(TrioAlertManager.self)!.modalScheduler
+        }
+
         var body: some View {
             router.view(for: .home)
                 .sheet(item: $state.modal) { modal in
@@ -39,7 +43,7 @@ extension Main {
                 .sheet(item: $state.secondaryModal) { wrapper in
                     wrapper.view.environment(\.isInModalSheet, true)
                 }
-
+                .trioAlerts(modalScheduler)
                 .onAppear(perform: configureView)
                 .scrollContentBackground(.hidden).background(appState.trioBackgroundColor(for: colorScheme))
                 .environment(defaultSettingsSearchHighlight)
