@@ -768,6 +768,18 @@ extension SettingsExport {
                     name: String(localized: "IOB Threshold Percent"),
                     value: String(describing: preferences.iobThresholdPercent)
                 )
+                addSetting(
+                    category: algorithmCategory,
+                    subcategory: autoISFSubcategory,
+                    name: String(localized: "Use Profile CSF"),
+                    value: preferences.useProfileCSF ? String(localized: "Enabled") : String(localized: "Disabled")
+                )
+                addSetting(
+                    category: algorithmCategory,
+                    subcategory: autoISFSubcategory,
+                    name: String(localized: "SMB Threshold Ratio"),
+                    value: String(describing: preferences.smbThresholdRatio)
+                )
 
                 // B30 Settings
                 let b30Subcategory = String(localized: "B30")
