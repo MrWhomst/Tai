@@ -146,7 +146,7 @@ struct MainChartView: View {
         .contentShape(Rectangle())
         .simultaneousGesture(panAndInspectGesture)
         .simultaneousGesture(magnifyGesture)
-        .onTapGesture(count: 2) { cycleZoomPreset() }
+        .simultaneousGesture(TapGesture(count: 2).onEnded { cycleZoomPreset() })
         .onDisappear {
             momentumTask?.cancel()
             inspectHoldTask?.cancel()
