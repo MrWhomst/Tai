@@ -49,6 +49,8 @@ enum MainChartHelper {
         static let minVisibleSeconds: TimeInterval = 3 * 3600
         /// Widest pinch-out zoom.
         static let maxVisibleSeconds: TimeInterval = 24 * 3600
+        /// Double-tap cycles the visible window through these presets.
+        static let zoomPresets: [TimeInterval] = [6 * 3600, 12 * 3600, 24 * 3600]
         /// Geometric grid for pinch commits (~4 % per step). Every committed zoom step
         /// re-lays the full-width canvas, so this bounds a halving of the visible window
         /// to roughly 18 re-layouts instead of hundreds.

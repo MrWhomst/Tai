@@ -146,6 +146,7 @@ struct MainChartView: View {
         .contentShape(Rectangle())
         .simultaneousGesture(panAndInspectGesture)
         .simultaneousGesture(magnifyGesture)
+        .onTapGesture(count: 2) { cycleZoomPreset() }
         .onDisappear {
             momentumTask?.cancel()
             inspectHoldTask?.cancel()
@@ -381,6 +382,21 @@ extension MainChartView {
     private func date(atViewportX x: CGFloat) -> Date {
         let fraction = min(max(x / viewportWidth, 0), 1)
         return scrollPosition.addingTimeInterval(visibleSeconds * TimeInterval(fraction))
+    }
+
+    /// Keeps domain-edge content clear of the pinned y-axis labels.
+    private var trailingOverscan: TimeInterval { visibleSeconds * 0.05 }
+
+    /// Double-tap cycles the zoom presets, trailing edge anchored.
+    private func cycleZoomPreset() {
+        let presets = MainChartHelper.Config.zoomPresets
+        let next = presets.first(where: { $0 > visibleSeconds + 1 }) ?? presets[0]
+        let trailing = scrollPosition.addingTimeInterval(visibleSeconds)
+        momentumTask?.cancel()
+        withAnimation(.easeInOut(duration: 0.25)) {
+            visibleSeconds = next
+            scrollPosition = clampedLeadingEdge(trailing.addingTimeInterval(-next))
+        }
     }
 
     /// Clamps a proposed leading edge so the visible window never leaves the chart's domain.
