@@ -12,6 +12,10 @@ enum HomeLayout {
     static let headerHeight: CGFloat = 150
     /// Zone C: horizontal pump panel slot; the row centers inside it.
     static let mealSlotHeight: CGFloat = 48
+    /// Pull distance that triggers the forced loop.
+    static let refreshTriggerDistance: CGFloat = 70
+    /// Indicator row height while the loop runs.
+    static let refreshIndicatorHeight: CGFloat = 40
     /// Zone E: rounded panel shared by the adjustment and bolus views.
     static let bottomPanelHeight: CGFloat = 60
     /// Zone E: horizontal inset of the panel.

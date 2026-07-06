@@ -59,5 +59,4 @@ extension Home.RootView {
             concentration: state.concentration
         )
     }
-
 }
