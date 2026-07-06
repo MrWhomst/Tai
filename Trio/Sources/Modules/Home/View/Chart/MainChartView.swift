@@ -129,6 +129,8 @@ struct MainChartView: View {
                 )
                 .equatable()
                 .frame(height: mainHeight)
+                // Keep the axis labels off the screen edge.
+                .padding(.trailing, 4)
                 Color.clear.frame(height: cobIobHeight)
             }
             .frame(width: viewportWidth, height: stackHeight, alignment: .topLeading)
@@ -402,19 +404,18 @@ extension MainChartView {
     /// Clamps a proposed leading edge so the visible window never leaves the chart's domain.
     private func clampedLeadingEdge(_ proposed: Date) -> Date {
         let earliest = state.startMarker
-        let latest = state.endMarker.addingTimeInterval(-visibleSeconds)
+        let latest = state.endMarker.addingTimeInterval(trailingOverscan - visibleSeconds)
         return min(max(proposed, earliest), max(earliest, latest))
     }
 
-    /// Scrolls so the trailing edge of the visible window sits at `state.endMarker`,
-    /// i.e. the latest data (plus forecast headroom) is on screen.
+    /// Anchors the visible window just past `state.endMarker`.
     private func scrollToTrailingEdge() {
         // Never yank the chart out from under an active gesture (pan, pinch, or an
         // in-progress inspect/scrub); the next data tick after the gesture ends will
         // re-anchor to trailing as before.
         guard !isPinching, panBaseline == nil, !isInspectLatched else { return }
         momentumTask?.cancel()
-        scrollPosition = state.endMarker.addingTimeInterval(-visibleSeconds)
+        scrollPosition = state.endMarker.addingTimeInterval(trailingOverscan - visibleSeconds)
     }
 
     /// One-finger gesture: movement pans (with momentum on release); a press held in
