@@ -56,7 +56,7 @@ extension Home.StateModel {
     }
 
     private func fetchOverrideRunStored() async throws -> [NSManagedObjectID] {
-        let predicate = NSPredicate(format: "startDate >= %@", Date.oneDayAgo as NSDate)
+        let predicate = NSPredicate(format: "startDate >= %@", chartHistoryStartDate as NSDate)
         let results = try await CoreDataStack.shared.fetchEntitiesAsync(
             ofType: OverrideRunStored.self,
             onContext: overrideFetchContext,

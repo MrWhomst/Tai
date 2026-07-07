@@ -22,7 +22,7 @@ extension Home.StateModel {
         let results = try await CoreDataStack.shared.fetchEntitiesAsync(
             ofType: GlucoseStored.self,
             onContext: glucoseFetchContext,
-            predicate: NSPredicate.glucose,
+            predicate: NSPredicate.glucose(since: chartHistoryStartDate),
             key: "date",
             ascending: true,
             batchSize: 50

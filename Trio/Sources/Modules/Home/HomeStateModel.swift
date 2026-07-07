@@ -34,6 +34,10 @@ extension Home {
 
         private let timer = DispatchTimer(timeInterval: 30)
         var startMarker = Date(timeIntervalSinceNow: -MainChartHelper.Config.chartHistorySeconds)
+        /// Span of history the chart arrays are fetched over; grows once to
+        /// `maxChartHistorySeconds` when the user pans near the domain start.
+        var chartHistorySpan: TimeInterval = MainChartHelper.Config.chartHistorySeconds
+        var isChartHistoryExpanded = false
         var endMarker = Date(timeIntervalSinceNow: TimeInterval(hours: 3))
         var manualGlucose: [BloodGlucose] = []
         var uploadStats = false
@@ -769,7 +773,7 @@ extension Home {
             }
         }
 
-        private func setupGlucoseTargets() async {
+        func setupGlucoseTargets() async {
             let bgTargets = await provider.getBGTargets()
             let targetProfiles = processFetchedTargets(bgTargets, startMarker: startMarker)
             await MainActor.run {

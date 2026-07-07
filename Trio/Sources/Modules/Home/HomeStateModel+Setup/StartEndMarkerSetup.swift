@@ -1,9 +1,33 @@
 import Foundation
 
 extension Home.StateModel {
+    /// Leading edge of the chart-feeding fetch window.
+    var chartHistoryStartDate: Date {
+        Date(timeIntervalSinceNow: -chartHistorySpan)
+    }
+
+    /// One-shot: widens the fetch window to the full history span and
+    /// re-runs the chart array fetches. Chart-only; dosing reads its own
+    /// storage fetches and is unaffected.
+    func expandChartHistory() {
+        guard !isChartHistoryExpanded else { return }
+        isChartHistoryExpanded = true
+        chartHistorySpan = MainChartHelper.Config.maxChartHistorySeconds
+        updateStartEndMarkers()
+        setupGlucoseArray()
+        setupCarbsArray()
+        setupFPUsArray()
+        setupInsulinArray()
+        setupDeterminationsArray()
+        setupOverrideRunStored()
+        setupTempTargetsStored()
+        setupTempTargetsRunStored()
+        Task { await setupGlucoseTargets() }
+    }
+
     // Update start and  end marker to fix scroll update problem with x axis
     func updateStartEndMarkers() {
-        startMarker = Date(timeIntervalSinceNow: -MainChartHelper.Config.chartHistorySeconds)
+        startMarker = Date(timeIntervalSinceNow: -chartHistorySpan)
 
         let threeHourSinceNow = Date(timeIntervalSinceNow: TimeInterval(hours: 3))
 

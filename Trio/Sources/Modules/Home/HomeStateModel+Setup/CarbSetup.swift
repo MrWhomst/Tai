@@ -19,7 +19,7 @@ extension Home.StateModel {
         let results = try await CoreDataStack.shared.fetchEntitiesAsync(
             ofType: CarbEntryStored.self,
             onContext: carbsFetchContext,
-            predicate: NSPredicate.carbsForChart,
+            predicate: NSPredicate.carbsForChart(since: chartHistoryStartDate),
             key: "date",
             ascending: false,
             batchSize: 5
@@ -55,7 +55,7 @@ extension Home.StateModel {
         let results = try await CoreDataStack.shared.fetchEntitiesAsync(
             ofType: CarbEntryStored.self,
             onContext: fpuFetchContext,
-            predicate: NSPredicate.fpusForChart,
+            predicate: NSPredicate.fpusForChart(since: chartHistoryStartDate),
             key: "date",
             ascending: false
         )

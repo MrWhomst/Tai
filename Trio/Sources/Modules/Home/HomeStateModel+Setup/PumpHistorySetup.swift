@@ -22,7 +22,7 @@ extension Home.StateModel {
         let results = try await CoreDataStack.shared.fetchEntitiesAsync(
             ofType: PumpEventStored.self,
             onContext: pumpHistoryFetchContext,
-            predicate: NSPredicate.pumpHistoryLast24h,
+            predicate: NSPredicate.pumpHistory(since: chartHistoryStartDate),
             key: "timestamp",
             ascending: true,
             batchSize: 30

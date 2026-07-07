@@ -22,7 +22,7 @@ extension Home.StateModel {
         let results = try await CoreDataStack.shared.fetchEntitiesAsync(
             ofType: TempTargetStored.self,
             onContext: tempTargetFetchContext,
-            predicate: NSPredicate.tempTargetsForMainChart,
+            predicate: NSPredicate.tempTargetsForMainChart(since: chartHistoryStartDate),
             key: "date",
             ascending: false
         )
@@ -57,7 +57,7 @@ extension Home.StateModel {
     }
 
     private func fetchTempTargetRunStored() async throws -> [NSManagedObjectID] {
-        let predicate = NSPredicate(format: "startDate >= %@", Date.oneDayAgo as NSDate)
+        let predicate = NSPredicate(format: "startDate >= %@", chartHistoryStartDate as NSDate)
         let results = try await CoreDataStack.shared.fetchEntitiesAsync(
             ofType: TempTargetRunStored.self,
             onContext: tempTargetFetchContext,

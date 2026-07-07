@@ -47,7 +47,7 @@ extension Home.StateModel {
         let results = try await CoreDataStack.shared.fetchEntitiesAsync(
             ofType: OrefDetermination.self,
             onContext: determinationFetchContext,
-            predicate: NSPredicate.determinationsForCobIobCharts,
+            predicate: NSPredicate.determinationsForCobIobCharts(since: chartHistoryStartDate),
             key: "deliverAt",
             ascending: false,
             batchSize: 50,
