@@ -39,6 +39,7 @@ extension Home {
         @State var selectedTab: Int = 0
         @State var showPumpSelection: Bool = false
         @State var showCGMSelection: Bool = false
+        @State var showSnoozeSheet: Bool = false
         @State var notificationsDisabled = false
         @State private var showAlgoCompare: Bool = false
         @State var timeButtons: [TimePicker] = [
@@ -200,7 +201,7 @@ extension Home {
             .onLongPressGesture {
                 let impactHeavy = UIImpactFeedbackGenerator(style: .heavy)
                 impactHeavy.impactOccurred()
-                state.showModal(for: .snooze)
+                showSnoozeSheet = true
             }
         }
 
@@ -1351,6 +1352,9 @@ extension Home {
                             }
                         }
                 }
+            }
+            .sheet(isPresented: $showSnoozeSheet) {
+                SnoozeAlertsSheetView(resolver: resolver, isPresented: $showSnoozeSheet)
             }
             // PUMP RELATED
             .confirmationDialog("Pump Model", isPresented: $showPumpSelection) {

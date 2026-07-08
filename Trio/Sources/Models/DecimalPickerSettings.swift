@@ -26,8 +26,6 @@ class PickerSettingsProvider: ObservableObject, Injectable {
     func pickerSetting(for key: String) -> PickerSetting? {
         let s = settings
         switch key {
-        case "lowGlucose": return s.lowGlucose
-        case "highGlucose": return s.highGlucose
         case "carbsRequiredThreshold": return s.carbsRequiredThreshold
         case "individualAdjustmentFactor": return s.individualAdjustmentFactor
         case "delay": return s.delay
@@ -124,8 +122,6 @@ class PickerSettingsProvider: ObservableObject, Injectable {
 }
 
 struct DecimalPickerSettings {
-    var lowGlucose = PickerSetting(value: 70, step: 5, min: 40, max: 100, type: PickerSetting.PickerSettingType.glucose)
-    var highGlucose = PickerSetting(value: 180, step: 5, min: 100, max: 400, type: PickerSetting.PickerSettingType.glucose)
     var carbsRequiredThreshold = PickerSetting(value: 10, step: 1, min: 0, max: 100, type: PickerSetting.PickerSettingType.gram)
     var individualAdjustmentFactor = PickerSetting(
         value: 0.5,

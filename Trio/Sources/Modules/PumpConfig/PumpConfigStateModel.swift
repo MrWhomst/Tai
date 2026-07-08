@@ -1,3 +1,4 @@
+import Foundation
 import LoopKit
 import LoopKitUI
 import MockKit
@@ -22,6 +23,7 @@ extension PumpConfig {
         @Published var allowDilution: Bool = false
         @Published var hideInsulinBadge: Bool = false
         @Injected() var bluetoothManager: BluetoothStateManager!
+        @Injected() var trioAlertManager: TrioAlertManager!
 
         var pumpSettings: PumpSettings {
             provider.settings()
@@ -112,7 +114,7 @@ extension PumpConfig {
         }
 
         func ack() {
-            provider.deviceManager.alertHistoryStorage.broadcastAlertUpdates()
+            trioAlertManager.acknowledgeAllOutstanding()
         }
 
         /// Checks if the pump simulator is selected and resets it if Bundle.main.simulatorVisibility.isHidden is true
