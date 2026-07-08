@@ -33,7 +33,8 @@ import Testing
             minPredBG: nil,
             threshold: nil,
             carbRatio: nil,
-            received: nil
+            received: nil,
+            tick: nil
         )
     }
 
