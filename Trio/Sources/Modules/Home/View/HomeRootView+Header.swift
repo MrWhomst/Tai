@@ -83,7 +83,6 @@ extension Home.RootView {
                 }
             }
             /// Loop view at bottomLeading
-            /// Loop view at bottomLeading
             LoopView(
                 closedLoop: state.closedLoop,
                 timerDate: state.timerDate,
@@ -94,11 +93,6 @@ extension Home.RootView {
             )
             .onTapGesture {
                 state.isStatusPopupPresented.toggle()
-            }
-            .onLongPressGesture {
-                let impactHeavy = UIImpactFeedbackGenerator(style: .heavy)
-                impactHeavy.impactOccurred()
-                state.runLoop()
             }
         }
     }
