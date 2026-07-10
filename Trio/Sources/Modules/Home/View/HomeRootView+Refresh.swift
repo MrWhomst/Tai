@@ -29,8 +29,27 @@ struct HomePullOffsetReader: ViewModifier {
 // MARK: - Pull-down-to-force-loop
 
 extension Home.RootView {
+    /// Pull hint while dragging. Disappears once the loop triggers — the
+    /// animated loop pill is the running feedback.
+    @ViewBuilder var pullToRefreshIndicator: some View {
+        if !isForcingLoop, pullOffset > 4 {
+            let progress = min(pullOffset / HomeLayout.refreshTriggerDistance, 1)
+            HStack(spacing: 8) {
+                Image(systemName: "arrow.down")
+                    .rotationEffect(.degrees(progress * 180))
+                Text("Pull down to force loop")
+            }
+            .font(.caption)
+            .foregroundStyle(.secondary)
+            .opacity(progress)
+            .frame(height: HomeLayout.refreshIndicatorHeight)
+            .frame(maxWidth: .infinity)
+        }
+    }
+
     /// Arms once per pull at the threshold; re-arms after the pull settles.
     func handlePullChange(_ offset: CGFloat) {
+        pullOffset = offset
         guard !isForcingLoop else { return }
         if offset >= HomeLayout.refreshTriggerDistance, !isRefreshArmed {
             isRefreshArmed = true

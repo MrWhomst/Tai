@@ -482,7 +482,6 @@ extension Home.RootView {
 
         let profileToShow: ProfileStored? = {
             guard overrideString == nil, tempTargetString == nil else { return nil }
-            guard profilesForCount.count > 1 else { return nil }
             return activeProfile.first
         }()
 

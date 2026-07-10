@@ -36,6 +36,7 @@ extension Home {
         @State var notificationsDisabled = false
 
         // Pull-down-to-force-loop (see HomeRootView+Refresh.swift)
+        @State var pullOffset: CGFloat = 0
         @State var isRefreshArmed = false
         @State var isForcingLoop = false
 
@@ -56,14 +57,6 @@ extension Home {
             ascending: false,
             fetchLimit: 1
         )) var activeProfile: FetchedResults<ProfileStored>
-
-        /// Count-only fetch, capped at 2 — the banner hides when a user has just one profile, so
-        /// we only need to know whether the total is >1.
-        @FetchRequest(fetchRequest: ProfileStored.fetch(
-            NSPredicate(value: true),
-            ascending: false,
-            fetchLimit: 2
-        )) var profilesForCount: FetchedResults<ProfileStored>
 
         private var historySFSymbol: String {
             if #available(iOS 17.0, *) {
@@ -115,6 +108,7 @@ extension Home {
             .scrollBounceBehavior(.always, axes: [.vertical])
             .modifier(HomePullOffsetReader(onChange: handlePullChange))
             .onPreferenceChange(HomePullOffsetKey.self) { handlePullChange($0) }
+            .overlay(alignment: .top) { pullToRefreshIndicator }
             // Safe-area inset: the tab bar can never cover the controls.
             .safeAreaInset(edge: .bottom, spacing: 0) {
                 bottomControls()

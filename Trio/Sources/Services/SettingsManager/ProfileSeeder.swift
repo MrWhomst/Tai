@@ -1,10 +1,11 @@
 import CoreData
 import Foundation
 
-/// Seeds an implicit "Default" `ProfileStored` from the current live settings on first launch.
+/// Seeds an implicit "Default Profile" `ProfileStored` from the current live settings on first launch.
 ///
-/// Runs once after Core Data is ready. If any profile already exists, no-op. The seeded profile is
-/// marked active so subsequent live-settings writes mirror into it via `ActiveProfileMirror`.
+/// Runs once after Core Data is ready. If any profile already exists, no-op (apart from a one-shot
+/// rename of the legacy "Default" seed). The seeded profile is marked active so subsequent
+/// live-settings writes mirror into it via `ActiveProfileMirror`.
 enum ProfileSeeder {
     static func seedDefaultIfNeeded(storage: FileStorage) async {
         let context = CoreDataStack.shared.newTaskContext()
@@ -16,7 +17,10 @@ enum ProfileSeeder {
                 let request: NSFetchRequest<ProfileStored> = ProfileStored.fetchRequest()
                 request.fetchLimit = 1
                 let existing = try context.count(for: request)
-                guard existing == 0 else { return }
+                guard existing == 0 else {
+                    renameLegacyDefault(in: context)
+                    return
+                }
 
                 let preferences = storage.retrieve(OpenAPS.Settings.preferences, as: Preferences.self)
                     ?? Preferences(from: OpenAPS.defaults(for: OpenAPS.Settings.preferences))
@@ -40,7 +44,7 @@ enum ProfileSeeder {
 
                 let profile = ProfileStored(context: context)
                 profile.id = UUID()
-                profile.name = "Default"
+                profile.name = "Default Profile"
                 profile.createdAt = Date()
                 profile.isActive = true
                 profile.activatedAt = Date()
@@ -56,10 +60,28 @@ enum ProfileSeeder {
                 )
 
                 try context.save()
-                debug(.coreData, "ProfileSeeder: created Default profile from live settings")
+                debug(.coreData, "ProfileSeeder: created Default Profile from live settings")
             } catch {
                 debug(.coreData, "ProfileSeeder failed: \(error)")
             }
+        }
+    }
+
+    /// One-shot migration: installs seeded before the rename carry a profile
+    /// literally named "Default"; give it the current "Default Profile" name.
+    private static func renameLegacyDefault(in context: NSManagedObjectContext) {
+        do {
+            let request: NSFetchRequest<ProfileStored> = ProfileStored.fetchRequest()
+            request.predicate = NSPredicate(format: "name == %@", "Default")
+            let legacy = try context.fetch(request)
+            guard !legacy.isEmpty else { return }
+            for profile in legacy {
+                profile.name = "Default Profile"
+            }
+            try context.save()
+            debug(.coreData, "ProfileSeeder: renamed legacy Default profile(s) to Default Profile")
+        } catch {
+            debug(.coreData, "ProfileSeeder legacy rename failed: \(error)")
         }
     }
 }
