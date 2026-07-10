@@ -25,7 +25,9 @@ private let scrubPointHaptic = UISelectionFeedbackGenerator()
 /// content is never re-evaluated mid-gesture.
 struct MainChartView: View {
     var geo: GeometryProxy
-    var safeAreaSize: CGFloat
+    /// Zone D allocation computed by the Home layout; the pane split below
+    /// preserves the proportions of the old screen-height fractions.
+    var chartHeight: CGFloat
     var units: GlucoseUnits
     var highGlucose: Decimal
     var lowGlucose: Decimal
@@ -213,10 +215,10 @@ struct MainChartView: View {
 extension MainChartView {
     private var viewportWidth: CGFloat { max(geo.size.width, 1) }
 
-    var basalHeight: CGFloat { geo.size.height * 0.05 }
+    var basalHeight: CGFloat { chartHeight * 0.10 }
     // With the COB/IOB pane hidden, the glucose pane absorbs its share.
-    var mainHeight: CGFloat { geo.size.height * ((showCobIobChart ? 0.33 : 0.45) - safeAreaSize) }
-    var cobIobHeight: CGFloat { showCobIobChart ? geo.size.height * 0.12 : 0 }
+    var mainHeight: CGFloat { chartHeight * (showCobIobChart ? 0.66 : 0.90) }
+    var cobIobHeight: CGFloat { showCobIobChart ? chartHeight * 0.24 : 0 }
 
     private var windowSeconds: TimeInterval {
         max(renderWindowEnd.timeIntervalSince(renderWindowStart), 1)

@@ -4,8 +4,6 @@ import SwiftUI
 // MARK: - Zone E: bottom controls (adjustment panel / bolus progress / stats + info buttons)
 
 extension Home.RootView {
-    var buttonFont: Font { Font.custom("TimeButtonFont", size: 14) }
-
     var bolusProgressFormatter: NumberFormatter {
         let fractionDigits: Int = switch state.settingsManager.preferences.bolusIncrement {
         case 0.1: 1
@@ -165,41 +163,31 @@ extension Home.RootView {
         return components.isEmpty ? nil : components.joined(separator: ", ")
     }
 
-    var statsIconString: String {
-        if #available(iOS 18, *) {
-            return "chart.line.text.clipboard"
-        } else {
-            return "list.clipboard"
-        }
-    }
-
-    @ViewBuilder private func tappableButton(
-        buttonColor: Color,
-        label: String,
-        iconString: String,
-        action: @escaping () -> Void
-    ) -> some View {
-        Button(action: {
-            action()
-        }) {
-            HStack {
-                Image(systemName: iconString)
-                Text(label)
+    /// Zone E: fixed-height bottom slot. Shows the bolus progress while a bolus
+    /// runs, otherwise the adjustments panel; Tai's stats and legend buttons sit
+    /// vertically stacked at the trailing edge.
+    @ViewBuilder func bottomControls() -> some View {
+        HStack(spacing: 8) {
+            Group {
+                if let progress = state.bolusProgress {
+                    bolusProgressView(progress)
+                } else {
+                    adjustmentView()
+                }
             }
-            .font(.footnote)
-            .padding(.vertical, 5)
-            .padding(.horizontal, 10)
-            .foregroundStyle(buttonColor)
-            .overlay(
-                Capsule()
-                    .stroke(buttonColor.opacity(0.4), lineWidth: 2)
-            )
+            .frame(maxWidth: .infinity)
+
+            sideButtons
         }
+        .frame(height: HomeLayout.bottomPanelHeight)
+        .padding(.horizontal, HomeLayout.bottomPanelHorizontalPadding)
+        .padding(.top, HomeLayout.bottomZoneTopPadding)
+        .padding(.bottom, HomeLayout.bottomZoneBottomPadding)
     }
 
-    var timeIntervalPanel: some View {
-        HStack(alignment: .center) {
-            Spacer()
+    /// Stats and chart-legend circle buttons, stacked at the right edge of Zone E.
+    var sideButtons: some View {
+        VStack(spacing: 6) {
             Image(systemName: "chart.bar.xaxis.ascending.badge.clock")
                 .symbolRenderingMode(.palette)
                 .scaleEffect(x: -1)
@@ -221,7 +209,7 @@ extension Home.RootView {
                     appState.statSelectedInsulinTimeInterval = .day
                     state.showModal(for: .statistics)
                 }
-            Spacer()
+
             Button(action: {
                 state.isLegendPresented.toggle()
             }) {
@@ -234,14 +222,11 @@ extension Home.RootView {
                     )
                     .clipShape(Circle())
             }
-            .padding([.top, .bottom])
-            Spacer()
         }
         .shadow(
             color: Color.black.opacity(colorScheme == .dark ? 0.75 : 0.33),
             radius: colorScheme == .dark ? 5 : 3
         )
-        .font(buttonFont)
     }
 
     @ViewBuilder func adjustmentsOverrideView(_ overrideString: String) -> some View {
@@ -481,7 +466,7 @@ extension Home.RootView {
         }
     }
 
-    @ViewBuilder func adjustmentView(geo: GeometryProxy) -> some View {
+    @ViewBuilder func adjustmentView() -> some View {
 //            let background = colorScheme == .dark ? Material.ultraThinMaterial.opacity(0.5) : Color.black.opacity(0.2)
 
         let profileToShow: ProfileStored? = {
@@ -503,7 +488,7 @@ extension Home.RootView {
                 )
                 .background(.ultraThinMaterial.opacity(colorScheme == .dark ? 0.35 : 0))
                 .clipShape(RoundedRectangle(cornerRadius: 15))
-                .frame(height: geo.size.height * 0.06)
+                .frame(height: HomeLayout.bottomPanelHeight)
                 .shadow(
                     color: (overrideString != nil || tempTargetString != nil || profileToShow != nil) ?
                         (
@@ -520,7 +505,7 @@ extension Home.RootView {
                         Spacer()
 
                         Divider()
-                            .frame(height: geo.size.height * 0.05)
+                            .frame(height: HomeLayout.bottomPanelHeight - 16)
                             .padding(.horizontal, 2)
 
                         adjustmentsTempTargetView(tempTargetString)
@@ -585,8 +570,7 @@ extension Home.RootView {
                 } message: {
                     Text("Select Adjustment")
                 }
-        }.padding(.horizontal, 10)
-            .padding(.bottom, UIDevice.adjustPadding(min: nil, max: 10))
+        }
     }
 
     @ViewBuilder func bolusProgressBar(_ progress: Decimal) -> some View {
@@ -607,7 +591,7 @@ extension Home.RootView {
         }
     }
 
-    @ViewBuilder func bolusProgressView(geo: GeometryProxy, _ progress: Decimal) -> some View {
+    @ViewBuilder func bolusProgressView(_ progress: Decimal) -> some View {
         /// ensure that state.lastPumpBolus has a value, i.e. there is a last bolus done by the pump and not an external bolus
         /// - TRUE:  show the pump bolus
         /// - FALSE:  do not show a progress bar at all
@@ -629,7 +613,7 @@ extension Home.RootView {
                     )
                     .background(.ultraThinMaterial.opacity(colorScheme == .dark ? 0.35 : 0))
                     .clipShape(RoundedRectangle(cornerRadius: 15))
-                    .frame(height: geo.size.height * 0.06)
+                    .frame(height: HomeLayout.bottomPanelHeight)
                     .shadow(
                         color: (overrideString != nil || tempTargetString != nil) ?
                             (
@@ -667,10 +651,8 @@ extension Home.RootView {
                     }
                 }.padding(.horizontal, 10)
             }
-            .padding(.horizontal, 10)
-            .padding(.bottom, UIDevice.adjustPadding(min: nil, max: 10))
             .overlay(alignment: .bottom) {
-                let offset = geo.size.height * 0.045
+                let offset = HomeLayout.bottomPanelHeight * 0.75
                 bolusProgressBar(progress)
                     .padding(.leading, 42)
                     .padding(.trailing, 50)

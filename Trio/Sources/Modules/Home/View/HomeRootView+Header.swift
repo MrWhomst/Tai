@@ -46,7 +46,7 @@ extension Home.RootView {
         }
     }
 
-    @ViewBuilder func rightHeaderPanel(_: GeometryProxy) -> some View {
+    @ViewBuilder func rightHeaderPanel() -> some View {
         VStack(alignment: .trailing, spacing: 15) {
             HStack(spacing: 4) {
                 Image(systemName: "arrow.up.arrow.down")
@@ -150,7 +150,7 @@ extension Home.RootView {
         return nil
     }
 
-    @ViewBuilder func leftHeaderPanel(_: GeometryProxy) -> some View {
+    @ViewBuilder func leftHeaderPanel() -> some View {
         VStack(alignment: .leading, spacing: 15) {
             HStack {
                 Image(systemName: "drop.circle")

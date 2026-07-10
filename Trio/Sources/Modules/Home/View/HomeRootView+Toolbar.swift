@@ -29,7 +29,7 @@ extension Home.RootView {
         )
     }
 
-    @ViewBuilder func alertSafetyNotificationsView(geo: GeometryProxy) -> some View {
+    @ViewBuilder func alertSafetyNotificationsView() -> some View {
         ZStack {
             /// rectangle as background
             RoundedRectangle(cornerRadius: 15)
@@ -41,7 +41,7 @@ extension Home.RootView {
                     )
                 )
                 .clipShape(RoundedRectangle(cornerRadius: 15))
-                .frame(height: geo.size.height * safeAreaSize)
+                .frame(height: HomeLayout.warningBannerHeight)
                 .coordinateSpace(name: "alertSafetyNotificationsView")
                 .shadow(
                     color: colorScheme == .dark ? Color(red: 0.02745098039, green: 0.1098039216, blue: 0.1411764706) :

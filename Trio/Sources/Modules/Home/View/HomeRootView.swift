@@ -8,7 +8,6 @@ import Swinject
 extension Home {
     struct RootView: BaseView {
         let resolver: Resolver
-        let safeAreaSize: CGFloat = 0.08
 
         @Environment(\.managedObjectContext) var moc
         @Environment(\.colorScheme) var colorScheme
@@ -71,10 +70,15 @@ extension Home {
         }
 
         @ViewBuilder func mainChart(geo: GeometryProxy) -> some View {
+            let chartHeight = max(
+                geo.size.height - HomeLayout.headerTopPadding - HomeLayout.headerHeight - HomeLayout.mealSlotHeight
+                    - HomeLayout.bottomZoneHeight - 2 * HomeLayout.chartVerticalPadding,
+                HomeLayout.chartMinHeight
+            )
             ZStack {
                 MainChartView(
                     geo: geo,
-                    safeAreaSize: notificationsDisabled == true ? safeAreaSize : 0,
+                    chartHeight: chartHeight,
                     units: state.units,
                     highGlucose: state.highGlucose,
                     lowGlucose: state.lowGlucose,
@@ -87,7 +91,7 @@ extension Home {
                     showCobIobChart: state.showCobIobChart
                 )
             }
-            .padding(.bottom, UIDevice.adjustPadding(min: 0, max: nil))
+            .padding(.vertical, HomeLayout.chartVerticalPadding)
         }
 
         @ViewBuilder func mainViewElements(_ geo: GeometryProxy) -> some View {
@@ -101,7 +105,7 @@ extension Home {
                         /// right panel with loop status and evBG
                         HStack {
                             Spacer()
-                            rightHeaderPanel(geo)
+                            rightHeaderPanel()
                         }.padding(.trailing, 20)
 
                         /// glucose bobble
@@ -109,40 +113,25 @@ extension Home {
 
                         /// left panel with meal related info
                         HStack {
-                            leftHeaderPanel(geo)
+                            leftHeaderPanel()
                             Spacer()
                         }.padding(.leading, 20)
                     }
                 }
-                .padding(.top, 10)
-                .safeAreaInset(edge: .top, spacing: 0) {
-                    if notificationsDisabled {
-                        alertSafetyNotificationsView(geo: geo)
-                    }
-                    if let badgeImage = state.pumpStatusBadgeImage, let badgeColor = state.pumpStatusBadgeColor {
-                        pumpTimezoneView(badgeImage, badgeColor)
-                            .padding(.horizontal, 20)
-                    }
-                }
+                // Fixed slot: every header state renders centered, no reflow below.
+                .frame(height: HomeLayout.headerHeight)
+                .padding(.top, HomeLayout.headerTopPadding)
 
                 horizontalPumpView
-                    .padding(.top, UIDevice.adjustPadding(min: nil, max: 10))
-                    .padding(.bottom, UIDevice.adjustPadding(min: nil, max: 10))
+                    .frame(height: HomeLayout.mealSlotHeight)
 
                 mainChart(geo: geo)
-
-                timeIntervalPanel
-                    .padding(.bottom, UIDevice.adjustPadding(min: 0, max: 6))
-
-                if let progress = state.bolusProgress {
-                    bolusProgressView(geo: geo, progress)
-                        .padding(.bottom, UIDevice.adjustPadding(min: 0, max: 6))
-                } else if overrideString != nil || tempTargetString != nil
-                    || (activeProfile.first != nil && profilesForCount.count > 1)
-                {
-                    adjustmentView(geo: geo)
-                        .padding(.bottom, UIDevice.adjustPadding(min: 0, max: 6))
-                }
+            }
+            .frame(maxWidth: .infinity)
+            // Bottom controls live in the safe area, so the tab bar can never
+            // cover them regardless of how the zones above are sized.
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                bottomControls()
             }
             .background(appState.trioBackgroundColor(for: colorScheme))
             .onReceive(
@@ -159,8 +148,19 @@ extension Home {
         }
 
         @ViewBuilder func mainView() -> some View {
-            GeometryReader { geo in
-                mainViewElements(geo)
+            VStack(spacing: 0) {
+                // Warnings live above the geometry: while one is visible the
+                // dashboard (and with it the chart) shrinks for its duration.
+                if notificationsDisabled {
+                    alertSafetyNotificationsView()
+                }
+                if let badgeImage = state.pumpStatusBadgeImage, let badgeColor = state.pumpStatusBadgeColor {
+                    pumpTimezoneView(badgeImage, badgeColor)
+                        .padding(.horizontal, 20)
+                }
+                GeometryReader { geo in
+                    mainViewElements(geo)
+                }
             }
             .onAppear {
                 configureView()
