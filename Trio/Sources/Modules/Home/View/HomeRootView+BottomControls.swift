@@ -185,10 +185,14 @@ extension Home.RootView {
         .padding(.bottom, HomeLayout.bottomZoneBottomPadding)
     }
 
-    /// Stats and chart-legend circle buttons, stacked at the right edge of Zone E.
+    /// Stats and chart-legend circle buttons, stacked at the right edge of
+    /// Zone E — pinned to the panel's top and bottom edges.
     var sideButtons: some View {
-        VStack(spacing: 6) {
+        VStack(spacing: 0) {
+            Spacer(minLength: 0)
+
             Image(systemName: "chart.bar.xaxis.ascending.badge.clock")
+                .font(.system(size: 11))
                 .symbolRenderingMode(.palette)
                 .scaleEffect(x: -1)
                 .foregroundStyle(
@@ -197,7 +201,7 @@ extension Home.RootView {
                         startPoint: .trailing, endPoint: .leading
                     )
                 )
-                .frame(width: 24, height: 24)
+                .frame(width: 20, height: 20)
                 .background(
                     colorScheme == .dark ? Color(red: 0.1176470588, green: 0.2352941176, blue: 0.3725490196) :
                         Color.white
@@ -210,19 +214,26 @@ extension Home.RootView {
                     state.showModal(for: .statistics)
                 }
 
+            Spacer(minLength: 0)
+
             Button(action: {
                 state.isLegendPresented.toggle()
             }) {
                 Image(systemName: "info")
+                    .font(.system(size: 11))
                     .foregroundColor(colorScheme == .dark ? Color.white : Color.black).opacity(0.9)
-                    .frame(width: 24, height: 24)
+                    .frame(width: 20, height: 20)
                     .background(
                         colorScheme == .dark ? Color(red: 0.1176470588, green: 0.2352941176, blue: 0.3725490196) :
                             Color.white
                     )
                     .clipShape(Circle())
             }
+
+            Spacer(minLength: 0)
         }
+        // Fill the Zone E slot so the Spacer pins the buttons to its edges.
+        .frame(maxHeight: .infinity)
         .shadow(
             color: Color.black.opacity(colorScheme == .dark ? 0.75 : 0.33),
             radius: colorScheme == .dark ? 5 : 3

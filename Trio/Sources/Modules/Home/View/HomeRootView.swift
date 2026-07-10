@@ -36,7 +36,6 @@ extension Home {
         @State var notificationsDisabled = false
 
         // Pull-down-to-force-loop (see HomeRootView+Refresh.swift)
-        @State var pullOffset: CGFloat = 0
         @State var isRefreshArmed = false
         @State var isForcingLoop = false
 
@@ -103,9 +102,6 @@ extension Home {
             // Viewport-sized content: rubber-bands for the pull-down, never scrolls.
             ScrollView(.vertical, showsIndicators: false) {
                 dashboardContent(geo)
-                    // Hold the indicator row open while the forced loop runs.
-                    .padding(.top, isForcingLoop ? HomeLayout.refreshIndicatorHeight : 0)
-                    .animation(.easeInOut(duration: 0.25), value: isForcingLoop)
                     .background(
                         GeometryReader { g in
                             Color.clear.preference(
@@ -119,7 +115,6 @@ extension Home {
             .scrollBounceBehavior(.always, axes: [.vertical])
             .modifier(HomePullOffsetReader(onChange: handlePullChange))
             .onPreferenceChange(HomePullOffsetKey.self) { handlePullChange($0) }
-            .overlay(alignment: .top) { pullToRefreshIndicator }
             // Safe-area inset: the tab bar can never cover the controls.
             .safeAreaInset(edge: .bottom, spacing: 0) {
                 bottomControls()

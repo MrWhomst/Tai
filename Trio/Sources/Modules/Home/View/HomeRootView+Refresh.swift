@@ -29,36 +29,8 @@ struct HomePullOffsetReader: ViewModifier {
 // MARK: - Pull-down-to-force-loop
 
 extension Home.RootView {
-    /// Pull hint while dragging; spinner while the loop runs.
-    @ViewBuilder var pullToRefreshIndicator: some View {
-        if isForcingLoop {
-            HStack(spacing: 8) {
-                ProgressView()
-                Text("Forcing loop…")
-            }
-            .font(.caption)
-            .foregroundStyle(.secondary)
-            .frame(height: HomeLayout.refreshIndicatorHeight)
-            .frame(maxWidth: .infinity)
-            .transition(.opacity)
-        } else if pullOffset > 4 {
-            let progress = min(pullOffset / HomeLayout.refreshTriggerDistance, 1)
-            HStack(spacing: 8) {
-                Image(systemName: "arrow.down")
-                    .rotationEffect(.degrees(progress * 180))
-                Text("Pull down to force loop")
-            }
-            .font(.caption)
-            .foregroundStyle(.secondary)
-            .opacity(progress)
-            .frame(height: HomeLayout.refreshIndicatorHeight)
-            .frame(maxWidth: .infinity)
-        }
-    }
-
     /// Arms once per pull at the threshold; re-arms after the pull settles.
     func handlePullChange(_ offset: CGFloat) {
-        pullOffset = offset
         guard !isForcingLoop else { return }
         if offset >= HomeLayout.refreshTriggerDistance, !isRefreshArmed {
             isRefreshArmed = true
@@ -69,9 +41,10 @@ extension Home.RootView {
         }
     }
 
-    /// Triggers the loop heartbeat and holds the indicator while it runs.
+    /// Triggers the loop heartbeat; `isForcingLoop` guards against re-triggering
+    /// while a forced run is still in flight (the loop pill shows the progress).
     private func forceLoop() {
-        withAnimation(.easeInOut(duration: 0.2)) { isForcingLoop = true }
+        isForcingLoop = true
         state.runLoop()
         Task {
             let start = Date()
@@ -81,11 +54,11 @@ extension Home.RootView {
             while state.isLooping, Date().timeIntervalSince(start) < 30 {
                 try? await Task.sleep(for: .milliseconds(200))
             }
-            // Minimum visible duration.
+            // Minimum guard duration so quick loops can't double-trigger.
             if Date().timeIntervalSince(start) < 1 {
                 try? await Task.sleep(for: .seconds(1))
             }
-            withAnimation(.easeInOut(duration: 0.25)) { isForcingLoop = false }
+            isForcingLoop = false
         }
     }
 }
