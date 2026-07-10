@@ -305,17 +305,20 @@ extension Home.RootView {
                             .stroke(Color.blue, lineWidth: 1.5)
                     )
             }
-            HStack(spacing: 6) {
+            VStack(alignment: .leading) {
                 Text(profile.name ?? String(
                     localized: "Active Profile",
                     comment: "Fallback name on Home adjustments banner for the active profile when it has no name set"
                 ))
                     .font(.subheadline)
+                    .frame(alignment: .leading)
                 let subtitle = profileSubtitle(profile, now: state.timerDate)
                 if !subtitle.isEmpty {
                     Text(subtitle)
                         .font(.caption)
                         .foregroundStyle(.secondary)
+                        .lineLimit(2)
+                        .frame(alignment: .leading)
                 }
             }
         }
