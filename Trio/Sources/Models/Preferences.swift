@@ -16,7 +16,6 @@ struct Preferences: JSON, Equatable {
     var halfBasalExerciseTarget: Decimal = 160
     var maxCOB: Decimal = 120
     var maxMealAbsorptionTime: Decimal = 6
-    var wideBGTargetRange: Bool = false
     var skipNeutralTemps: Bool = false
     var unsuspendIfNoTemp: Bool = false
     var min5mCarbimpact: Decimal = 8
@@ -110,7 +109,6 @@ extension Preferences {
         case halfBasalExerciseTarget = "half_basal_exercise_target"
         case maxCOB
         case maxMealAbsorptionTime
-        case wideBGTargetRange = "wide_bg_target_range"
         case skipNeutralTemps = "skip_neutral_temps"
         case unsuspendIfNoTemp = "unsuspend_if_no_temp"
         case min5mCarbimpact = "min_5m_carbimpact"
@@ -256,10 +254,6 @@ extension Preferences: Decodable {
 
         if let maxMealAbsorptionTime = try? container.decode(Decimal.self, forKey: .maxMealAbsorptionTime) {
             preferences.maxMealAbsorptionTime = maxMealAbsorptionTime
-        }
-
-        if let wideBGTargetRange = try? container.decode(Bool.self, forKey: .wideBGTargetRange) {
-            preferences.wideBGTargetRange = wideBGTargetRange
         }
 
         if let skipNeutralTemps = try? container.decode(Bool.self, forKey: .skipNeutralTemps) {

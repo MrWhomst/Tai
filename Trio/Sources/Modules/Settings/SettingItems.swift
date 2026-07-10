@@ -311,7 +311,19 @@ enum SettingItems {
                 "Super Bolus Factor",
                 "Very Low Glucose Warning"
             ],
-            path: ["Features", "Bolus Calculator"]
+            scrollTargetLabels: [
+                "Enable Reduced Bolus Factor": "Enable Reduced Bolus Option",
+                "Reduced Bolus Factor": "Enable Reduced Bolus Option",
+                "Enable Super Bolus": "Enable Super Bolus Option",
+                "Super Bolus Factor": "Enable Super Bolus Option"
+            ],
+            path: ["Features", "Treatments", "Bolus Calculator"]
+        ),
+        SettingItem(
+            title: "Quick-Pick Boluses",
+            view: .quickBolusConfig,
+            searchContents: ["Enable Quick-Pick Boluses"],
+            path: ["Features", "Treatments", "Quick-Pick Boluses"]
         ),
         SettingItem(
             title: "Meal Settings",
@@ -328,7 +340,15 @@ enum SettingItems {
                 "Fat and Protein Factor",
                 "FPU"
             ],
-            path: ["Features", "Meal Settings"]
+            scrollTargetLabels: [
+                "Max Fat": "Enable Fat and Protein Entries",
+                "Max Protein": "Enable Fat and Protein Entries",
+                "Fat and Protein Delay": "Enable Fat and Protein Entries",
+                "Spread Interval": "Enable Fat and Protein Entries",
+                "Fat and Protein Percentage": "Enable Fat and Protein Entries",
+                "FPU": "Enable Fat and Protein Entries"
+            ],
+            path: ["Features", "Treatments", "Meal Settings"]
         ),
         SettingItem(
             title: "Shortcuts",
