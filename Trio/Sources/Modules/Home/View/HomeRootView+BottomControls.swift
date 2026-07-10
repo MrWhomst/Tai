@@ -352,7 +352,11 @@ extension Home.RootView {
             dailyBasalRate: profile.therapy?.basalProfile.totalDailyBasal,
             tuning: profileTuning(for: profile)
         )
-        return parts.joined(separator: " · ")
+        // Non-breaking spaces inside each fragment: wrapping may only happen
+        // at the "·" separators, never mid-phrase.
+        return parts
+            .map { $0.replacingOccurrences(of: " ", with: "\u{00A0}") }
+            .joined(separator: " · ")
     }
 
     /// Compares the profile's current prefs + glucose targets against its source to build
