@@ -164,10 +164,12 @@ extension Home.RootView {
     }
 
     /// Zone E: fixed-height bottom slot. Shows the bolus progress while a bolus
-    /// runs, otherwise the adjustments panel; Tai's stats and legend buttons sit
-    /// vertically stacked at the trailing edge.
+    /// runs, otherwise the adjustments panel — flanked by the stats button on
+    /// the left and the chart-legend button on the right.
     @ViewBuilder func bottomControls() -> some View {
         HStack(spacing: 8) {
+            statsButton
+
             Group {
                 if let progress = state.bolusProgress {
                     bolusProgressView(progress)
@@ -177,7 +179,7 @@ extension Home.RootView {
             }
             .frame(maxWidth: .infinity)
 
-            sideButtons
+            infoButton
         }
         .frame(height: HomeLayout.bottomPanelHeight)
         .padding(.horizontal, HomeLayout.bottomPanelHorizontalPadding)
@@ -185,55 +187,49 @@ extension Home.RootView {
         .padding(.bottom, HomeLayout.bottomZoneBottomPadding)
     }
 
-    /// Stats and chart-legend circle buttons, stacked at the right edge of
-    /// Zone E — pinned to the panel's top and bottom edges.
-    var sideButtons: some View {
-        VStack(spacing: 0) {
-            Spacer(minLength: 0)
-
-            Image(systemName: "chart.bar.xaxis.ascending.badge.clock")
-                .font(.system(size: 11))
-                .symbolRenderingMode(.palette)
-                .scaleEffect(x: -1)
-                .foregroundStyle(
-                    Color.secondary,
-                    TaiStyle.linearGradient(
-                        startPoint: .trailing, endPoint: .leading
-                    )
+    var statsButton: some View {
+        Image(systemName: "chart.bar.xaxis.ascending.badge.clock")
+            .font(.system(size: 17))
+            .symbolRenderingMode(.palette)
+            .scaleEffect(x: -1)
+            .foregroundStyle(
+                Color.secondary,
+                TaiStyle.linearGradient(
+                    startPoint: .trailing, endPoint: .leading
                 )
-                .frame(width: 20, height: 20)
+            )
+            .frame(width: 32, height: 32)
+            .background(
+                colorScheme == .dark ? Color(red: 0.1176470588, green: 0.2352941176, blue: 0.3725490196) :
+                    Color.white
+            )
+            .clipShape(Circle())
+            .contentShape(Circle())
+            .onTapGesture {
+                appState.statSelectedViewType = .glucose
+                appState.statSelectedInsulinTimeInterval = .day
+                state.showModal(for: .statistics)
+            }
+            .shadow(
+                color: Color.black.opacity(colorScheme == .dark ? 0.75 : 0.33),
+                radius: colorScheme == .dark ? 5 : 3
+            )
+    }
+
+    var infoButton: some View {
+        Button(action: {
+            state.isLegendPresented.toggle()
+        }) {
+            Image(systemName: "info")
+                .font(.system(size: 17))
+                .foregroundColor(colorScheme == .dark ? Color.white : Color.black).opacity(0.9)
+                .frame(width: 32, height: 32)
                 .background(
                     colorScheme == .dark ? Color(red: 0.1176470588, green: 0.2352941176, blue: 0.3725490196) :
                         Color.white
                 )
                 .clipShape(Circle())
-                .contentShape(Circle())
-                .onTapGesture {
-                    appState.statSelectedViewType = .glucose
-                    appState.statSelectedInsulinTimeInterval = .day
-                    state.showModal(for: .statistics)
-                }
-
-            Spacer(minLength: 0)
-
-            Button(action: {
-                state.isLegendPresented.toggle()
-            }) {
-                Image(systemName: "info")
-                    .font(.system(size: 11))
-                    .foregroundColor(colorScheme == .dark ? Color.white : Color.black).opacity(0.9)
-                    .frame(width: 20, height: 20)
-                    .background(
-                        colorScheme == .dark ? Color(red: 0.1176470588, green: 0.2352941176, blue: 0.3725490196) :
-                            Color.white
-                    )
-                    .clipShape(Circle())
-            }
-
-            Spacer(minLength: 0)
         }
-        // Fill the Zone E slot so the Spacer pins the buttons to its edges.
-        .frame(maxHeight: .infinity)
         .shadow(
             color: Color.black.opacity(colorScheme == .dark ? 0.75 : 0.33),
             radius: colorScheme == .dark ? 5 : 3
