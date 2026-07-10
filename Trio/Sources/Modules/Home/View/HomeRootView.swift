@@ -43,7 +43,6 @@ extension Home {
         @State var showCGMSelection: Bool = false
         @State var showSnoozeSheet: Bool = false
         @State var notificationsDisabled = false
-        @State private var showAlgoCompare: Bool = false
         @State var timeButtons: [TimePicker] = [
             TimePicker(
                 label: String(localized: "2 hours", comment: "Time range button on Home chart — show last 2 hours"),
@@ -534,9 +533,6 @@ extension Home {
                         appState.statSelectedViewType = .glucose
                         appState.statSelectedInsulinTimeInterval = .day
                         state.showModal(for: .statistics)
-                    }
-                    .onLongPressGesture(minimumDuration: 0.6) {
-                        showAlgoCompare = true
                     }
                 Spacer()
                 ForEach(timeButtons) { button in
@@ -1345,19 +1341,6 @@ extension Home {
             .sheet(isPresented: $state.isLegendPresented) {
                 ChartLegendView(state: state)
             }
-            .sheet(isPresented: $showAlgoCompare) {
-                NavigationView {
-                    AlgoComparisonAnalysisView()
-                        .toolbar {
-                            ToolbarItem(placement: .confirmationAction) {
-                                Button("Done") { showAlgoCompare = false }
-                            }
-                        }
-                }
-            }
-            .sheet(isPresented: $showSnoozeSheet) {
-                SnoozeAlertsSheetView(resolver: resolver, isPresented: $showSnoozeSheet)
-            }
             // PUMP RELATED
             .confirmationDialog("Pump Model", isPresented: $showPumpSelection) {
                 Button("Medtronic") { state.addPump(.minimed) }
@@ -1573,9 +1556,8 @@ extension Home {
                 dateFormatter.timeStyle = .short
 
                 // Check if the determination is from suggested or enacted source
-                let algo = state.useSwiftOref ? "Swift" : "JS"
                 if state.determinationsFromSuggestion.first?.objectID == determination?.objectID {
-                    var title = "\(algo) " + String(localized: "Algorithm suggested at", comment: "Headline in suggested popup") +
+                    var title = String(localized: "Algorithm suggested at", comment: "Headline in suggested popup") +
                         " " + dateFormatter.string(from: determination?.deliverAt ?? Date())
 
                     // Add warning if the loop is not closed or if it's a manual temp basal
@@ -1587,7 +1569,7 @@ extension Home {
                     }
                     return title
                 } else {
-                    return "\(algo) " + String(localized: "Algorithm enacted at", comment: "Headline in enacted popup") +
+                    return String(localized: "Algorithm enacted at", comment: "Headline in enacted popup") +
                         " " + dateFormatter.string(from: determination?.deliverAt ?? Date())
                 }
             }()
@@ -1668,9 +1650,8 @@ extension Home {
             dateFormatter.timeStyle = .short
 
             // Check if the determination is from suggested or enacted source
-            let algo = state.useSwiftOref ? "Swift" : "JS"
             if state.determinationsFromSuggestion.first?.objectID == determination?.objectID {
-                statusTitlePopup = "\(algo) " +
+                statusTitlePopup =
                     String(localized: "Algorithm suggested at", comment: "Headline in suggested popup") +
                     " " + dateFormatter.string(from: determination?.deliverAt ?? Date())
 
@@ -1682,7 +1663,7 @@ extension Home {
                     )
                 }
             } else {
-                statusTitlePopup = "\(algo) " + String(localized: "Algorithm enacted at", comment: "Headline in enacted popup") +
+                statusTitlePopup = String(localized: "Algorithm enacted at", comment: "Headline in enacted popup") +
                     " " + dateFormatter.string(from: determination?.deliverAt ?? Date())
             }
 
