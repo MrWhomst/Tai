@@ -26,7 +26,7 @@ final class ProfileScheduleFirer {
 
     init(resolver: Resolver) {
         self.resolver = resolver
-        debug(.coreData, "ProfileScheduleFirer init — starting sweep loop")
+        // debug(.coreData, "ProfileScheduleFirer init — starting sweep loop")
         startLoop()
     }
 
@@ -46,7 +46,7 @@ final class ProfileScheduleFirer {
 
     private func sweep() async {
         guard !sweepInFlight else {
-            debug(.coreData, "ProfileScheduleFirer: sweep skipped (in flight)")
+            // debug(.coreData, "ProfileScheduleFirer: sweep skipped (in flight)")
             return
         }
         sweepInFlight = true
@@ -54,7 +54,7 @@ final class ProfileScheduleFirer {
 
         let context = coreDataStack.newTaskContext()
         let now = Date()
-        debug(.coreData, "ProfileScheduleFirer: sweep tick @ \(now)")
+        // debug(.coreData, "ProfileScheduleFirer: sweep tick @ \(now)")
 
         let due: [DueFire] = await context.perform {
             // Pre-resolve profile names so indefinite-fire notifications can reference the
@@ -66,14 +66,14 @@ final class ProfileScheduleFirer {
 
             let request = ProfileScheduleStored.fetch(.enabledSchedule)
             let rows = (try? context.fetch(request)) ?? []
-            debug(.coreData, "ProfileScheduleFirer: \(rows.count) enabled schedules in store")
+            // debug(.coreData, "ProfileScheduleFirer: \(rows.count) enabled schedules in store")
             return rows.compactMap { row -> DueFire? in
                 guard let sid = row.id,
                       let pid = row.profileID,
                       let rule = row.rule,
                       let duration = row.duration
                 else {
-                    debug(.coreData, "ProfileScheduleFirer: row decode failed (id/profile/rule/duration)")
+                    // debug(.coreData, "ProfileScheduleFirer: row decode failed (id/profile/rule/duration)")
                     return nil
                 }
                 let anchor = row.lastFiredAt ?? row.createdAt ?? .distantPast
@@ -109,13 +109,13 @@ final class ProfileScheduleFirer {
         for fire in due {
             switch fire.duration {
             case let .minutes(m):
-                debug(.coreData, "ProfileScheduleFirer: activating \(fire.profileID) for \(m) min")
+                // debug(.coreData, "ProfileScheduleFirer: activating \(fire.profileID) for \(m) min")
                 let outcome = await provider.activate(
                     id: fire.profileID,
                     durationMinutes: m,
                     confirmedPumpSync: true
                 )
-                debug(.coreData, "ProfileScheduleFirer: activate outcome = \(outcome)")
+                // debug(.coreData, "ProfileScheduleFirer: activate outcome = \(outcome)")
                 if outcome != .success { continue }
                 postActivatedNotification(for: fire, minutes: m)
             case .indefinite,
@@ -147,11 +147,11 @@ final class ProfileScheduleFirer {
                     // Once-schedules are not editable; deleting after fire is cleaner than
                     // leaving a disabled row cluttering the list.
                     context.delete(row)
-                    debug(.coreData, "ProfileScheduleFirer: deleted one-off \(fire.scheduleID) after fire")
+                    // debug(.coreData, "ProfileScheduleFirer: deleted one-off \(fire.scheduleID) after fire")
                 } else {
                     row.lastFiredAt = fire.occurrence
                     row.pendingOccurrence = nil
-                    debug(.coreData, "ProfileScheduleFirer: stamped lastFiredAt=\(fire.occurrence) on \(fire.scheduleID)")
+                    // debug(.coreData, "ProfileScheduleFirer: stamped lastFiredAt=\(fire.occurrence) on \(fire.scheduleID)")
                 }
                 try? context.save()
             }

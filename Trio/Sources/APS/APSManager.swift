@@ -189,7 +189,7 @@ final class BaseAPSManager: APSManager, Injectable {
             if wasParsed {
                 Task {
                     do {
-                        try await openAPS.createProfiles(useSwiftOref: settings.useSwiftOref)
+                        try await openAPS.createProfiles()
                     } catch {
                         debug(
                             .apsManager,
@@ -296,19 +296,6 @@ final class BaseAPSManager: APSManager, Injectable {
                 debug(.apsManager, "Loop skipped (already running or too soon)")
                 return
             }
-
-            // Sync algo shadow-compare flag from settings before each loop, and stamp
-            // an APS-loop-tick UUID so all serialized OpenAPS sub-pipelines
-            // (createProfiles, autosense, determineBasal) share a single umbrella ID
-            // for analyzer aggregation.
-            self.openAPS.algoShadowCompare = self.settings.algoShadowCompare
-            OrefSubTimer.enabled = self.settings.algoShadowCompare
-            self.openAPS.currentApsLoopId = UUID()
-
-            // Affects whether transient errors surface immediately instead of
-            // dwell-suppressed (see `surfaceErrorIfNeeded`).
-            self.currentLoopUserInitiated = userInitiated
-            defer { self.currentLoopUserInitiated = false }
 
             // Start background task
             // we probably need to refactor this when implementing Swift 6 due to mutation of a captured var in an async context
@@ -491,8 +478,7 @@ final class BaseAPSManager: APSManager, Injectable {
               (autosense.timestamp ?? .distantPast).addingTimeInterval(30.minutes.timeInterval) > Date()
         else {
             let result = try await openAPS.autosense(
-                shouldSmoothGlucose: settingsManager.settings.smoothGlucose,
-                useSwiftOref: settings.useSwiftOref
+                shouldSmoothGlucose: settingsManager.settings.smoothGlucose
             )
             return result != nil
         }
@@ -559,14 +545,13 @@ final class BaseAPSManager: APSManager, Injectable {
             let now = Date()
 
             // put profile creation up front since autosens needs it
-            try await openAPS.createProfiles(useSwiftOref: settings.useSwiftOref)
+            try await openAPS.createProfiles()
             let currentTemp = try await fetchCurrentTempBasal(date: now)
             _ = try await autosense()
 
             let determination = try await openAPS.determineBasal(
                 currentTemp: currentTemp,
                 shouldSmoothGlucose: settingsManager.settings.smoothGlucose,
-                useSwiftOref: settings.useSwiftOref,
                 units: settingsManager.settings.units,
                 clock: now
             )
@@ -614,7 +599,6 @@ final class BaseAPSManager: APSManager, Injectable {
             return try await openAPS.determineBasal(
                 currentTemp: temp,
                 shouldSmoothGlucose: settingsManager.settings.smoothGlucose,
-                useSwiftOref: settings.useSwiftOref,
                 units: settingsManager.settings.units,
                 clock: Date(),
                 simulatedCarbsAmount: simulatedCarbsAmount,

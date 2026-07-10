@@ -37,11 +37,12 @@ extension Home {
         @State var isMenuPresented = false
         @State var showTreatments = false
         @State var selectedTab: Int = 0
+        @State var showQuickBolusPicker = false
+        @State var showQuickBolusNoHistory = false
         @State var showPumpSelection: Bool = false
         @State var showCGMSelection: Bool = false
         @State var showSnoozeSheet: Bool = false
         @State var notificationsDisabled = false
-        @State private var showAlgoCompare: Bool = false
         @State var timeButtons: [TimePicker] = [
             TimePicker(
                 label: String(localized: "2 hours", comment: "Time range button on Home chart — show last 2 hours"),
@@ -532,9 +533,6 @@ extension Home {
                         appState.statSelectedViewType = .glucose
                         appState.statSelectedInsulinTimeInterval = .day
                         state.showModal(for: .statistics)
-                    }
-                    .onLongPressGesture(minimumDuration: 0.6) {
-                        showAlgoCompare = true
                     }
                 Spacer()
                 ForEach(timeButtons) { button in
@@ -1343,19 +1341,6 @@ extension Home {
             .sheet(isPresented: $state.isLegendPresented) {
                 ChartLegendView(state: state)
             }
-            .sheet(isPresented: $showAlgoCompare) {
-                NavigationView {
-                    AlgoComparisonAnalysisView()
-                        .toolbar {
-                            ToolbarItem(placement: .confirmationAction) {
-                                Button("Done") { showAlgoCompare = false }
-                            }
-                        }
-                }
-            }
-            .sheet(isPresented: $showSnoozeSheet) {
-                SnoozeAlertsSheetView(resolver: resolver, isPresented: $showSnoozeSheet)
-            }
             // PUMP RELATED
             .confirmationDialog("Pump Model", isPresented: $showPumpSelection) {
                 Button("Medtronic") { state.addPump(.minimed) }
@@ -1481,23 +1466,29 @@ extension Home {
                 }
                 .tint(Color.tabBar)
 
-                Button(
-                    action: {
-                        state.showModal(for: .treatmentView) },
-                    label: {
-//                        Image(systemName: "plus.circle.fill")
-//                            .font(.system(size: 40))
-//                            .foregroundStyle(Color.tabBar)
-//                            .padding(.vertical, 2)
-//                            .padding(.horizontal, 24)
-                        Image(.taiCircledNoBackground)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 42, height: 42)
-                            .padding(.vertical, 2)
-                            .shadow(color: Color.white.opacity(0.1), radius: 5, x: 0, y: 0)
+                Image(.taiCircledNoBackground)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 42, height: 42)
+                    .padding(.vertical, 2)
+                    .shadow(color: Color.white.opacity(0.1), radius: 5, x: 0, y: 0)
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        state.showModal(for: .treatmentView)
                     }
-                )
+                    .onLongPressGesture(minimumDuration: 0.5) {
+                        guard state.enableQuickBolus else { return }
+                        let impactHeavy = UIImpactFeedbackGenerator(style: .heavy)
+                        impactHeavy.impactOccurred()
+                        Task {
+                            await state.loadQuickBolusSuggestions()
+                            if state.quickBolusHistory.isEmpty {
+                                showQuickBolusNoHistory = true
+                            } else {
+                                showQuickBolusPicker = true
+                            }
+                        }
+                    }
             }.ignoresSafeArea(.keyboard, edges: .bottom).blur(radius: state.waitForSuggestion ? 8 : 0)
                 .onChange(of: selectedTab) { oldValue, newValue in
                     // Tag-2 is the placeholder slot under the central "+". If a tap lands
@@ -1529,6 +1520,24 @@ extension Home {
                     CustomProgressView(text: String(localized: "Updating IOB...", comment: "Progress text when updating IOB"))
                 }
             }
+            .sheet(isPresented: $showQuickBolusPicker) {
+                QuickPickBolusesView(
+                    suggestions: state.quickBolusHistory,
+                    onEnact: { amount in await state.enactQuickBolus(amount: amount) },
+                    isPresented: $showQuickBolusPicker
+                )
+            }
+            .alert(
+                String(localized: "No bolus history yet", comment: "Alert title when no quick-pick boluses history exists"),
+                isPresented: $showQuickBolusNoHistory
+            ) {
+                Button(String(localized: "OK"), role: .cancel) {}
+            } message: {
+                Text(String(
+                    localized: "Quick-Pick Boluses learns from your manual boluses over time. Once you've delivered a few boluses, it will suggest amounts based on what you typically enact at this time of day.",
+                    comment: "Alert body explaining that quick-pick boluses history is empty"
+                ))
+            }
         }
 
         private var popup: some View {
@@ -1547,9 +1556,8 @@ extension Home {
                 dateFormatter.timeStyle = .short
 
                 // Check if the determination is from suggested or enacted source
-                let algo = state.useSwiftOref ? "Swift" : "JS"
                 if state.determinationsFromSuggestion.first?.objectID == determination?.objectID {
-                    var title = "\(algo) " + String(localized: "Algorithm suggested at", comment: "Headline in suggested popup") +
+                    var title = String(localized: "Algorithm suggested at", comment: "Headline in suggested popup") +
                         " " + dateFormatter.string(from: determination?.deliverAt ?? Date())
 
                     // Add warning if the loop is not closed or if it's a manual temp basal
@@ -1561,7 +1569,7 @@ extension Home {
                     }
                     return title
                 } else {
-                    return "\(algo) " + String(localized: "Algorithm enacted at", comment: "Headline in enacted popup") +
+                    return String(localized: "Algorithm enacted at", comment: "Headline in enacted popup") +
                         " " + dateFormatter.string(from: determination?.deliverAt ?? Date())
                 }
             }()
@@ -1642,9 +1650,8 @@ extension Home {
             dateFormatter.timeStyle = .short
 
             // Check if the determination is from suggested or enacted source
-            let algo = state.useSwiftOref ? "Swift" : "JS"
             if state.determinationsFromSuggestion.first?.objectID == determination?.objectID {
-                statusTitlePopup = "\(algo) " +
+                statusTitlePopup =
                     String(localized: "Algorithm suggested at", comment: "Headline in suggested popup") +
                     " " + dateFormatter.string(from: determination?.deliverAt ?? Date())
 
@@ -1656,7 +1663,7 @@ extension Home {
                     )
                 }
             } else {
-                statusTitlePopup = "\(algo) " + String(localized: "Algorithm enacted at", comment: "Headline in enacted popup") +
+                statusTitlePopup = String(localized: "Algorithm enacted at", comment: "Headline in enacted popup") +
                     " " + dateFormatter.string(from: determination?.deliverAt ?? Date())
             }
 

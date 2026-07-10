@@ -79,14 +79,13 @@ struct TrioSettings: JSON, Equatable, Encodable {
     var sweetMealFactor: Decimal = 1
     var displayPresets: Bool = true
     var confirmBolus: Bool = false
+    var enableQuickBolus: Bool = false
     var useLiveActivity: Bool = false
     var lockScreenView: LockScreenView = .simple
     var smartStackView: LockScreenView = .simple
     var bolusShortcut: BolusShortcutLimit = .notAllowed
     var timeInRangeType: TimeInRangeType = .timeInTightRange
     var showGlucosePeaks: Bool = false
-    var useSwiftOref: Bool = false
-    var algoShadowCompare: Bool = false
     var useChartBars: Bool = true
     var requireAdjustmentsConfirmation: Bool = false
 
@@ -328,6 +327,10 @@ extension TrioSettings: Decodable {
             settings.confirmBolus = confirmBolus
         }
 
+        if let enableQuickBolus = try? container.decode(Bool.self, forKey: .enableQuickBolus) {
+            settings.enableQuickBolus = enableQuickBolus
+        }
+
         if let useLiveActivity = try? container.decode(Bool.self, forKey: .useLiveActivity) {
             settings.useLiveActivity = useLiveActivity
         }
@@ -350,14 +353,6 @@ extension TrioSettings: Decodable {
 
         if let showGlucosePeaks = try? container.decode(Bool.self, forKey: .showGlucosePeaks) {
             settings.showGlucosePeaks = showGlucosePeaks
-        }
-
-        if let useSwiftOref = try? container.decode(Bool.self, forKey: .useSwiftOref) {
-            settings.useSwiftOref = useSwiftOref
-        }
-
-        if let algoShadowCompare = try? container.decode(Bool.self, forKey: .algoShadowCompare) {
-            settings.algoShadowCompare = algoShadowCompare
         }
 
         if let useChartBars = try? container.decode(Bool.self, forKey: .useChartBars) {
