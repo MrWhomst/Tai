@@ -13,6 +13,7 @@ extension UserInterfaceSettings {
         @Published var bolusDisplayThreshold: BolusDisplayThreshold = .allUnits
         @Published var forecastDisplayType: ForecastDisplayType = .cone
         @Published var showCarbsRequiredBadge: Bool = true
+        @Published var showCgmSensorStatus: Bool = true
         @Published var carbsRequiredThreshold: Decimal = 0
         @Published var glucoseColorScheme: GlucoseColorScheme = .dynamicColor
         @Published var eA1cDisplayUnit: EstimatedA1cDisplayUnit = .percent
@@ -40,6 +41,8 @@ extension UserInterfaceSettings {
             subscribeSetting(\.high, on: $high) { high = $0 }
 
             subscribeSetting(\.showCarbsRequiredBadge, on: $showCarbsRequiredBadge) { showCarbsRequiredBadge = $0 }
+
+            subscribeSetting(\.showCgmSensorStatus, on: $showCgmSensorStatus) { showCgmSensorStatus = $0 }
 
             subscribeSetting(
                 \.carbsRequiredThreshold,

@@ -221,6 +221,33 @@ extension UserInterfaceSettings {
                     }
                 )
 
+                SettingInputSection(
+                    decimalValue: $decimalPlaceholder,
+                    booleanValue: $state.showCgmSensorStatus,
+                    shouldDisplayHint: $shouldDisplayHint,
+                    selectedVerboseHint: Binding(
+                        get: { selectedVerboseHint },
+                        set: {
+                            selectedVerboseHint = $0.map { AnyView($0) }
+                            hintLabel = String(localized: "Show CGM Status Around Bobble")
+                        }
+                    ),
+                    units: state.units,
+                    type: .boolean,
+                    label: String(localized: "Show CGM Status Around Bobble"),
+                    miniHint: String(
+                        localized: "Display sensor lifecycle arc, hourglass and status around the glucose bobble."
+                    ),
+                    verboseHint: VStack(alignment: .leading, spacing: 10) {
+                        Text(
+                            "When enabled, the glucose bobble shows CGM sensor status: a lifecycle arc during warmup and the last 48 hours before expiry, an hourglass icon tracking the sensor's remaining time, and compact status views for error states like signal loss or sensor failure."
+                        )
+                        Text(
+                            "When disabled, the bobble only shows the glucose reading, trend arrow, and delta."
+                        )
+                    }
+                )
+
                 Section {
                     VStack {
                         Picker(
