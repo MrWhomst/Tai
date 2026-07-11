@@ -314,11 +314,7 @@ extension Home.RootView {
                     .frame(alignment: .leading)
                 let subtitle = profileSubtitle(profile, now: state.timerDate)
                 if !subtitle.isEmpty {
-                    Text(subtitle)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(2)
-                        .frame(alignment: .leading)
+                    GreedyWrapText(subtitle, textStyle: .caption1, maxLines: 2)
                 }
             }
         }
@@ -668,5 +664,45 @@ extension Home.RootView {
                     .offset(y: offset)
             }.clipShape(RoundedRectangle(cornerRadius: 15))
         }
+    }
+}
+
+/// Multi-line caption that fills each line completely before wrapping.
+/// SwiftUI's `Text` applies TextKit's "push out" balancing on multi-line
+/// wraps (it breaks early so the last line isn't a single short word);
+/// `UILabel` with an empty `lineBreakStrategy` wraps greedily instead.
+struct GreedyWrapText: UIViewRepresentable {
+    let text: String
+    let textStyle: UIFont.TextStyle
+    let maxLines: Int
+
+    init(_ text: String, textStyle: UIFont.TextStyle, maxLines: Int) {
+        self.text = text
+        self.textStyle = textStyle
+        self.maxLines = maxLines
+    }
+
+    func makeUIView(context _: Context) -> UILabel {
+        let label = UILabel()
+        label.font = UIFont.preferredFont(forTextStyle: textStyle)
+        label.textColor = .secondaryLabel
+        label.numberOfLines = maxLines
+        label.lineBreakMode = .byTruncatingTail
+        label.lineBreakStrategy = []
+        // Let the label be narrower than its full text so it wraps to the
+        // width SwiftUI proposes instead of stretching the layout.
+        label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        label.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        return label
+    }
+
+    func updateUIView(_ label: UILabel, context _: Context) {
+        label.text = text
+    }
+
+    func sizeThatFits(_ proposal: ProposedViewSize, uiView label: UILabel, context _: Context) -> CGSize? {
+        let width = proposal.width ?? UIView.layoutFittingExpandedSize.width
+        let size = label.sizeThatFits(CGSize(width: width, height: .greatestFiniteMagnitude))
+        return CGSize(width: min(size.width, width), height: size.height)
     }
 }
