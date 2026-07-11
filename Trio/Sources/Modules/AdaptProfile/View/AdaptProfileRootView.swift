@@ -16,6 +16,7 @@ extension AdaptProfile {
         @State private var profileHintDetent = PresentationDetent.large
         @State private var showRenameActive = false
         @State private var activeRenameText: String = ""
+        @State private var revertErrorMessage: String?
 
         @Environment(\.colorScheme) var colorScheme
         @Environment(AppState.self) var appState
@@ -190,6 +191,17 @@ extension AdaptProfile {
                     stickyStopTempProfileButton
                 }
             }
+            .alert(
+                "Stopping the temp profile failed",
+                isPresented: Binding(
+                    get: { revertErrorMessage != nil },
+                    set: { if !$0 { revertErrorMessage = nil } }
+                )
+            ) {
+                Button("OK") { revertErrorMessage = nil }
+            } message: {
+                Text(revertErrorMessage ?? "")
+            }
         }
 
         private var addProfileSheet: some View {
@@ -317,11 +329,23 @@ extension AdaptProfile {
                         if let prevID = activeItem?.previousProfileID {
                             Button("Stop", role: .destructive) {
                                 Task {
-                                    _ = await state.activate(
+                                    // Revert path: the anchor invariant guarantees the pump already
+                                    // holds the target's basal, so skip the pump write — same
+                                    // contract as revertActiveProfile() and the expiry sweep.
+                                    let outcome = await state.activate(
                                         id: prevID,
                                         durationMinutes: nil,
-                                        confirmedPumpSync: true
+                                        confirmedPumpSync: true,
+                                        skipPumpSync: true
                                     )
+                                    switch outcome {
+                                    case .success,
+                                         .needsPumpConfirm:
+                                        break
+                                    case let .pumpSyncFailed(message),
+                                         let .failed(message):
+                                        revertErrorMessage = message
+                                    }
                                 }
                             }
                         }
