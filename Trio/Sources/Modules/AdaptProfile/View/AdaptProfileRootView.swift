@@ -339,11 +339,11 @@ extension AdaptProfile {
                                         skipPumpSync: true
                                     )
                                     switch outcome {
-                                    case .success,
-                                         .needsPumpConfirm:
+                                    case .needsPumpConfirm,
+                                         .success:
                                         break
-                                    case let .pumpSyncFailed(message),
-                                         let .failed(message):
+                                    case let .failed(message),
+                                         let .pumpSyncFailed(message):
                                         revertErrorMessage = message
                                     }
                                 }

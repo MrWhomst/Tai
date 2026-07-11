@@ -124,11 +124,11 @@ enum AimiB30 {
     ) throws -> (suppressed: Bool, determination: Determination) {
         // ── B30 safety-check overrides ────────────────────────────────────────────
         // Progressive order: most critical → least. Set `true` to re-enforce for B30.
-        let enforce1ZeroTempSuspend = true // BG or minGuardBG < threshold → zero temp
-        let enforce2LowEventualBG = true // eventualBG < min target → reduce/zero basal
-        let enforce3GlucoseFallingFast = true // BG falling faster than expected
-        let enforce4EventualForecastLow = false // eventual/forecast BG < max target
-        let enforce5IobCap = false // IOB > maxIOB
+        let enforce1ZeroTempSuspend = false // not enforced for B30: BG or minGuardBG < threshold → zero temp
+        let enforce2LowEventualBG = false // not enforced for B30: eventualBG < min target → reduce/zero basal
+        let enforce3GlucoseFallingFast = false // not enforced for B30: BG falling faster than expected
+        let enforce4EventualForecastLow = false // not enforced for B30: eventual/forecast BG < max target
+        let enforce5IobCap = false // not enforced for B30: IOB > maxIOB
 
         var det = determination
 
