@@ -314,7 +314,7 @@ extension Home.RootView {
                     .frame(alignment: .leading)
                 let subtitle = profileSubtitle(profile, now: state.timerDate)
                 if !subtitle.isEmpty {
-                    GreedyWrapText(subtitle, textStyle: .caption1, maxLines: 2)
+                    GreedyWrapText(subtitle, textStyle: .caption1, maxLines: 1)
                 }
             }
         }

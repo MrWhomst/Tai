@@ -17,7 +17,9 @@ enum HomeLayout {
     /// Height of the pull-down hint row shown in the rubber-band gap.
     static let refreshIndicatorHeight: CGFloat = 40
     /// Zone E: rounded panel shared by the adjustment and bolus views.
-    static let bottomPanelHeight: CGFloat = 60
+    /// Matches Tai's pre-rework sizing (6% of the usable screen height,
+    /// ~44pt on Pro-class devices): name + one caption line.
+    static let bottomPanelHeight: CGFloat = 44
     /// Zone E: horizontal inset of the panel.
     static let bottomPanelHorizontalPadding: CGFloat = 10
     /// Zone E: air above the panel.
