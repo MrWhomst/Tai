@@ -43,7 +43,8 @@ enum AutoISFsmb {
         iob: Decimal,
         b30IsActive: Bool,
         exerciseRatio: Decimal,
-        overrideSmbIsOff: Bool
+        overrideSmbIsOff: Bool,
+        orefSmbEnabled: Bool
     ) -> AutoISFsmbResult? {
         guard profile.autoisf else { return nil }
 
@@ -116,6 +117,17 @@ enum AutoISFsmb {
                 iobTHEffective: iobThEffective,
                 iobTHVirtual: iobThVirtual,
                 reason: AutoISFReason.smbBlockedOddTarget
+            )
+        }
+
+        // An even target may only *permit* SMBs, never grant them: if the user's SMB
+        // settings (oref enable_smb) have SMBs off, that wins unconditionally.
+        guard orefSmbEnabled else {
+            return AutoISFsmbResult(
+                loopMode: .blocked,
+                iobTHEffective: iobThEffective,
+                iobTHVirtual: iobThVirtual,
+                reason: AutoISFReason.smbBlockedSettingsOff
             )
         }
 

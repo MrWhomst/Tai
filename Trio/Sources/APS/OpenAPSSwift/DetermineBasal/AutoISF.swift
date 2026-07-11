@@ -126,7 +126,8 @@ enum AutoISF {
         iob: Decimal,
         b30IsActive: Bool,
         autoISFStatus: AutoISFGlucoseStatus?,
-        overrideSmbIsOff: Bool
+        overrideSmbIsOff: Bool,
+        orefSmbEnabled: Bool
     ) -> AutoISFEngineResult {
         let (exerciseModeActive, resistanceModeActive) = tempTargetMode(profile: profile, targetBG: targetBG)
         // Drives the iobTH reduction inside AutoISFsmb when iob_threshold_percent != 1.
@@ -153,7 +154,8 @@ enum AutoISF {
                 iob: iob,
                 b30IsActive: b30IsActive,
                 exerciseRatio: exerciseRatio,
-                overrideSmbIsOff: overrideSmbIsOff
+                overrideSmbIsOff: overrideSmbIsOff,
+                orefSmbEnabled: orefSmbEnabled
             )
         }
         let smbEnabled: Bool? = smbResult.flatMap { $0.loopMode != .oref ? $0.smbEnabled : nil }
@@ -267,6 +269,7 @@ enum AutoISF {
         iob: Decimal,
         sensitivityRatio: Decimal,
         overrideSmbIsOff: Bool,
+        orefSmbEnabled: Bool,
         iobInputs: KetoProtect.IobInputs
     ) throws -> B30Dispatch {
         guard b30Result.isActive else { return .notActive }
@@ -289,7 +292,8 @@ enum AutoISF {
                 iob: iob,
                 b30IsActive: false,
                 exerciseRatio: exerciseRatio,
-                overrideSmbIsOff: overrideSmbIsOff
+                overrideSmbIsOff: overrideSmbIsOff,
+                orefSmbEnabled: orefSmbEnabled
             )
             blocked.smbRatio = min(
                 AutoISFsmb.variableSMBRatio(

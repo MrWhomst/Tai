@@ -65,7 +65,8 @@ import Testing
         microBolusAllowed: Bool = true,
         iob: Decimal = 0,
         b30IsActive: Bool = false,
-        overrideSmbIsOff: Bool = false
+        overrideSmbIsOff: Bool = false,
+        orefSmbEnabled: Bool = true
     ) -> AutoISFEngineResult {
         AutoISF.run(
             profile: profile,
@@ -81,7 +82,8 @@ import Testing
             iob: iob,
             b30IsActive: b30IsActive,
             autoISFStatus: autoISFStatus,
-            overrideSmbIsOff: overrideSmbIsOff
+            overrideSmbIsOff: overrideSmbIsOff,
+            orefSmbEnabled: orefSmbEnabled
         )
     }
 

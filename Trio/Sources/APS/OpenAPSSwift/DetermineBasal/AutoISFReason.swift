@@ -141,6 +141,9 @@ enum AutoISFReason {
 
     static let smbBlockedOddTarget = "autoISF-SMB disabled:, odd Target"
     static let smbBlockedMaxIobZero = "autoISF-SMB disabled:, maxIOB=0"
+    /// Even target would enforce SMBs, but the user's SMB settings have them off —
+    /// user settings win; autoISF may only gate SMBs, never grant them.
+    static let smbBlockedSettingsOff = "autoISF-SMB disabled:, SMBs off in settings"
 
     /// "autoISF-SMB enabled:, even TT, eff.iobTH:, <value>" — full-loop mode (even temp
     /// target below 100 mg/dL).

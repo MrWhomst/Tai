@@ -14,8 +14,10 @@ enum DosingEngine {
         let reason: String?
     }
 
-    /// checks to see if SMB are enabled via the profile
-    private static func isProfileSmbEnabled(
+    /// checks to see if SMB are enabled via the profile.
+    /// Also consulted by the autoISF even/odd SMB control: an even target may only
+    /// permit SMBs when this returns true — user SMB settings win unconditionally.
+    static func isProfileSmbEnabled(
         currentGlucose: Decimal,
         adjustedTargetGlucose: Decimal,
         profile: Profile,
