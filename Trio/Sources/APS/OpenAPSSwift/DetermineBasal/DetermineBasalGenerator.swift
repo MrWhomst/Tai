@@ -268,6 +268,17 @@ enum DeterminationGenerator {
                 trioCustomOrefVariables: trioCustomOrefVariables,
                 clock: currentTime
             )) ?? false)
+        // Standard oref enable_smb decision (SMB settings toggles + override). autoISF's
+        // even/odd control may only gate SMBs, never grant them — its enforce path needs
+        // to know whether the user's SMB settings allow SMBs at all.
+        let profileSmbEnabled = try DosingEngine.isProfileSmbEnabled(
+            currentGlucose: currentGlucose,
+            adjustedTargetGlucose: adjustedGlucoseTargets.targetGlucose,
+            profile: profile,
+            meal: mealData,
+            trioCustomOrefVariables: trioCustomOrefVariables,
+            clock: currentTime
+        )
         let autoISFResult = OrefSubTimer.time("determineBasal.AutoISF.run") {
             AutoISF.run(
                 profile: profile,
@@ -283,7 +294,8 @@ enum DeterminationGenerator {
                 iob: iobData.first?.iob ?? 0,
                 b30IsActive: b30Result.isActive,
                 autoISFStatus: autoISFStatus,
-                overrideSmbIsOff: overrideDisablesSmb
+                overrideSmbIsOff: overrideDisablesSmb,
+                orefSmbEnabled: profileSmbEnabled
             )
         }
         if let adjusted = autoISFResult.adjustedSensitivity {
@@ -461,8 +473,11 @@ enum DeterminationGenerator {
         }
 
         var smbIsEnabled = smbDecision.isEnabled
-        if let override = autoISFResult.smbEnabled {
-            smbIsEnabled = override
+        // autoISF may only veto SMBs (odd target, iobTH exceeded, B30 running) — never
+        // force them on. User SMB settings plus the minGuardBG/maxDelta safety checks in
+        // smbDecision stay authoritative for enabling.
+        if autoISFResult.smbEnabled == false {
+            smbIsEnabled = false
         }
         if overrideDisablesSmb { smbIsEnabled = false }
 
@@ -591,6 +606,7 @@ enum DeterminationGenerator {
                 iob: iobData.first?.iob ?? 0,
                 sensitivityRatio: sensitivityRatio,
                 overrideSmbIsOff: overrideDisablesSmb,
+                orefSmbEnabled: profileSmbEnabled,
                 iobInputs: iobInputs
             )
             switch dispatch {

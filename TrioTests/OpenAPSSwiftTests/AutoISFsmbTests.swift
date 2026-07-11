@@ -43,7 +43,8 @@ import Testing
             iob: 0,
             b30IsActive: false,
             exerciseRatio: 1,
-            overrideSmbIsOff: false
+            overrideSmbIsOff: false,
+            orefSmbEnabled: true
         )
 
         #expect(result == nil)
@@ -60,7 +61,8 @@ import Testing
             iob: 0,
             b30IsActive: false,
             exerciseRatio: 1,
-            overrideSmbIsOff: true
+            overrideSmbIsOff: true,
+            orefSmbEnabled: true
         )!
 
         #expect(result.loopMode == .blocked)
@@ -78,7 +80,8 @@ import Testing
             iob: 0,
             b30IsActive: true,
             exerciseRatio: 1,
-            overrideSmbIsOff: false
+            overrideSmbIsOff: false,
+            orefSmbEnabled: true
         )!
 
         #expect(result.loopMode == .b30Running)
@@ -96,7 +99,8 @@ import Testing
             iob: 0,
             b30IsActive: false,
             exerciseRatio: 1,
-            overrideSmbIsOff: false
+            overrideSmbIsOff: false,
+            orefSmbEnabled: true
         )!
 
         #expect(result.loopMode == .oref)
@@ -114,7 +118,8 @@ import Testing
             iob: 8,
             b30IsActive: false,
             exerciseRatio: 1,
-            overrideSmbIsOff: false
+            overrideSmbIsOff: false,
+            orefSmbEnabled: true
         )!
 
         #expect(result.loopMode == .iobTHExceeded)
@@ -132,10 +137,52 @@ import Testing
             iob: 0,
             b30IsActive: false,
             exerciseRatio: 1,
-            overrideSmbIsOff: false
+            overrideSmbIsOff: false,
+            orefSmbEnabled: true
         )!
 
         #expect(result.loopMode == .oref)
+    }
+
+    @Test("evaluate blocks SMB on even targets when user SMB settings are off") func evaluateEvenTargetSettingsOffBlocks() throws {
+        let profile = makeProfile()
+
+        let result = AutoISFsmb.evaluate(
+            profile: profile,
+            targetBG: 100, // even — would enforce, but SMB settings win
+            units: .mgdL,
+            microBolusAllowed: true,
+            iob: 0,
+            b30IsActive: false,
+            exerciseRatio: 1,
+            overrideSmbIsOff: false,
+            orefSmbEnabled: false
+        )!
+
+        #expect(result.loopMode == .blocked)
+        #expect(!result.smbEnabled)
+        #expect(result.reason == AutoISFReason.smbBlockedSettingsOff)
+    }
+
+    @Test("evaluate blocks SMB on even temp target below 100 when user SMB settings are off")
+    func evaluateEvenTTSettingsOffBlocks() throws {
+        let profile = makeProfile()
+
+        let result = AutoISFsmb.evaluate(
+            profile: profile,
+            targetBG: 90, // even TT — would grant fullLoop, but SMB settings win
+            units: .mgdL,
+            microBolusAllowed: true,
+            iob: 0,
+            b30IsActive: false,
+            exerciseRatio: 1,
+            overrideSmbIsOff: false,
+            orefSmbEnabled: false
+        )!
+
+        #expect(result.loopMode == .blocked)
+        #expect(!result.smbEnabled)
+        #expect(result.reason == AutoISFReason.smbBlockedSettingsOff)
     }
 
     @Test("evaluate blocks SMB on odd targets when toggle is on") func evaluateOddTargetBlocks() throws {
@@ -149,7 +196,8 @@ import Testing
             iob: 0,
             b30IsActive: false,
             exerciseRatio: 1,
-            overrideSmbIsOff: false
+            overrideSmbIsOff: false,
+            orefSmbEnabled: true
         )!
 
         #expect(result.loopMode == .blocked)
@@ -166,7 +214,8 @@ import Testing
             iob: 0,
             b30IsActive: false,
             exerciseRatio: 1,
-            overrideSmbIsOff: false
+            overrideSmbIsOff: false,
+            orefSmbEnabled: true
         )!
 
         #expect(result.loopMode == .blocked)
@@ -183,7 +232,8 @@ import Testing
             iob: 0,
             b30IsActive: false,
             exerciseRatio: 1,
-            overrideSmbIsOff: false
+            overrideSmbIsOff: false,
+            orefSmbEnabled: true
         )!
 
         #expect(result.loopMode == .fullLoop)
@@ -201,7 +251,8 @@ import Testing
             iob: 0,
             b30IsActive: false,
             exerciseRatio: 1,
-            overrideSmbIsOff: false
+            overrideSmbIsOff: false,
+            orefSmbEnabled: true
         )!
 
         #expect(result.loopMode == .enforced)
@@ -223,7 +274,8 @@ import Testing
             iob: 0,
             b30IsActive: false,
             exerciseRatio: 1,
-            overrideSmbIsOff: false
+            overrideSmbIsOff: false,
+            orefSmbEnabled: true
         )!
 
         #expect(result.loopMode == .enforced)
@@ -245,7 +297,8 @@ import Testing
             iob: 0,
             b30IsActive: false,
             exerciseRatio: 1,
-            overrideSmbIsOff: false
+            overrideSmbIsOff: false,
+            orefSmbEnabled: true
         )!
 
         #expect(result.loopMode == .blocked)
@@ -265,7 +318,8 @@ import Testing
             iob: 0,
             b30IsActive: false,
             exerciseRatio: 1,
-            overrideSmbIsOff: false
+            overrideSmbIsOff: false,
+            orefSmbEnabled: true
         )!
 
         #expect(result.loopMode == .blocked)
@@ -288,7 +342,8 @@ import Testing
             iob: 0,
             b30IsActive: false,
             exerciseRatio: 1,
-            overrideSmbIsOff: false
+            overrideSmbIsOff: false,
+            orefSmbEnabled: true
         )!
 
         let mmolResult = AutoISFsmb.evaluate(
@@ -299,7 +354,8 @@ import Testing
             iob: 0,
             b30IsActive: false,
             exerciseRatio: 1,
-            overrideSmbIsOff: false
+            overrideSmbIsOff: false,
+            orefSmbEnabled: true
         )!
 
         // 92 mg/dL < 100 → even branch routes to fullLoop in mg/dL mode.
@@ -324,7 +380,8 @@ import Testing
             iob: 0,
             b30IsActive: false,
             exerciseRatio: 1,
-            overrideSmbIsOff: false
+            overrideSmbIsOff: false,
+            orefSmbEnabled: true
         )!
 
         let mmolResult = AutoISFsmb.evaluate(
@@ -335,7 +392,8 @@ import Testing
             iob: 0,
             b30IsActive: false,
             exerciseRatio: 1,
-            overrideSmbIsOff: false
+            overrideSmbIsOff: false,
+            orefSmbEnabled: true
         )!
 
         #expect(mgdlResult.loopMode == .blocked)
@@ -357,7 +415,8 @@ import Testing
             iob: 0,
             b30IsActive: false,
             exerciseRatio: 1,
-            overrideSmbIsOff: false
+            overrideSmbIsOff: false,
+            orefSmbEnabled: true
         )!
 
         #expect(result.loopMode == .enforced)
