@@ -164,11 +164,17 @@ extension AdaptProfile {
             }
         }
 
-        @MainActor func activate(id: UUID, durationMinutes: Int?, confirmedPumpSync: Bool) async -> ActivationOutcome {
+        @MainActor func activate(
+            id: UUID,
+            durationMinutes: Int?,
+            confirmedPumpSync: Bool,
+            skipPumpSync: Bool = false
+        ) async -> ActivationOutcome {
             let outcome = await provider.activate(
                 id: id,
                 durationMinutes: durationMinutes,
-                confirmedPumpSync: confirmedPumpSync
+                confirmedPumpSync: confirmedPumpSync,
+                skipPumpSync: skipPumpSync
             )
             if outcome == .success {
                 await refresh()
