@@ -166,7 +166,7 @@ import Testing
 
     @Test(
         "evaluate blocks SMB on even temp target below 100 when user SMB settings are off"
-    )  func evaluateEvenTTSettingsOffBlocks() throws {
+    ) func evaluateEvenTTSettingsOffBlocks() throws {
         let profile = makeProfile()
 
         let result = AutoISFsmb.evaluate(
