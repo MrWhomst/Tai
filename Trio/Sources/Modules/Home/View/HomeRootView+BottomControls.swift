@@ -305,7 +305,7 @@ extension Home.RootView {
                             .stroke(Color.blue, lineWidth: 1.5)
                     )
             }
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 2) {
                 Text(profile.name ?? String(
                     localized: "Active Profile",
                     comment: "Fallback name on Home adjustments banner for the active profile when it has no name set"
@@ -685,7 +685,7 @@ struct GreedyWrapText: UIViewRepresentable {
     func makeUIView(context _: Context) -> UILabel {
         let label = UILabel()
         label.font = UIFont.preferredFont(forTextStyle: textStyle)
-        label.textColor = .secondaryLabel
+        label.textColor = .label
         label.numberOfLines = maxLines
         label.lineBreakMode = .byTruncatingTail
         label.lineBreakStrategy = []
