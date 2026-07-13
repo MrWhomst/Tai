@@ -63,8 +63,6 @@ final class BaseFetchGlucoseManager: FetchGlucoseManager, Injectable {
 
     private lazy var simulatorSource = GlucoseSimulatorSource()
 
-    private let context = CoreDataStack.shared.newTaskContext()
-
     /// Enforce mutual exclusion on calls to glucoseStoreAndHeartDecision
     private let glucoseStoreAndHeartLock = DispatchSemaphore(value: 1)
 
@@ -325,6 +323,7 @@ final class BaseFetchGlucoseManager: FetchGlucoseManager, Injectable {
             debug(.deviceManager, "Triggering smoothing: hasBackfilled=\(hasBackfilled), hasStoredNew=\(hasStoredNew)")
             // Create a fresh context for smoothing to ensure it sees the latest data from the persistent store
             let smoothingContext = CoreDataStack.shared.newTaskContext()
+            smoothingContext.name = "smoothGlucose"
             await smoothGlucose(context: smoothingContext)
         }
 
@@ -413,6 +412,7 @@ extension BaseFetchGlucoseManager: SettingsObserver {
             Task {
                 // Create a fresh context for smoothing to ensure it sees the latest data
                 let smoothingContext = CoreDataStack.shared.newTaskContext()
+                smoothingContext.name = "smoothGlucose"
                 await self.smoothGlucose(context: smoothingContext)
                 self.glucoseStoreAndHeartLock.signal()
             }

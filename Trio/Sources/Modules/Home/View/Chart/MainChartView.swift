@@ -97,7 +97,7 @@ struct MainChartView: View {
                             if !mainChartHasInitialized {
                                 scroller.scrollTo("MainChart", anchor: .trailing)
                                 state.updateStartEndMarkers()
-                                calculateTempBasalsInBackground()
+                                calculateTempBasals()
                                 mainChartHasInitialized = true
                             }
                         }
