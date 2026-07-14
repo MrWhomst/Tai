@@ -77,18 +77,18 @@ struct InsulinConcentrationBadge: View {
         if hide {
             EmptyView()
         } else {
-            ZStack {
-                RoundedRectangle(cornerRadius: 20)
-                    .fill(badgeColor) // Dynamic color based on concentration
-                    .frame(width: 42, height: 20)
-                    .overlay {
-                        Text("U\(Int(truncating: NSDecimalNumber(decimal: concentration * 100)))")
-                            .font(.caption)
-                            .fontWeight(.bold)
-                            .fontDesign(.rounded)
-                            .foregroundStyle(Color.white)
-                    }
-            }
+            Text("U\(Int(truncating: NSDecimalNumber(decimal: concentration * 100)))")
+                .font(.caption)
+                .fontWeight(.bold)
+                .fontDesign(.rounded)
+                .foregroundStyle(Color.white)
+                .fixedSize()
+                .padding(.horizontal, 7)
+                .frame(minWidth: 42, minHeight: 20)
+                .background(
+                    RoundedRectangle(cornerRadius: 20)
+                        .fill(badgeColor) // Dynamic color based on concentration
+                )
         }
     }
 }

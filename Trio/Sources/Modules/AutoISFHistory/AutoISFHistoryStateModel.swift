@@ -22,8 +22,6 @@ extension AutoISFHistory {
         var iobThresholdPercent: Decimal = 1
         var maxIOB: Decimal = 9
 
-        private let context = CoreDataStack.shared.newTaskContext()
-
         override func subscribe() {
             units = settingsManager.settings.units
             iobThresholdPercent = settingsManager.preferences.iobThresholdPercent
@@ -36,6 +34,11 @@ extension AutoISFHistory {
             let endTime = selectedEndTime
             let intervalHours = timeIntervalOptions[selectedTimeIntervalIndex]
             let startTime = Calendar.current.date(byAdding: .hour, value: -intervalHours, to: endTime)!
+
+            // Per-call context: task contexts no longer auto-merge parent changes, so a
+            // long-lived context would serve stale determinations on repeated fetches.
+            let context = CoreDataStack.shared.newTaskContext()
+            context.name = "fetchedAutoISF"
 
             do {
                 let results = try await CoreDataStack.shared.fetchEntitiesAsync(

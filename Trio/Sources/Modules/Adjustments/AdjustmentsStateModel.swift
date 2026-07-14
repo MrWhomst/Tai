@@ -101,7 +101,6 @@ extension Adjustments {
         var didSaveSettings: Bool = false
 
         // Core Data
-        let coredataContext = CoreDataStack.shared.newTaskContext()
         let viewContext = CoreDataStack.shared.persistentContainer.viewContext
 
         // Help Sheet

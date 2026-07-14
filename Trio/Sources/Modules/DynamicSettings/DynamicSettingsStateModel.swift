@@ -50,8 +50,6 @@ extension DynamicSettings {
 
         var units: GlucoseUnits = .mgdL
 
-        let context = CoreDataStack.shared.newTaskContext()
-
         override func subscribe() {
             units = settingsManager.settings.units
 
@@ -113,6 +111,9 @@ extension DynamicSettings {
         /// - Returns: `true` if sufficient TDD data is available, otherwise `false`.
         /// - Throws: An error if the Core Data count operation fails.
         private func hasSufficientTDD() throws -> Bool {
+            let context = CoreDataStack.shared.newTaskContext()
+            context.name = "DynamicSettingsStateModel.hasSufficientTDD"
+
             var result = false
 
             context.performAndWait {

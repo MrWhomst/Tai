@@ -15,8 +15,6 @@ extension History {
         @ObservationIgnored @Injected() var healthKitManager: HealthKitManager!
         @ObservationIgnored @Injected() var carbsStorage: CarbsStorage!
 
-        let coredataContext = CoreDataStack.shared.newTaskContext()
-
         var mode: Mode = .treatments
         var treatments: [Treatment] = []
         var manualGlucose: Decimal = 0

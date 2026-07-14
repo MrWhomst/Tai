@@ -83,6 +83,7 @@ struct TrioSettings: JSON, Equatable, Encodable {
     var useLiveActivity: Bool = false
     var lockScreenView: LockScreenView = .simple
     var smartStackView: LockScreenView = .simple
+    var displayGlucoseForecasts: Bool = false
     var bolusShortcut: BolusShortcutLimit = .notAllowed
     var timeInRangeType: TimeInRangeType = .timeInTightRange
     var showGlucosePeaks: Bool = false
@@ -341,6 +342,10 @@ extension TrioSettings: Decodable {
 
         if let smartStackView = try? container.decode(LockScreenView.self, forKey: .smartStackView) {
             settings.smartStackView = smartStackView
+        }
+
+        if let displayGlucoseForecasts = try? container.decode(Bool.self, forKey: .displayGlucoseForecasts) {
+            settings.displayGlucoseForecasts = displayGlucoseForecasts
         }
 
         if let bolusShortcut = try? container.decode(BolusShortcutLimit.self, forKey: .bolusShortcut) {
