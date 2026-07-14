@@ -89,6 +89,7 @@ struct TrioSettings: JSON, Equatable, Encodable {
     var showGlucosePeaks: Bool = false
     var useChartBars: Bool = true
     var requireAdjustmentsConfirmation: Bool = false
+    var showCgmSensorStatus: Bool = true
 
     /// Selected Garmin watchface (Trio or SwissAlpine)
     var garminWatchface: GarminWatchface = .trio
@@ -366,6 +367,10 @@ extension TrioSettings: Decodable {
 
         if let requireAdjustmentsConfirmation = try? container.decode(Bool.self, forKey: .requireAdjustmentsConfirmation) {
             settings.requireAdjustmentsConfirmation = requireAdjustmentsConfirmation
+        }
+
+        if let showCgmSensorStatus = try? container.decode(Bool.self, forKey: .showCgmSensorStatus) {
+            settings.showCgmSensorStatus = showCgmSensorStatus
         }
 
         if let garminWatchface = try? container.decode(GarminWatchface.self, forKey: .garminWatchface) {

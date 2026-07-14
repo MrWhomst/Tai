@@ -68,6 +68,12 @@
 		3811DE3125C9D49500A708ED /* HomeProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3811DE2925C9D49500A708ED /* HomeProvider.swift */; };
 		3811DE3225C9D49500A708ED /* HomeDataFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3811DE2A25C9D49500A708ED /* HomeDataFlow.swift */; };
 		3811DE3525C9D49500A708ED /* HomeRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3811DE2E25C9D49500A708ED /* HomeRootView.swift */; };
+		7A11AC0DE000000000000101 /* HomeRootView+Header.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A11AC0DE000000000000001 /* HomeRootView+Header.swift */; };
+		7A11AC0DE000000000000106 /* HomeRootView+Refresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A11AC0DE000000000000006 /* HomeRootView+Refresh.swift */; };
+		7A11AC0DE000000000000102 /* HomeRootView+MealPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A11AC0DE000000000000002 /* HomeRootView+MealPanel.swift */; };
+		7A11AC0DE000000000000103 /* HomeRootView+BottomControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A11AC0DE000000000000003 /* HomeRootView+BottomControls.swift */; };
+		7A11AC0DE000000000000104 /* HomeRootView+Toolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A11AC0DE000000000000004 /* HomeRootView+Toolbar.swift */; };
+		7A11AC0DE000000000000105 /* HomeLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A11AC0DE000000000000005 /* HomeLayout.swift */; };
 		3811DE3F25C9D4A100A708ED /* SettingsStateModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3811DE3925C9D4A100A708ED /* SettingsStateModel.swift */; };
 		3811DE4125C9D4A100A708ED /* SettingsRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3811DE3C25C9D4A100A708ED /* SettingsRootView.swift */; };
 		3811DE4225C9D4A100A708ED /* SettingsDataFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3811DE3D25C9D4A100A708ED /* SettingsDataFlow.swift */; };
@@ -439,7 +445,6 @@
 		58A3D5442C96DE11003F90FC /* TempTargetStored+Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58A3D5432C96DE11003F90FC /* TempTargetStored+Helper.swift */; };
 		58D08B222C8DAA8E00AA37D3 /* OverrideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58D08B212C8DAA8E00AA37D3 /* OverrideView.swift */; };
 		58D08B302C8DEA7500AA37D3 /* ForecastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58D08B2F2C8DEA7500AA37D3 /* ForecastView.swift */; };
-		58D08B322C8DF88900AA37D3 /* DummyCharts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58D08B312C8DF88900AA37D3 /* DummyCharts.swift */; };
 		58D08B342C8DF9A700AA37D3 /* CobIobChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58D08B332C8DF9A700AA37D3 /* CobIobChart.swift */; };
 		58D08B382C8DFB6000AA37D3 /* BasalChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58D08B372C8DFB6000AA37D3 /* BasalChart.swift */; };
 		58D08B3A2C8DFECD00AA37D3 /* TempTargets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58D08B392C8DFECD00AA37D3 /* TempTargets.swift */; };
@@ -1183,6 +1188,12 @@
 		3811DE2925C9D49500A708ED /* HomeProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeProvider.swift; sourceTree = "<group>"; };
 		3811DE2A25C9D49500A708ED /* HomeDataFlow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeDataFlow.swift; sourceTree = "<group>"; };
 		3811DE2E25C9D49500A708ED /* HomeRootView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeRootView.swift; sourceTree = "<group>"; };
+		7A11AC0DE000000000000001 /* HomeRootView+Header.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HomeRootView+Header.swift"; sourceTree = "<group>"; };
+		7A11AC0DE000000000000006 /* HomeRootView+Refresh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HomeRootView+Refresh.swift"; sourceTree = "<group>"; };
+		7A11AC0DE000000000000002 /* HomeRootView+MealPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HomeRootView+MealPanel.swift"; sourceTree = "<group>"; };
+		7A11AC0DE000000000000003 /* HomeRootView+BottomControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HomeRootView+BottomControls.swift"; sourceTree = "<group>"; };
+		7A11AC0DE000000000000004 /* HomeRootView+Toolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HomeRootView+Toolbar.swift"; sourceTree = "<group>"; };
+		7A11AC0DE000000000000005 /* HomeLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeLayout.swift; sourceTree = "<group>"; };
 		3811DE3925C9D4A100A708ED /* SettingsStateModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsStateModel.swift; sourceTree = "<group>"; };
 		3811DE3C25C9D4A100A708ED /* SettingsRootView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsRootView.swift; sourceTree = "<group>"; };
 		3811DE3D25C9D4A100A708ED /* SettingsDataFlow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsDataFlow.swift; sourceTree = "<group>"; };
@@ -1547,7 +1558,6 @@
 		58A3D5432C96DE11003F90FC /* TempTargetStored+Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TempTargetStored+Helper.swift"; sourceTree = "<group>"; };
 		58D08B212C8DAA8E00AA37D3 /* OverrideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverrideView.swift; sourceTree = "<group>"; };
 		58D08B2F2C8DEA7500AA37D3 /* ForecastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForecastView.swift; sourceTree = "<group>"; };
-		58D08B312C8DF88900AA37D3 /* DummyCharts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DummyCharts.swift; sourceTree = "<group>"; };
 		58D08B332C8DF9A700AA37D3 /* CobIobChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CobIobChart.swift; sourceTree = "<group>"; };
 		58D08B372C8DFB6000AA37D3 /* BasalChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasalChart.swift; sourceTree = "<group>"; };
 		58D08B392C8DFECD00AA37D3 /* TempTargets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TempTargets.swift; sourceTree = "<group>"; };
@@ -2572,6 +2582,12 @@
 			isa = PBXGroup;
 			children = (
 				3811DE2E25C9D49500A708ED /* HomeRootView.swift */,
+				7A11AC0DE000000000000001 /* HomeRootView+Header.swift */,
+				7A11AC0DE000000000000006 /* HomeRootView+Refresh.swift */,
+				7A11AC0DE000000000000002 /* HomeRootView+MealPanel.swift */,
+				7A11AC0DE000000000000003 /* HomeRootView+BottomControls.swift */,
+				7A11AC0DE000000000000004 /* HomeRootView+Toolbar.swift */,
+				7A11AC0DE000000000000005 /* HomeLayout.swift */,
 				3833B51E260264AC003021B3 /* Chart */,
 				3833B51F260264B6003021B3 /* Header */,
 				FDB1D1005DA54C048E622761 /* QuickPickBoluses */,
@@ -4130,7 +4146,6 @@
 				F1ABCDE10000000000000006 /* PeakLabelsOverlay.swift */,
 				58D08B212C8DAA8E00AA37D3 /* OverrideView.swift */,
 				58D08B2F2C8DEA7500AA37D3 /* ForecastView.swift */,
-				58D08B312C8DF88900AA37D3 /* DummyCharts.swift */,
 				58D08B332C8DF9A700AA37D3 /* CobIobChart.swift */,
 				58D08B372C8DFB6000AA37D3 /* BasalChart.swift */,
 				58D08B392C8DFECD00AA37D3 /* TempTargets.swift */,
@@ -5420,7 +5435,6 @@
 				3862CC2E2743F9F700BF832C /* CalendarManager.swift in Sources */,
 				38B4F3C325E2A20B00E76A18 /* PumpSetupView.swift in Sources */,
 				38E4453C274E411700EC9A94 /* Disk+Codable.swift in Sources */,
-				58D08B322C8DF88900AA37D3 /* DummyCharts.swift in Sources */,
 				19E1F7EF29D08EBA005C8D20 /* IconConfigRootWiew.swift in Sources */,
 				1967DFC229D053D300759F30 /* IconImage.swift in Sources */,
 				382C134B25F14E3700715CE1 /* BGTargets.swift in Sources */,
@@ -5654,6 +5668,12 @@
 				3B2A3BC12E2B19C600658FB9 /* DynamicISF.swift in Sources */,
 				CEE9A6592BBB418300EB5194 /* CalibrationsDataFlow.swift in Sources */,
 				3811DE3525C9D49500A708ED /* HomeRootView.swift in Sources */,
+				7A11AC0DE000000000000101 /* HomeRootView+Header.swift in Sources */,
+				7A11AC0DE000000000000106 /* HomeRootView+Refresh.swift in Sources */,
+				7A11AC0DE000000000000102 /* HomeRootView+MealPanel.swift in Sources */,
+				7A11AC0DE000000000000103 /* HomeRootView+BottomControls.swift in Sources */,
+				7A11AC0DE000000000000104 /* HomeRootView+Toolbar.swift in Sources */,
+				7A11AC0DE000000000000105 /* HomeLayout.swift in Sources */,
 				584C79A91D034426A1DE60CB /* SlideToConfirmView.swift in Sources */,
 				DECF1903237041E2BBBE4033 /* QuickPickBolusesInfoView.swift in Sources */,
 				3F23E18680094E6DA98628E4 /* QuickPickBolusesView.swift in Sources */,

@@ -1,9 +1,28 @@
 import Foundation
 
 extension Home.StateModel {
+    /// Leading edge of the chart-feeding fetch window.
+    var chartHistoryStartDate: Date {
+        Date(timeIntervalSinceNow: -chartHistorySpan)
+    }
+
+    /// One-shot: widens the fetch window to the full history span and
+    /// re-anchors the chart-feeding fetched-results controllers. Chart-only;
+    /// dosing reads its own storage fetches and is unaffected.
+    func expandChartHistory() {
+        guard !isChartHistoryExpanded else { return }
+        isChartHistoryExpanded = true
+        chartHistorySpan = MainChartHelper.Config.maxChartHistorySeconds
+        updateStartEndMarkers()
+        Task { @MainActor in
+            reanchorFetchWindows()
+            await setupGlucoseTargets()
+        }
+    }
+
     // Update start and  end marker to fix scroll update problem with x axis
     func updateStartEndMarkers() {
-        startMarker = Date(timeIntervalSince1970: TimeInterval(NSDate().timeIntervalSince1970 - 86400))
+        startMarker = Date(timeIntervalSinceNow: -chartHistorySpan)
 
         let threeHourSinceNow = Date(timeIntervalSinceNow: TimeInterval(hours: 3))
 
