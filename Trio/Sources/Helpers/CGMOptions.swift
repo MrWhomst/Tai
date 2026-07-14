@@ -6,6 +6,7 @@ var cgmOptions: [CGMOption] {
         CGMOption(name: "Dexcom G6 / ONE", predicate: { $0.type == .plugin && $0.displayName.contains("G6") }),
         CGMOption(name: "Dexcom G7 / ONE+", predicate: { $0.type == .plugin && $0.displayName.contains("G7") }),
         CGMOption(name: "Dexcom Share", predicate: { $0.type == .plugin && $0.displayName.contains("Dexcom Share") }),
+        CGMOption(name: "Eversense", predicate: { $0.type == .plugin && $0.displayName == "Eversense" }),
         CGMOption(name: "FreeStyle Libre", predicate: { $0.type == .plugin && $0.displayName == "FreeStyle Libre" }),
         CGMOption(
             name: "FreeStyle Libre Demo",
