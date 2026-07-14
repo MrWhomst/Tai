@@ -909,7 +909,7 @@ extension Treatments.StateModel {
             uam: forecastsSet.extractValues(for: "uam")
         )
 
-return Determination(
+        return Determination(
             id: UUID(),
             reason: "",
             units: 0,

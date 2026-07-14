@@ -10,13 +10,7 @@ import Foundation
 final class ActiveProfileMirror {
     static let shared = ActiveProfileMirror()
 
-    private let context: NSManagedObjectContext
-
-    private init() {
-        context = CoreDataStack.shared.newTaskContext()
-        context.name = "ActiveProfileMirrorContext"
-        context.transactionAuthor = "ActiveProfileMirror"
-    }
+    private init() {}
 
     func updatePreferences(_ preferences: Preferences) {
         update { $0.preferences = preferences }
@@ -52,13 +46,19 @@ final class ActiveProfileMirror {
     }
 
     private func update(_ mutate: @escaping (ProfileStored) -> Void) {
+        // Per-call context: task contexts no longer auto-merge parent changes, so a
+        // long-lived context could mutate a stale snapshot of the active profile.
+        let context = CoreDataStack.shared.newTaskContext()
+        context.name = "ActiveProfileMirrorContext"
+        context.transactionAuthor = "ActiveProfileMirror"
+
         context.perform {
             do {
                 let request = ProfileStored.fetch(.activeProfile, fetchLimit: 1)
-                guard let profile = try self.context.fetch(request).first else { return }
+                guard let profile = try context.fetch(request).first else { return }
                 mutate(profile)
-                if self.context.hasChanges {
-                    try self.context.save()
+                if context.hasChanges {
+                    try context.save()
                 }
             } catch {
                 debug(.coreData, "ActiveProfileMirror update failed: \(error)")
