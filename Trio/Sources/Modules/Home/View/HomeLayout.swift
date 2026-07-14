@@ -11,7 +11,7 @@ enum HomeLayout {
     /// Zone B: left info panel / glucose bobble / loop status header.
     static let headerHeight: CGFloat = 150
     /// Zone C: horizontal pump panel slot; the row centers inside it.
-    static let mealSlotHeight: CGFloat = 48
+    static let mealSlotHeight: CGFloat = 30
     /// Pull distance that triggers the forced loop.
     static let refreshTriggerDistance: CGFloat = 70
     /// Height of the pull-down hint row shown in the rubber-band gap.
