@@ -327,7 +327,6 @@
 		3BEF6AB12D9731660076089D /* MealHistoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BEF6AB02D9731530076089D /* MealHistoryTests.swift */; };
 		3BEF6AB32D97316F0076089D /* MealTotalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BEF6AB22D97316A0076089D /* MealTotalTests.swift */; };
 		3BF424C72DF4805A0017CFD9 /* AutosensError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BF424C62DF480550017CFD9 /* AutosensError.swift */; };
-		3BF8D0C12D5175BE001B3F84 /* ProfileJsNativeCompareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BF8D0C02D5175B3001B3F84 /* ProfileJsNativeCompareTests.swift */; };
 		3BF92F2D2D86DEE9006B545A /* autosens.js in Resources */ = {isa = PBXBuildFile; fileRef = 3BF92F212D86DEE9006B545A /* autosens.js */; };
 		3BF92F2E2D86DEE9006B545A /* autotune-prep.js in Resources */ = {isa = PBXBuildFile; fileRef = 3BF92F232D86DEE9006B545A /* autotune-prep.js */; };
 		3BF92F2F2D86DEE9006B545A /* profile.js in Resources */ = {isa = PBXBuildFile; fileRef = 3BF92F2A2D86DEE9006B545A /* profile.js */; };
@@ -1439,7 +1438,6 @@
 		3BEF6AB22D97316A0076089D /* MealTotalTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealTotalTests.swift; sourceTree = "<group>"; };
 		3BF424C62DF480550017CFD9 /* AutosensError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutosensError.swift; sourceTree = "<group>"; };
 		3BF768BD6264FF7D71D66767 /* NightscoutConfigProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NightscoutConfigProvider.swift; sourceTree = "<group>"; };
-		3BF8D0C02D5175B3001B3F84 /* ProfileJsNativeCompareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileJsNativeCompareTests.swift; sourceTree = "<group>"; };
 		3BF92F212D86DEE9006B545A /* autosens.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = autosens.js; sourceTree = "<group>"; };
 		3BF92F222D86DEE9006B545A /* autotune-core.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = "autotune-core.js"; sourceTree = "<group>"; };
 		3BF92F232D86DEE9006B545A /* autotune-prep.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = "autotune-prep.js"; sourceTree = "<group>"; };
@@ -3386,7 +3384,6 @@
 				3BE2F1E72E030E2F009E2900 /* MealCobTests.swift */,
 				3BEF6AB02D9731530076089D /* MealHistoryTests.swift */,
 				3BEF6AB22D97316A0076089D /* MealTotalTests.swift */,
-				3BF8D0C02D5175B3001B3F84 /* ProfileJsNativeCompareTests.swift */,
 				3B5CD2C12D4AECD500CE213C /* ProfileBasalTests.swift */,
 				3B5CD2C32D4AECD500CE213C /* ProfileCarbsTests.swift */,
 				3B5CD2C42D4AECD500CE213C /* ProfileIsfTests.swift */,
@@ -6223,7 +6220,6 @@
 				CEE9A65E2BBC9F6500EB5194 /* CalibrationsTests.swift in Sources */,
 				3B3B4F562E661FD600B668E3 /* DetermineBasalEventualOrForecastGlucoseLessThanMaxTests.swift in Sources */,
 				3BEF6AB32D97316F0076089D /* MealTotalTests.swift in Sources */,
-				3BF8D0C12D5175BE001B3F84 /* ProfileJsNativeCompareTests.swift in Sources */,
 				3BEF6AB12D9731660076089D /* MealHistoryTests.swift in Sources */,
 				BD8FC0572D66188700B95AED /* PumpHistoryStorageTests.swift in Sources */,
 				BD8FC0642D6619EF00B95AED /* TempTargetStorageTests.swift in Sources */,

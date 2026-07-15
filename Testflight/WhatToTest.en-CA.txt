@@ -3,3 +3,4 @@ test O5 if registered
 Alarm feature set
 relevant fix swiftoref
 home view rework
+remove JS completely
