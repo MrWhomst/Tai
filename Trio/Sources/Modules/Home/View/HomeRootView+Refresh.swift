@@ -39,7 +39,7 @@ extension Home.RootView {
                     .rotationEffect(.degrees(progress * 180))
                 Text("Pull down to force loop")
             }
-            .font(.caption)
+            .font(.body)
             .foregroundStyle(.secondary)
             .opacity(progress)
             .frame(height: HomeLayout.refreshIndicatorHeight)
