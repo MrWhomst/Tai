@@ -804,8 +804,11 @@ extension BaseFetchGlucoseManager {
                 })
                 let output = engine.smooth(input)
 
+                // Store as integer mg/dL, consistent with the raw values and the other algorithms;
+                // fractional filter output is false precision for oref, which rounds on read anyway.
                 for (stored, value) in zip(newestFirst, output) {
-                    stored.smoothedGlucose = NSDecimalNumber(value: value.smoothed ?? max(value.value, 39.0))
+                    let smoothed = value.smoothed ?? max(value.value, 39.0)
+                    stored.smoothedGlucose = NSDecimalNumber(value: Int(smoothed.rounded()))
                 }
 
                 try context.save()
