@@ -94,6 +94,56 @@ import Testing
         #expect(damped > followed + 5.0)
     }
 
+    @Test("Golden trace with an IOB vector per reading locks the gated smoothing output")  func matchesIobVectorGoldenTrace() throws {
+        // Newest-first, 5-min spacing. Phases (newest → oldest): a dip to 40 with near-zero IOB
+        // (gate damps it), a steady stretch (one reading without an IOB entry exercising the
+        // fail-safe lookup), the identical dip with 3 U on board (gate off, followed down), and a
+        // steady tail. Expected values were captured from the implementation after it was verified
+        // bit-exact against the Python reference (gate off) and behaviorally against the upstream
+        // PR's gate assertions — locking the combined core + per-reading-gate numerics against
+        // regression.
+        let values: [Double] = [40, 44, 60, 82, 100, 99, 100, 40, 44, 60, 82, 100, 101, 100, 100]
+        let iobs: [Double?] = [0.1, 0.1, 0.1, 0.1, 0.5, nil, 0.5, 3.0, 3.0, 3.0, 3.0, 1.0, 1.0, 1.0, 1.0]
+        let expected: [Double] = [
+            79.930845272967,
+            82.841006451117,
+            85.855442143276,
+            88.136485372453,
+            88.641685590727,
+            82.337425569492,
+            69.625861183074,
+            57.687995533420,
+            53.407153460059,
+            62.693698935060,
+            77.484563549094,
+            90.106004998940,
+            97.595261545569,
+            100.953027408397,
+            102.391277583788
+        ]
+
+        var iobByTimestamp: [Int64: Double] = [:]
+        var input: [AdaptiveUKFGlucoseValue] = []
+        for (i, value) in values.enumerated() {
+            let timestamp = Self.base - Int64(i) * 5 * 60000
+            input.append(AdaptiveUKFGlucoseValue(timestamp: timestamp, value: value))
+            if let iob = iobs[i] { iobByTimestamp[timestamp] = iob }
+        }
+
+        let out = AdaptiveUKFSmoother(iobAt: { iobByTimestamp[$0] ?? 99.0 }).smooth(input)
+        #expect(out.count == expected.count)
+        for i in out.indices {
+            let got = try #require(out[i].smoothed)
+            #expect(abs(got - expected[i]) <= 1E-6, "[\(i)]: expected \(expected[i]), got \(got)")
+        }
+
+        // The same raw dip reads ~22 mg/dL higher when insulin cannot explain it (index 0, gated)
+        // than when it can (index 7, followed) — the discriminating property in one trace.
+        let gatedDip = try #require(out[0].smoothed)
+        let followedDip = try #require(out[7].smoothed)
+        #expect(gatedDip > followedDip + 20.0)
+    }
+
     // MARK: - Fixture
 
     /// Verbatim copy of `GlucoseSmoothing/Tests/GlucoseSmoothingCoreTests/Fixtures/
