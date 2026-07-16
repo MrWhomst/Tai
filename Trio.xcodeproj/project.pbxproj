@@ -372,6 +372,7 @@
 		49AC5B642D7F2833005A47F3 /* CustomDateTimePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49AC5B632D7F2833005A47F3 /* CustomDateTimePicker.swift */; };
 		49AD0CEF2F8797F2004301B6 /* UKFTestData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49AD0CEE2F8797F2004301B6 /* UKFTestData.swift */; };
 		49AD0CF12F8797F3004301B6 /* AdaptiveUKFSmootherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49AD0CF02F8797F3004301B6 /* AdaptiveUKFSmootherTests.swift */; };
+		49AD0CF52F8797F5004301B6 /* ukf_python_reference.json in Resources */ = {isa = PBXBuildFile; fileRef = 49AD0CF42F8797F5004301B6 /* ukf_python_reference.json */; };
 		49B21BBD2D7F102100D0B6C3 /* MainChartHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49B21BBC2D7F102100D0B6C3 /* MainChartHelper.swift */; };
 		49B21BF02D7F21D100D0B6C3 /* AutoISFHistoryStateModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49B21BEE2D7F21D100D0B6C3 /* AutoISFHistoryStateModel.swift */; };
 		49B21BF12D7F21D100D0B6C3 /* AutoISFHistoryDataFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49B21BEC2D7F21D100D0B6C3 /* AutoISFHistoryDataFlow.swift */; };
@@ -1487,6 +1488,7 @@
 		49AC5CE22D7F5F39005A47F3 /* WhatToTest.en-CA.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = "WhatToTest.en-CA.txt"; path = "Testflight/WhatToTest.en-CA.txt"; sourceTree = "<group>"; };
 		49AD0CEE2F8797F2004301B6 /* UKFTestData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UKFTestData.swift; sourceTree = "<group>"; };
 		49AD0CF02F8797F3004301B6 /* AdaptiveUKFSmootherTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveUKFSmootherTests.swift; sourceTree = "<group>"; };
+		49AD0CF42F8797F5004301B6 /* ukf_python_reference.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "Fixtures/ukf_python_reference.json"; sourceTree = "<group>"; };
 		49B21BBC2D7F102100D0B6C3 /* MainChartHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainChartHelper.swift; sourceTree = "<group>"; };
 		49B21BEA2D7F21D100D0B6C3 /* AutoISFHistoryRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoISFHistoryRootView.swift; sourceTree = "<group>"; };
 		49B21BEC2D7F21D100D0B6C3 /* AutoISFHistoryDataFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoISFHistoryDataFlow.swift; sourceTree = "<group>"; };
@@ -3212,6 +3214,7 @@
 				DDDD0FFA2F4E22C000F9C645 /* GlucoseSmoothingTests.swift */,
 				49AD0CEE2F8797F2004301B6 /* UKFTestData.swift */,
 				49AD0CF02F8797F3004301B6 /* AdaptiveUKFSmootherTests.swift */,
+				49AD0CF42F8797F5004301B6 /* ukf_python_reference.json */,
 				C2AA6D9B2E1AAC6300BF6C16 /* TDDStorageTimezoneTests.swift */,
 				DDDD0FFC2F4E22C000F9C645 /* GlucoseNativeConversionTests.swift */,
 				DDDD10A02F4E22C000F9C645 /* CarbsNativeConversionTests.swift */,
@@ -5266,6 +5269,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				49AD0CF52F8797F5004301B6 /* ukf_python_reference.json in Resources */,
 				3BF92F2D2D86DEE9006B545A /* autosens.js in Resources */,
 				3BF92F2E2D86DEE9006B545A /* autotune-prep.js in Resources */,
 				3BBE323C2F12AB22005F9665 /* meal-prepare.js in Resources */,
