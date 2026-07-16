@@ -765,10 +765,12 @@ extension BaseFetchGlucoseManager {
             let objectIDs = try await fetchGlucose(context: context)
             debug(.deviceManager, "Adaptive UKF smoothing: fetched \(objectIDs.count) glucose readings")
 
-            // IOB for the compression-low gate, from the latest determination (≤30 min old).
-            // Fail-safe: without a recent determination the gate stays off (large IOB), so a
-            // steep low is always followed — never masked by a stale or missing IOB.
-            let iobTotal = await latestIOBForSmoothing(context: context)
+            // IOB timeline for the compression-low gate: Tai re-smooths the full window every
+            // run, so each reading is judged with the IOB that was current at its own time
+            // (nearest determination ≤30 min before it). Fail-safe: readings without a nearby
+            // determination get a large IOB, i.e. gate off — a steep low is always followed,
+            // never masked by stale or missing IOB.
+            let iobTimeline = await iobTimelineForSmoothing(context: context)
 
             try await context.perform(schedule: .immediate) {
                 let glucoseReadings = objectIDs.compactMap {
@@ -797,7 +799,9 @@ extension BaseFetchGlucoseManager {
                     )
                 }
 
-                let engine = AdaptiveUKFSmoother(iobProvider: { iobTotal })
+                let engine = AdaptiveUKFSmoother(iobAt: { timestamp in
+                    Self.iobAt(timestamp, in: iobTimeline)
+                })
                 let output = engine.smooth(input)
 
                 for (stored, value) in zip(newestFirst, output) {
@@ -823,28 +827,56 @@ extension BaseFetchGlucoseManager {
         }
     }
 
-    /// Latest determination IOB (units) for the Adaptive UKF compression gate, or a large value
-    /// (gate off) when no determination from the last 30 minutes exists or the fetch fails.
-    private func latestIOBForSmoothing(context: NSManagedObjectContext) async -> Double {
+    /// IOB timeline for the Adaptive UKF compression gate: `(timestamp ms, iob)` pairs from the
+    /// determinations covering the smoothing window, sorted ascending by time. Empty on fetch
+    /// failure (every lookup then fails safe to gate-off).
+    private func iobTimelineForSmoothing(context: NSManagedObjectContext) async -> [(timestamp: Int64, iob: Double)] {
         do {
+            // Glucose fetch covers ~24h; determinations up to 30 min older can still gate the
+            // oldest reading, hence the 24.5h window.
+            let cutoff = Date().addingTimeInterval(-24.5 * 3600)
             let results = try await CoreDataStack.shared.fetchEntitiesAsync(
                 ofType: OrefDetermination.self,
                 onContext: context,
-                predicate: NSPredicate.predicateFor30MinAgoForDetermination,
+                predicate: NSPredicate(format: "deliverAt >= %@", cutoff as NSDate),
                 key: "deliverAt",
-                ascending: false,
-                fetchLimit: 1
+                ascending: true
             )
 
             return await context.perform {
-                guard let determinations = results as? [OrefDetermination],
-                      let iob = determinations.first?.iob
-                else { return 99.0 }
-                return iob.doubleValue
+                guard let determinations = results as? [OrefDetermination] else { return [] }
+                return determinations.compactMap { determination in
+                    guard let deliverAt = determination.deliverAt, let iob = determination.iob else { return nil }
+                    return (Int64(deliverAt.timeIntervalSince1970 * 1000), iob.doubleValue)
+                }
             }
         } catch {
-            debug(.deviceManager, "Adaptive UKF smoothing: IOB fetch failed, compression gate off: \(error)")
-            return 99.0
+            debug(.deviceManager, "Adaptive UKF smoothing: IOB timeline fetch failed, compression gate off: \(error)")
+            return []
         }
+    }
+
+    /// IOB (units) at a reading time: the latest determination at or before `timestamp` that is at
+    /// most 30 minutes older. No such determination (loop outage, app not running) returns a large
+    /// value, i.e. compression gate off for that reading.
+    private static func iobAt(_ timestamp: Int64, in timeline: [(timestamp: Int64, iob: Double)]) -> Double {
+        let maxAgeMs: Int64 = 30 * 60000
+
+        // Binary search: last entry with entry.timestamp <= timestamp.
+        var low = 0
+        var high = timeline.count
+        while low < high {
+            let mid = (low + high) / 2
+            if timeline[mid].timestamp <= timestamp {
+                low = mid + 1
+            } else {
+                high = mid
+            }
+        }
+        guard low > 0 else { return 99.0 }
+
+        let entry = timeline[low - 1]
+        guard timestamp - entry.timestamp <= maxAgeMs else { return 99.0 }
+        return entry.iob
     }
 }

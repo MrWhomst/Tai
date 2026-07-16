@@ -35,9 +35,12 @@ struct AdaptiveUKFGlucoseValue {
 final class AdaptiveUKFSmoother {
     // MARK: Injected collaborator
 
-    /// Total IOB (units) for the compression-damping gate. Defaults to a large value (gate off),
-    /// matching the AAPS fail-safe when IOB is unavailable.
-    private let iobProvider: () -> Double
+    /// Total IOB (units) at a given reading time (ms since epoch) for the compression-damping
+    /// gate. Tai re-smooths the full glucose window every run, so a single "current" IOB would
+    /// re-judge historical readings with today's insulin state; a per-timestamp lookup keeps the
+    /// gate correct for past points too. Defaults to a large value (gate off), matching the AAPS
+    /// fail-safe when IOB is unavailable.
+    private let iobAt: (Int64) -> Double
 
     // MARK: UKF parameters (Van der Merwe scaled formulation)
 
@@ -98,8 +101,8 @@ final class AdaptiveUKFSmoother {
     private var rawInnovationVariance: [Double] = [] // raw ν²
     private var predVarHistory: [Double] = [] // predicted variance P_pred[0]
 
-    init(iobProvider: @escaping () -> Double = { 99.0 }) {
-        self.iobProvider = iobProvider
+    init(iobAt: @escaping (Int64) -> Double = { _ in 99.0 }) {
+        self.iobAt = iobAt
         lambda = alpha * alpha * (Double(n) + kappa) - Double(n)
         gamma = (Double(n) + lambda).squareRoot()
         var wmArr = [Double](repeating: 0, count: 2 * n + 1)
@@ -126,11 +129,9 @@ final class AdaptiveUKFSmoother {
         var data = input
         if data.isEmpty { return data }
 
-        let iobTotal = iobProvider()
-
         let segments = findDataSegments(data)
         for segment in segments {
-            processSegment(&data, startIdx: segment.startIdx, endIdx: segment.endIdx, iobTotal: iobTotal)
+            processSegment(&data, startIdx: segment.startIdx, endIdx: segment.endIdx)
         }
 
         // Fill any unprocessed point (orphaned by gaps/invalid spacing into a run of <2) with its
@@ -172,7 +173,7 @@ final class AdaptiveUKFSmoother {
 
     private func processSegment(
         _ data: inout [AdaptiveUKFGlucoseValue],
-        startIdx: Int, endIdx: Int, iobTotal: Double
+        startIdx: Int, endIdx: Int
     ) {
         let segmentSize = endIdx - startIdx + 1
         if segmentSize < 2 {
@@ -246,9 +247,10 @@ final class AdaptiveUKFSmoother {
             let absn = abs(normRaw)
 
             // IOB-gated compression-low suspicion (baseline is raw, computed before adding z).
+            // IOB is looked up at this reading's time, not "now" — see `iobAt`.
             let recentMaxRaw = recentRaw.isEmpty ? z : recentRaw.max()!
             let compressionSuspect = z < compressionBgCeiling &&
-                iobTotal < compressionIobMaxU &&
+                iobAt(data[i].timestamp) < compressionIobMaxU &&
                 (recentMaxRaw - z) > compressionDropMgdl &&
                 consecutiveCompression < maxConsecutiveCompression
             if compressionSuspect { consecutiveCompression += 1 } else { consecutiveCompression = 0 }
