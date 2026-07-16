@@ -413,7 +413,12 @@ extension BaseFetchGlucoseManager: SettingsObserver {
                 // Create a fresh context for smoothing to ensure it sees the latest data
                 let smoothingContext = CoreDataStack.shared.newTaskContext()
                 smoothingContext.name = "smoothGlucose"
-                await self.smoothGlucose(context: smoothingContext)
+                // One-shot backfill over the full chart history span: activation (or an algorithm
+                // change, which forces the toggle off and back on) smooths everything the chart can
+                // show, so no visible stretch is left without a smoothed value. The recurring
+                // per-cycle passes stay at the default 24h window that algorithm consumers need.
+                let fullChartWindowHours = MainChartHelper.Config.maxChartHistorySeconds / 3600
+                await self.smoothGlucose(context: smoothingContext, hours: fullChartWindowHours)
                 self.glucoseStoreAndHeartLock.signal()
             }
         }
@@ -421,9 +426,10 @@ extension BaseFetchGlucoseManager: SettingsObserver {
 }
 
 extension BaseFetchGlucoseManager {
-    func fetchGlucose(context: NSManagedObjectContext) async throws -> [NSManagedObjectID] {
+    func fetchGlucose(context: NSManagedObjectContext, hours: Double = 24) async throws -> [NSManagedObjectID] {
         // Compound predicate: time window + non-manual + valid date
-        let timePredicate = NSPredicate.predicateForOneDayAgoInMinutes
+        let cutoff = Date().addingTimeInterval(-hours * 3600)
+        let timePredicate = NSPredicate(format: "date >= %@", cutoff as NSDate)
         let manualPredicate = NSPredicate(format: "isManual == NO")
         let datePredicate = NSPredicate(format: "date != nil")
 
@@ -433,18 +439,21 @@ extension BaseFetchGlucoseManager {
             datePredicate
         ])
 
+        // Limit sized for 5-min readings (12/h) plus 25% headroom for duplicates/backfills.
+        let fetchLimit = Int(hours * 15)
+
         let results = try await CoreDataStack.shared.fetchEntitiesAsync(
             ofType: GlucoseStored.self,
             onContext: context,
-            // Predicate must cover at least the full glucose horizon used by downstream algorithm consumers.
-            // If autosens / oref / smoothing logic ever starts looking back further (e.g. 36h),
-            // this fetch window must be expanded accordingly.
-            // Fetch descending (newest first) so the limit always keeps the most recent 350 readings.
+            // The default window must cover at least the full glucose horizon used by downstream
+            // algorithm consumers. If autosens / oref / smoothing logic ever starts looking back
+            // further (e.g. 36h), the default must be expanded accordingly.
+            // Fetch descending (newest first) so the limit always keeps the most recent readings.
             // Reversed before return so callers receive oldest-first (chronological) order.
             predicate: compoundPredicate,
             key: "date",
             ascending: false,
-            fetchLimit: 350
+            fetchLimit: fetchLimit
         )
 
         guard let glucoseArray = results as? [GlucoseStored] else {
@@ -457,29 +466,29 @@ extension BaseFetchGlucoseManager {
     /// Main smoothing entry point - dispatches to exponential or UKF based on settings.
     /// - Important: Only stores `smoothedGlucose`. UI/alerts should still use `glucose`.
     ///
-    func smoothGlucose(context: NSManagedObjectContext) async {
+    func smoothGlucose(context: NSManagedObjectContext, hours: Double = 24) async {
         let algorithm = settingsManager.settings.smoothingAlgorithm
-        debug(.deviceManager, "Smoothing glucose with algorithm: \(algorithm.displayName)")
+        debug(.deviceManager, "Smoothing glucose with algorithm: \(algorithm.displayName), window: \(hours)h")
 
         switch algorithm {
         case .exponential:
-            await exponentialSmoothingGlucose(context: context)
+            await exponentialSmoothingGlucose(context: context, hours: hours)
         case .ukf:
-            await ukfSmoothingGlucose(context: context)
+            await ukfSmoothingGlucose(context: context, hours: hours)
         case .adaptiveUkf:
-            await adaptiveUkfSmoothingGlucose(context: context)
+            await adaptiveUkfSmoothingGlucose(context: context, hours: hours)
         }
     }
 
     /// CoreData-friendly AAPS exponential smoothing + storage.
     /// - Important: Only stores `smoothedGlucose`. UI/alerts should still use `glucose`.
     ///
-    func exponentialSmoothingGlucose(context: NSManagedObjectContext) async {
+    func exponentialSmoothingGlucose(context: NSManagedObjectContext, hours: Double = 24) async {
         let startTime = Date()
 
         do {
             // get objectIDs
-            let objectIDs = try await fetchGlucose(context: context)
+            let objectIDs = try await fetchGlucose(context: context, hours: hours)
             debug(.deviceManager, "Exponential smoothing: fetched \(objectIDs.count) glucose readings")
 
             try await context.perform(schedule: .immediate) {
@@ -662,12 +671,12 @@ extension BaseFetchGlucoseManager {
     /// UKF-based glucose smoothing + storage.
     /// - Important: Only stores `smoothedGlucose`. UI/alerts should still use `glucose`.
     ///
-    private func ukfSmoothingGlucose(context: NSManagedObjectContext) async {
+    private func ukfSmoothingGlucose(context: NSManagedObjectContext, hours: Double = 24) async {
         let startTime = Date()
 
         do {
             // get objectIDs
-            let objectIDs = try await fetchGlucose(context: context)
+            let objectIDs = try await fetchGlucose(context: context, hours: hours)
             let objectIDsCount = objectIDs.count
             debug(.deviceManager, "UKF smoothing: fetched \(objectIDsCount) glucose readings")
 
@@ -757,12 +766,12 @@ extension BaseFetchGlucoseManager {
     /// Adaptive UKF glucose smoothing + storage (port of the nightscout/Trio#1302 core).
     /// - Important: Only stores `smoothedGlucose`. UI/alerts should still use `glucose`.
     ///
-    private func adaptiveUkfSmoothingGlucose(context: NSManagedObjectContext) async {
+    private func adaptiveUkfSmoothingGlucose(context: NSManagedObjectContext, hours: Double = 24) async {
         let startTime = Date()
 
         do {
             // get objectIDs (oldest-first, see fetchGlucose)
-            let objectIDs = try await fetchGlucose(context: context)
+            let objectIDs = try await fetchGlucose(context: context, hours: hours)
             debug(.deviceManager, "Adaptive UKF smoothing: fetched \(objectIDs.count) glucose readings")
 
             // IOB timeline for the compression-low gate: Tai re-smooths the full window every
@@ -770,7 +779,7 @@ extension BaseFetchGlucoseManager {
             // (nearest determination ≤30 min before it). Fail-safe: readings without a nearby
             // determination get a large IOB, i.e. gate off — a steep low is always followed,
             // never masked by stale or missing IOB.
-            let iobTimeline = await iobTimelineForSmoothing(context: context)
+            let iobTimeline = await iobTimelineForSmoothing(context: context, hours: hours)
 
             try await context.perform(schedule: .immediate) {
                 let glucoseReadings = objectIDs.compactMap {
@@ -833,11 +842,14 @@ extension BaseFetchGlucoseManager {
     /// IOB timeline for the Adaptive UKF compression gate: `(timestamp ms, iob)` pairs from the
     /// determinations covering the smoothing window, sorted ascending by time. Empty on fetch
     /// failure (every lookup then fails safe to gate-off).
-    private func iobTimelineForSmoothing(context: NSManagedObjectContext) async -> [(timestamp: Int64, iob: Double)] {
+    private func iobTimelineForSmoothing(
+        context: NSManagedObjectContext,
+        hours: Double
+    ) async -> [(timestamp: Int64, iob: Double)] {
         do {
-            // Glucose fetch covers ~24h; determinations up to 30 min older can still gate the
-            // oldest reading, hence the 24.5h window.
-            let cutoff = Date().addingTimeInterval(-24.5 * 3600)
+            // Matches the glucose fetch window; determinations up to 30 min older can still gate
+            // the oldest reading, hence the extra half hour.
+            let cutoff = Date().addingTimeInterval(-(hours + 0.5) * 3600)
             let results = try await CoreDataStack.shared.fetchEntitiesAsync(
                 ofType: OrefDetermination.self,
                 onContext: context,
