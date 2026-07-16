@@ -45,7 +45,7 @@ private final class BundleToken {}
         let rate_online: [Double]
     }
 
-    @Test("Smoothed output matches the Python V4UKF reference on all golden traces")  func matchesGoldenVectors() throws {
+    @Test("Smoothed output matches the Python V4UKF reference on all golden traces") func matchesGoldenVectors() throws {
         let url = try #require(
             Bundle(for: BundleToken.self).url(forResource: "ukf_python_reference", withExtension: "json"),
             "ukf_python_reference.json must be bundled with TrioTests"
@@ -74,21 +74,21 @@ private final class BundleToken {}
 
     // MARK: - Kotlin behavior vectors (UnscentedKalmanFilterPluginTest.kt parity)
 
-    @Test("Empty input returns the same empty list")  func emptyInput() {
+    @Test("Empty input returns the same empty list") func emptyInput() {
         #expect(AdaptiveUKFSmoother().smooth([]).isEmpty)
     }
 
-    @Test("A single value is copied to smoothed, floored at 39")  func singleValueFloored() {
+    @Test("A single value is copied to smoothed, floored at 39") func singleValueFloored() {
         #expect(AdaptiveUKFSmoother().smooth(series([100]))[0].smoothed == 100.0)
         #expect(AdaptiveUKFSmoother().smooth(series([20]))[0].smoothed == 39.0)
     }
 
-    @Test("Error-code 38 values collapse to the 39 floor with no valid segment")  func errorCode38Floor() {
+    @Test("Error-code 38 values collapse to the 39 floor with no valid segment") func errorCode38Floor() {
         let out = AdaptiveUKFSmoother().smooth(series([38, 38, 38]))
         #expect(out.map(\.smoothed) == [39.0, 39.0, 39.0])
     }
 
-    @Test("A clean series smooths every point to a sane value")  func cleanSeriesSane() throws {
+    @Test("A clean series smooths every point to a sane value") func cleanSeriesSane() throws {
         let out = AdaptiveUKFSmoother().smooth(series([101, 99, 100, 102, 98, 100, 101, 99, 100, 100]))
         #expect(out.count == 10)
         for v in out {
@@ -98,7 +98,7 @@ private final class BundleToken {}
         }
     }
 
-    @Test("A rising series produces a rising smoothed trend")  func risingTrend() throws {
+    @Test("A rising series produces a rising smoothed trend") func risingTrend() throws {
         // newest-first: index 0 is the most recent (highest), last the oldest (lowest).
         let out = AdaptiveUKFSmoother().smooth(series([150, 140, 130, 120, 110, 100, 90, 80]))
         let newest = try #require(out.first?.smoothed)
@@ -106,14 +106,14 @@ private final class BundleToken {}
         #expect(newest > oldest)
     }
 
-    @Test("An isolated spike is dampened toward the surrounding level")  func spikeDampened() throws {
+    @Test("An isolated spike is dampened toward the surrounding level") func spikeDampened() throws {
         let out = AdaptiveUKFSmoother().smooth(series([100, 100, 100, 300, 100, 100, 100, 100]))
         let spike = out[3]
         #expect(spike.value == 300.0)
         #expect(try #require(spike.smoothed) < 200.0)
     }
 
-    @Test("Data spanning a major gap is split into segments and both clusters are smoothed")  func majorGapSegmentation() {
+    @Test("Data spanning a major gap is split into segments and both clusters are smoothed") func majorGapSegmentation() {
         let clusterA = [100.0, 101.0, 99.0].enumerated().map { i, v in
             AdaptiveUKFGlucoseValue(timestamp: Self.base - Int64(i) * 5 * 60000, value: v)
         }
@@ -125,7 +125,7 @@ private final class BundleToken {}
         #expect(out.filter { $0.smoothed != nil }.count >= 4)
     }
 
-    @Test("Smoothing is deterministic across fresh instances")  func deterministicAcrossInstances() throws {
+    @Test("Smoothing is deterministic across fresh instances") func deterministicAcrossInstances() throws {
         let a = AdaptiveUKFSmoother().smooth(series([120, 118, 122, 119, 121, 120, 118]))
         let b = AdaptiveUKFSmoother().smooth(series([120, 118, 122, 119, 121, 120, 118]))
         for i in a.indices {
@@ -135,7 +135,7 @@ private final class BundleToken {}
         }
     }
 
-    @Test("Orphan points isolated by a gap are filled, not left nil")  func orphansFilled() throws {
+    @Test("Orphan points isolated by a gap are filled, not left nil") func orphansFilled() throws {
         // Two leading (newest) points isolated by a 90-min gap from a 3-point segment join no
         // segment (run < 3). They must be filled with their floored raw value — never returned
         // nil — matching the reference Python V4UKF and keeping the `.smoothed` contract.
@@ -161,7 +161,7 @@ private final class BundleToken {}
     /// Same trace as the upstream PR's gate test.
     private static let compressionDip: [Double] = [40, 44, 60, 82, 100, 100, 100, 100]
 
-    @Test("A compression low with near-zero IOB is damped, not tracked to the floor")  func compressionLowIsDamped() throws {
+    @Test("A compression low with near-zero IOB is damped, not tracked to the floor") func compressionLowIsDamped() throws {
         let damped = try #require(
             AdaptiveUKFSmoother(iobAt: { _ in 0.1 }).smooth(series(Self.compressionDip))[0].smoothed
         )
@@ -173,7 +173,7 @@ private final class BundleToken {}
         #expect(damped > followed + 5.0, "clearly higher than the un-gated case")
     }
 
-    @Test("The gate is judged with IOB at each reading's own time, not a single spot value")  func gateUsesPerReadingIob() throws {
+    @Test("The gate is judged with IOB at each reading's own time, not a single spot value") func gateUsesPerReadingIob() throws {
         // IOB low exactly during the dip readings, high before: gate active → damped.
         let dipStart = Self.base - 2 * 5 * 60000
         let damped = try #require(
@@ -189,7 +189,7 @@ private final class BundleToken {}
         #expect(damped > followed + 5.0)
     }
 
-    @Test("Golden trace with an IOB vector per reading locks the gated smoothing output")  func matchesIobVectorGoldenTrace() throws {
+    @Test("Golden trace with an IOB vector per reading locks the gated smoothing output") func matchesIobVectorGoldenTrace() throws {
         // Newest-first, 5-min spacing. Phases (newest → oldest): a dip to 40 with near-zero IOB
         // (gate damps it), a steady stretch (one reading without an IOB entry exercising the
         // fail-safe lookup), the identical dip with 3 U on board (gate off, followed down), and a

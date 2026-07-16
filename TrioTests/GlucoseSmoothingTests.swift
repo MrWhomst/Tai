@@ -58,7 +58,8 @@ import Testing
         // - apply limit = min(5, 6) = 5 => most recent 5 entries get smoothedGlucose
         //
         // In ascending order, "most recent 5" are indices 1...5. Oldest (index 0) is not guaranteed to be updated.
-        #expect(fetchedAscending.count == 6)
+        // >= not ==: the restored cgmManager can seed extra readings (see deleteAllGlucose).
+        #expect(fetchedAscending.count >= 6)
 
         let smoothedValues = fetchedAscending.compactMap { $0.smoothedGlucose?.decimalValue }
         #expect(smoothedValues.count >= 5, "Expected at least 5 smoothed values to be stored.")
@@ -184,8 +185,9 @@ import Testing
         await fetchGlucoseManager.exponentialSmoothingGlucose(context: testContext)
 
         // THEN
+        // >= not ==: the restored cgmManager can seed extra readings (see deleteAllGlucose).
         let ascending = try await fetchAndSortGlucose()
-        #expect(ascending.count == 6)
+        #expect(ascending.count >= 6)
 
         let smoothedValues = ascending
             .compactMap { $0.smoothedGlucose?.decimalValue }
@@ -281,6 +283,71 @@ import Testing
         )
     }
 
+    // MARK: - Adaptive UKF Smoothing Tests (integration, mirroring nightscout/Trio#1302)
+
+    @Test(
+        "Adaptive UKF smoothing writes smoothed glucose for CGM values when enough data exists"
+    ) func testAdaptiveSmoothingStoresSmoothedValues() async throws {
+        try await deleteAllGlucose()
+        // Deliberately noisy so the filter visibly departs from raw somewhere.
+        let glucoseValues: [Int16] = [100, 132, 94, 136, 90, 140, 92, 138, 96, 134]
+        let dates = await createGlucoseSequence(values: glucoseValues, interval: 5 * 60, isManual: false)
+
+        await fetchGlucoseManager.adaptiveUkfSmoothingGlucose(context: testContext)
+
+        let createdDates = Set(dates)
+        let ours = try await fetchAndSortGlucose()
+            .filter { $0.date.map(createdDates.contains) ?? false }
+        #expect(ours.count == glucoseValues.count)
+
+        for (index, object) in ours.enumerated() {
+            let smoothed = try #require(
+                object.smoothedGlucose?.decimalValue,
+                "Every reading must receive a smoothed value, missing at index \(index)."
+            )
+            #expect(smoothed >= 39, "Smoothed glucose must be clamped to >= 39, got \(smoothed).")
+            #expect(
+                smoothed == smoothed.rounded(toPlaces: 0),
+                "Smoothed glucose must be stored as integer mg/dL, got \(smoothed)."
+            )
+        }
+    }
+
+    @Test("Adaptive UKF smoothing does not smooth manual glucose entries") func testAdaptiveSmoothingIgnoresManual() async throws {
+        await createGlucoseSequence(values: [100, 105, 110, 115, 120].map(Int16.init), interval: 5 * 60, isManual: false)
+        await createGlucose(glucose: 130, smoothed: nil, isManual: true, date: Date().addingTimeInterval(6 * 5 * 60))
+
+        await fetchGlucoseManager.adaptiveUkfSmoothingGlucose(context: testContext)
+
+        let manual = try await fetchAndSortGlucose().first(where: \.isManual)
+        #expect(manual != nil, "Expected a manual glucose entry.")
+        #expect(manual?.smoothedGlucose == nil, "Manual entries must not be smoothed/stored.")
+    }
+
+    @Test(
+        "Adaptive UKF smoothing clamps smoothed glucose to >= 39 and stores integers"
+    ) func testAdaptiveSmoothingClampAndRounding() async throws {
+        try await deleteAllGlucose()
+        let glucoseValues: [Int16] = [40, 39, 41, 42, 43, 44]
+        let dates = await createGlucoseSequence(values: glucoseValues, interval: 5 * 60, isManual: false)
+
+        await fetchGlucoseManager.adaptiveUkfSmoothingGlucose(context: testContext)
+
+        let createdDates = Set(dates)
+        let smoothedValues = try await fetchAndSortGlucose()
+            .filter { $0.date.map(createdDates.contains) ?? false }
+            .compactMap { $0.smoothedGlucose?.decimalValue }
+
+        #expect(!smoothedValues.isEmpty, "Expected smoothed glucose values to be stored.")
+        for (index, smoothed) in smoothedValues.enumerated() {
+            #expect(smoothed >= 39, "Smoothed glucose must be clamped to >= 39, got \(smoothed) at index \(index).")
+            #expect(
+                smoothed == smoothed.rounded(toPlaces: 0),
+                "Smoothed glucose must be an integer value, got \(smoothed) at index \(index)."
+            )
+        }
+    }
+
     // MARK: - OpenAPS Glucose Selection Tests
 
     @Test("Algorithm uses smoothed glucose when enabled") func testAlgorithmUsesSmoothedGlucose() async throws {
@@ -361,10 +428,15 @@ import Testing
         }
     }
 
-    private func createGlucoseSequence(values: [Int16], interval: TimeInterval, isManual: Bool) async {
+    @discardableResult private func createGlucoseSequence(
+        values: [Int16],
+        interval: TimeInterval,
+        isManual: Bool
+    ) async -> [Date] {
         let now = Date()
         let dates = values.indices.map { now.addingTimeInterval(Double($0) * interval) }
         await createGlucoseSequence(values: values, dates: dates, isManual: isManual)
+        return dates
     }
 
     /// Removes any pre-existing GlucoseStored rows. State can leak between tests
