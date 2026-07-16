@@ -1,6 +1,2 @@
 based on Trio dev 0.8.4.16
-test O5 if registered
-Alarm feature set
-relevant fix swiftoref
-home view rework
-remove JS completely
+new smoothing algo

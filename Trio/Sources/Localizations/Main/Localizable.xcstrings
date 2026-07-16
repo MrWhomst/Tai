@@ -29759,6 +29759,9 @@
         }
       }
     },
+    "Adaptive UKF Smoothing" : {
+      "comment" : "Adaptive UKF smoothing algorithm display name"
+    },
     "Add" : {
       "comment" : "Add profile basal",
       "localizations" : {

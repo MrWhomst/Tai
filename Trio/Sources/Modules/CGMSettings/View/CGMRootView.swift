@@ -283,7 +283,8 @@ extension CGMSettings {
                         hintText: Text(
                             "Available smoothing algorithms:\n\n" +
                                 "• Second Order Exponential\n" +
-                                "• Tsunami Unscented Kalman Filter\n\n" +
+                                "• Tsunami Unscented Kalman Filter\n" +
+                                "• Adaptive UKF Smoothing\n\n" +
                                 "Default: Exponential\n\n" +
                                 "Second-Order Exponential Smoothing\n\n" +
                                 "Benefit: provides a simple, fast filter that smooths CGM values and captures approximately linear trends with minimal computation.\n\n" +
@@ -293,7 +294,11 @@ extension CGMSettings {
                                 "The UKF maintains a state vector xₜ = [Gₜ, Ġₜ]ᵀ (glucose Gₜ and its rate of change Ġₜ) and a covariance matrix Pₜ that represent both the estimate and its uncertainty.\n\n" +
                                 "Each step predicts the state with a nonlinear process model, then fuses the new CGM value zₜ using a measurement-noise term Rₜ and the innovation νₜ = zₜ − ẑₜ.\n\n" +
                                 "In the Tsunami adaptation, Rₜ is learned online from recent νₜ values using dual-rate updates (fast and slow), and suspicious points are handled softly by inflating an effective Rₑ instead of discarding them.\n\n" +
-                                "A Rauch–Tung–Striebel (RTS) smoother then runs backward over each segment, using a smoothing gain Cₜ = Pₜ · Fₜᵀ · (P̂ₜ)⁻¹ to reduce lag and sharpen the final smoothed glucose curve."
+                                "A Rauch–Tung–Striebel (RTS) smoother then runs backward over each segment, using a smoothing gain Cₜ = Pₜ · Fₜᵀ · (P̂ₜ)⁻¹ to reduce lag and sharpen the final smoothed glucose curve.\n\n" +
+                                "Adaptive UKF Smoothing\n\n" +
+                                "Benefit: the newest generation of the UKF (AAPS Boost variant), with a statistically corrected noise estimator, faster trend detection, and protection against sensor-compression lows.\n\n" +
+                                "It uses the same [Gₜ, Ġₜ] state model as the UKF, but learns Rₜ by subtracting the predicted variance from the innovation statistics, ramps outlier down-weighting in gently from 2σ (Huber-style), and detects genuine fast moves with a 2-of-3 same-sign gate so it accelerates onto real trends sooner.\n\n" +
+                                "A steep drop below 75 mg/dL with little insulin on board is treated as a probable sensor-compression low and heavily down-weighted for at most 3 readings — a real, insulin-driven low always passes through."
                         ),
                         sheetTitle: String(localized: "Help", comment: "Help sheet title")
                     )
