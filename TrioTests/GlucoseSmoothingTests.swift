@@ -148,7 +148,12 @@ import Testing
 
         await fetchGlucoseManager.exponentialSmoothingGlucose(context: testContext)
 
+        // Assert only over the readings this test created (matched by their exact dates): the
+        // restored cgmManager can asynchronously seed extra readings (see deleteAllGlucose), and
+        // seeded readings outside the fetch window would fail the every-entry assertions below.
+        let createdDates = Set(dates)
         let ascending = try await fetchAndSortGlucose()
+            .filter { $0.date.map(createdDates.contains) ?? false }
         #expect(ascending.count == values.count)
 
         // After 0fa593695 "try to always smooth", the smoother sets fallback
@@ -206,11 +211,13 @@ import Testing
     // MARK: - fetchGlucose Window Tests
 
     @Test(
-        "fetchGlucose retains the most recent 350 readings (not the oldest) when 24h holds more than 350"
+        "fetchGlucose retains the most recent readings (not the oldest) when the window holds more than the fetch limit"
     ) func testFetchGlucoseKeepsMostRecentWhenOverLimit() async throws {
-        // GIVEN: 360 readings within the last 24h (3 min spacing => ~18h span).
+        // GIVEN: 400 readings within the last 24h (3 min spacing => 20h span) — more than the
+        // fetch limit, which scales with the window (hours * 15, i.e. 360 for the default 24h).
         // Each reading carries a unique glucose value so we can verify which subset survives the limit.
-        let count = 360
+        let count = 400
+        let limit = 360
         let values: [Int16] = (0 ..< count).map { Int16(100 + $0) }
         await createGlucoseSequence(values: values, interval: 3 * 60, isManual: false)
 
@@ -218,11 +225,11 @@ import Testing
         let objectIDs = try await fetchGlucoseManager.fetchGlucose(context: testContext)
 
         // THEN
-        #expect(objectIDs.count == 350, "fetchGlucose should respect the 350 limit, got \(objectIDs.count).")
+        #expect(objectIDs.count == limit, "fetchGlucose should respect the \(limit) limit, got \(objectIDs.count).")
 
         await testContext.perform {
             let fetched = objectIDs.compactMap { self.testContext.object(with: $0) as? GlucoseStored }
-            #expect(fetched.count == 350, "All returned object IDs must resolve to GlucoseStored instances.")
+            #expect(fetched.count == limit, "All returned object IDs must resolve to GlucoseStored instances.")
 
             // Returned order must be oldest-first (chronological) — the smoother walks the array this way.
             let dates = fetched.compactMap(\.date)
@@ -231,10 +238,10 @@ import Testing
             // The most recent reading (current BG) must be the LAST element after the chronological reverse.
             #expect(
                 fetched.last?.glucose == Int16(100 + count - 1),
-                "Most recent reading (current BG) must be retained after the 350-limit truncation."
+                "Most recent reading (current BG) must be retained after the fetch-limit truncation."
             )
 
-            // The oldest 10 readings must be dropped — verify the limit cut from the OLD end, not the recent end.
+            // The oldest 40 readings must be dropped — verify the limit cut from the OLD end, not the recent end.
             let returnedGlucoseValues = Set(fetched.map(\.glucose))
             #expect(
                 !returnedGlucoseValues.contains(Int16(100)),
@@ -248,7 +255,7 @@ import Testing
     }
 
     @Test(
-        "Exponential smoothing writes a smoothed value for the current BG when 24h holds more than 350 readings"
+        "Exponential smoothing writes a smoothed value for the current BG when 24h holds more readings than the fetch limit"
     ) func testExponentialSmoothingCoversCurrentBGAboveLimit() async throws {
         try await deleteAllGlucose()
         // GIVEN: 360 contiguous CGM readings within the last 24h (3 min spacing, no gaps).
@@ -260,14 +267,17 @@ import Testing
         await fetchGlucoseManager.exponentialSmoothingGlucose(context: testContext)
 
         // THEN: the most recent reading must have received a smoothed value.
-        // Regression test for the bug where ascending+fetchLimit kept the OLDEST 350 readings,
+        // Regression test for the bug where ascending+fetchLimit kept the OLDEST readings,
         // so the current BG fell outside the smoothing window and was never written.
+        // No exact-count assertion: the restored cgmManager can asynchronously seed extra
+        // readings (see deleteAllGlucose), but our created readings are future-dated, so the
+        // newest reading — the one this regression test is about — is always ours.
         let ascending = try await fetchAndSortGlucose()
-        #expect(ascending.count == count)
+        #expect(ascending.count >= count)
 
         #expect(
             ascending.last?.smoothedGlucose != nil,
-            "Most recent reading (current BG) must receive a smoothed value when over the 350-row limit."
+            "Most recent reading (current BG) must receive a smoothed value when over the fetch limit."
         )
     }
 

@@ -94,7 +94,7 @@ import Testing
         #expect(damped > followed + 5.0)
     }
 
-    @Test("Golden trace with an IOB vector per reading locks the gated smoothing output")  func matchesIobVectorGoldenTrace() throws {
+    @Test("Golden trace with an IOB vector per reading locks the gated smoothing output") func matchesIobVectorGoldenTrace() throws {
         // Newest-first, 5-min spacing. Phases (newest → oldest): a dip to 40 with near-zero IOB
         // (gate damps it), a steady stretch (one reading without an IOB entry exercising the
         // fail-safe lookup), the identical dip with 3 U on board (gate off, followed down), and a
