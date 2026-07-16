@@ -466,6 +466,8 @@ extension BaseFetchGlucoseManager {
             await exponentialSmoothingGlucose(context: context)
         case .ukf:
             await ukfSmoothingGlucose(context: context)
+        case .adaptiveUkf:
+            await adaptiveUkfSmoothingGlucose(context: context)
         }
     }
 
@@ -749,6 +751,100 @@ extension BaseFetchGlucoseManager {
             debugPrint(String(format: "UKF smoothing duration: %0.04fs", duration))
         } catch {
             debug(.deviceManager, "Failed to smooth glucose with UKF: \(error)")
+        }
+    }
+
+    /// Adaptive UKF glucose smoothing + storage (port of the nightscout/Trio#1302 core).
+    /// - Important: Only stores `smoothedGlucose`. UI/alerts should still use `glucose`.
+    ///
+    private func adaptiveUkfSmoothingGlucose(context: NSManagedObjectContext) async {
+        let startTime = Date()
+
+        do {
+            // get objectIDs (oldest-first, see fetchGlucose)
+            let objectIDs = try await fetchGlucose(context: context)
+            debug(.deviceManager, "Adaptive UKF smoothing: fetched \(objectIDs.count) glucose readings")
+
+            // IOB for the compression-low gate, from the latest determination (≤30 min old).
+            // Fail-safe: without a recent determination the gate stays off (large IOB), so a
+            // steep low is always followed — never masked by a stale or missing IOB.
+            let iobTotal = await latestIOBForSmoothing(context: context)
+
+            try await context.perform(schedule: .immediate) {
+                let glucoseReadings = objectIDs.compactMap {
+                    context.object(with: $0) as? GlucoseStored
+                }
+
+                guard glucoseReadings.count >= 2 else {
+                    debug(
+                        .deviceManager,
+                        "Adaptive UKF smoothing: insufficient readings (\(glucoseReadings.count) < 2), using raw values as fallback"
+                    )
+                    for reading in glucoseReadings {
+                        reading.smoothedGlucose = NSDecimalNumber(value: Int(reading.glucose))
+                    }
+                    try context.save()
+                    return
+                }
+
+                // The engine requires NEWEST-first input; fetchGlucose returns oldest-first.
+                // Reverse once and keep readings/values index-aligned for the write-back.
+                let newestFirst = Array(glucoseReadings.reversed())
+                let input = newestFirst.map { stored in
+                    AdaptiveUKFGlucoseValue(
+                        timestamp: Int64((stored.date ?? Date()).timeIntervalSince1970 * 1000),
+                        value: Double(stored.glucose)
+                    )
+                }
+
+                let engine = AdaptiveUKFSmoother(iobProvider: { iobTotal })
+                let output = engine.smooth(input)
+
+                for (stored, value) in zip(newestFirst, output) {
+                    stored.smoothedGlucose = NSDecimalNumber(value: value.smoothed ?? max(value.value, 39.0))
+                }
+
+                try context.save()
+                debug(.deviceManager, "Adaptive UKF smoothing: saved \(output.count) smoothed values to CoreData")
+            }
+
+            // Force viewContext to refresh so UI sees updated smoothed values immediately
+            // The viewContext has automaticallyMergesChangesFromParent = false and relies
+            // on persistent history tracking, which merges asynchronously
+            let viewContext = CoreDataStack.shared.persistentContainer.viewContext
+            await viewContext.perform {
+                viewContext.refreshAllObjects()
+            }
+
+            let duration = Date().timeIntervalSince(startTime)
+            debugPrint(String(format: "Adaptive UKF smoothing duration: %0.04fs", duration))
+        } catch {
+            debug(.deviceManager, "Failed to smooth glucose with Adaptive UKF: \(error)")
+        }
+    }
+
+    /// Latest determination IOB (units) for the Adaptive UKF compression gate, or a large value
+    /// (gate off) when no determination from the last 30 minutes exists or the fetch fails.
+    private func latestIOBForSmoothing(context: NSManagedObjectContext) async -> Double {
+        do {
+            let results = try await CoreDataStack.shared.fetchEntitiesAsync(
+                ofType: OrefDetermination.self,
+                onContext: context,
+                predicate: NSPredicate.predicateFor30MinAgoForDetermination,
+                key: "deliverAt",
+                ascending: false,
+                fetchLimit: 1
+            )
+
+            return await context.perform {
+                guard let determinations = results as? [OrefDetermination],
+                      let iob = determinations.first?.iob
+                else { return 99.0 }
+                return iob.doubleValue
+            }
+        } catch {
+            debug(.deviceManager, "Adaptive UKF smoothing: IOB fetch failed, compression gate off: \(error)")
+            return 99.0
         }
     }
 }
