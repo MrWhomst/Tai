@@ -371,6 +371,7 @@
 		498ED7BE2D80811800D18CAF /* HorizontalPumpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 498ED7BD2D80811800D18CAF /* HorizontalPumpView.swift */; };
 		49AC5B642D7F2833005A47F3 /* CustomDateTimePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49AC5B632D7F2833005A47F3 /* CustomDateTimePicker.swift */; };
 		49AD0CEF2F8797F2004301B6 /* UKFTestData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49AD0CEE2F8797F2004301B6 /* UKFTestData.swift */; };
+		49AD0CF12F8797F3004301B6 /* AdaptiveUKFSmootherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49AD0CF02F8797F3004301B6 /* AdaptiveUKFSmootherTests.swift */; };
 		49B21BBD2D7F102100D0B6C3 /* MainChartHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49B21BBC2D7F102100D0B6C3 /* MainChartHelper.swift */; };
 		49B21BF02D7F21D100D0B6C3 /* AutoISFHistoryStateModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49B21BEE2D7F21D100D0B6C3 /* AutoISFHistoryStateModel.swift */; };
 		49B21BF12D7F21D100D0B6C3 /* AutoISFHistoryDataFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49B21BEC2D7F21D100D0B6C3 /* AutoISFHistoryDataFlow.swift */; };
@@ -1485,6 +1486,7 @@
 		49AC5CB32D7F5EB2005A47F3 /* ci_post_xcodebuild.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; name = ci_post_xcodebuild.sh; path = ci_scripts/ci_post_xcodebuild.sh; sourceTree = "<group>"; };
 		49AC5CE22D7F5F39005A47F3 /* WhatToTest.en-CA.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = "WhatToTest.en-CA.txt"; path = "Testflight/WhatToTest.en-CA.txt"; sourceTree = "<group>"; };
 		49AD0CEE2F8797F2004301B6 /* UKFTestData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UKFTestData.swift; sourceTree = "<group>"; };
+		49AD0CF02F8797F3004301B6 /* AdaptiveUKFSmootherTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveUKFSmootherTests.swift; sourceTree = "<group>"; };
 		49B21BBC2D7F102100D0B6C3 /* MainChartHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainChartHelper.swift; sourceTree = "<group>"; };
 		49B21BEA2D7F21D100D0B6C3 /* AutoISFHistoryRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoISFHistoryRootView.swift; sourceTree = "<group>"; };
 		49B21BEC2D7F21D100D0B6C3 /* AutoISFHistoryDataFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoISFHistoryDataFlow.swift; sourceTree = "<group>"; };
@@ -3209,6 +3211,7 @@
 				DDDD0FFD2F4E231600F9C645 /* Mocks */,
 				DDDD0FFA2F4E22C000F9C645 /* GlucoseSmoothingTests.swift */,
 				49AD0CEE2F8797F2004301B6 /* UKFTestData.swift */,
+				49AD0CF02F8797F3004301B6 /* AdaptiveUKFSmootherTests.swift */,
 				C2AA6D9B2E1AAC6300BF6C16 /* TDDStorageTimezoneTests.swift */,
 				DDDD0FFC2F4E22C000F9C645 /* GlucoseNativeConversionTests.swift */,
 				DDDD10A02F4E22C000F9C645 /* CarbsNativeConversionTests.swift */,
@@ -6208,6 +6211,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				49AD0CF12F8797F3004301B6 /* AdaptiveUKFSmootherTests.swift in Sources */,
 				3B5CD2C92D4AECD500CE213C /* ProfileCarbsTests.swift in Sources */,
 				3BEDC9932EEB27B600AC6492 /* IobConsecutiveEventsTests.swift in Sources */,
 				3B8B5D3E2DF5240C00365ED3 /* TimeZoneForTests.swift in Sources */,
