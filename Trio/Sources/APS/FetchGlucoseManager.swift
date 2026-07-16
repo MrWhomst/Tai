@@ -765,8 +765,9 @@ extension BaseFetchGlucoseManager {
 
     /// Adaptive UKF glucose smoothing + storage (port of the nightscout/Trio#1302 core).
     /// - Important: Only stores `smoothedGlucose`. UI/alerts should still use `glucose`.
+    /// - Note: internal (not private) so the ordering-regression test can drive the production path.
     ///
-    private func adaptiveUkfSmoothingGlucose(context: NSManagedObjectContext, hours: Double = 24) async {
+    func adaptiveUkfSmoothingGlucose(context: NSManagedObjectContext, hours: Double = 24) async {
         let startTime = Date()
 
         do {
