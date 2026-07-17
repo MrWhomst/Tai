@@ -462,13 +462,14 @@ extension Home.RootView {
                     .symbolRenderingMode(.palette)
                     .foregroundStyle(Color.primary, Color.blue)
             } else {
+                // Badge scaled to the same footprint as the OR/TT glyphs (~26pt).
                 Image(systemName: "person.2", variableValue: 0.58)
                     .symbolRenderingMode(.palette)
                     .foregroundStyle(Color.blue, Color.white, Color.white)
-                    .font(.system(size: 13, weight: .regular))
-                    .frame(width: 22, height: 22)
+                    .font(.system(size: 15, weight: .regular))
+                    .frame(width: 26, height: 26)
                     .overlay(
-                        RoundedRectangle(cornerRadius: 4)
+                        RoundedRectangle(cornerRadius: 5)
                             .stroke(Color.blue, lineWidth: 1.5)
                     )
             }
