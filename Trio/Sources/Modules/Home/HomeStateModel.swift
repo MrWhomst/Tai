@@ -133,6 +133,7 @@ extension Home {
         var shouldRunDeleteOnSettingsChange = true
 
         var showCarbsRequiredBadge: Bool = true
+        var showCgmSensorStatus: Bool = true
         var showCobIobChart: Bool = true
         var enableQuickBolus: Bool = false
         var quickBolusHistory: [Decimal] = []
@@ -696,6 +697,7 @@ extension Home {
             useChartBars = settingsManager.settings.useChartBars
             bolusDisplayThreshold = settingsManager.settings.bolusDisplayThreshold
             showCarbsRequiredBadge = settingsManager.settings.showCarbsRequiredBadge
+            showCgmSensorStatus = settingsManager.settings.showCgmSensorStatus
             enableQuickBolus = settingsManager.settings.enableQuickBolus
             forecastDisplayType = settingsManager.settings.forecastDisplayType
             highTTraisesSens = settingsManager.preferences.highTemptargetRaisesSensitivity
@@ -1179,6 +1181,7 @@ extension Home.StateModel:
         useChartBars = settingsManager.settings.useChartBars
         bolusDisplayThreshold = settingsManager.settings.bolusDisplayThreshold
         showCarbsRequiredBadge = settingsManager.settings.showCarbsRequiredBadge
+        showCgmSensorStatus = settingsManager.settings.showCgmSensorStatus
         enableQuickBolus = settingsManager.settings.enableQuickBolus
         forecastDisplayType = settingsManager.settings.forecastDisplayType
         cgmAvailable = (fetchGlucoseManager.cgmGlucoseSourceType != CGMType.none)

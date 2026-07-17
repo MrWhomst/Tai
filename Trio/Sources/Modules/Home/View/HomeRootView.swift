@@ -187,10 +187,11 @@ extension Home {
                 currentGlucoseTarget: state.currentGlucoseTarget,
                 glucoseColorScheme: state.glucoseColorScheme,
                 glucose: state.latestTwoGlucoseValues,
-                cgmProgress: state.cgmProgressHighlight,
-                cgmStatus: state.cgmDisplayState,
-                cgmSensorExpiresAt: state.cgmSensorExpiresAt,
-                cgmWarmupEndsAt: state.cgmWarmupEndsAt
+
+                cgmProgress: state.showCgmSensorStatus ? state.cgmProgressHighlight : nil,
+                cgmStatus: state.showCgmSensorStatus ? state.cgmDisplayState : nil,
+                cgmSensorExpiresAt: state.showCgmSensorStatus ? state.cgmSensorExpiresAt : nil,
+                cgmWarmupEndsAt: state.showCgmSensorStatus ? state.cgmWarmupEndsAt : nil
             )
             .onTapGesture {
                 if !state.cgmAvailable {

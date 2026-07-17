@@ -388,7 +388,10 @@ enum SettingItems {
                 "Time in Range Type",
                 "Time in Tight Range (TITR)",
                 "Time in Normoglycemia (TING)",
-                "Require Adjustments Confirmation"
+                "Require Adjustments Confirmation",
+                "Show CGM Status Around Bobble",
+                "CGM Status",
+                "Bobble"
             ],
             scrollTargetLabels: [
                 "Show Y-Axis Grid Lines": "Show X-Axis Grid Lines",
@@ -399,7 +402,9 @@ enum SettingItems {
                 "Light Mode": "Appearance",
                 "Dark Scheme": "Appearance",
                 "Light Scheme": "Appearance",
-                "Carbs Required Threshold": "Show Carbs Required Badge"
+                "Carbs Required Threshold": "Show Carbs Required Badge",
+                "CGM Status": "Show CGM Status Around Bobble",
+                "Bobble": "Show CGM Status Around Bobble"
             ],
             path: ["Features", "User Interface"]
         ),
