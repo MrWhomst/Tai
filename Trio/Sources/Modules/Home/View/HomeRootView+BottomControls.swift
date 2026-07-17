@@ -378,7 +378,7 @@ extension Home.RootView {
                 .padding(.horizontal, 16)
             }
             .frame(height: HomeLayout.statsBannerHeight)
-            .glassPanel(tint: .insulin, tintOpacity: 0.10, strokeOpacity: 0.30)
+            .glassPanel()
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
