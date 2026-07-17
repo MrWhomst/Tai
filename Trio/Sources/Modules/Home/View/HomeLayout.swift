@@ -18,7 +18,7 @@ enum HomeLayout {
     static let refreshIndicatorHeight: CGFloat = 40
     /// Zone E: rounded panel shared by the adjustment and bolus views.
     /// Name + one caption line with breathing room to the border.
-    static let bottomPanelHeight: CGFloat = 48
+    static let bottomPanelHeight: CGFloat = 54
     /// Zone E: horizontal inset of the panel.
     static let bottomPanelHorizontalPadding: CGFloat = 10
     /// Zone E: air above the panel.
@@ -27,8 +27,9 @@ enum HomeLayout {
     static let bottomZoneBottomPadding: CGFloat = 16
     /// Zone E: air between the adjustment panel and the multi-use panel.
     static let bottomZoneSpacing: CGFloat = 10
-    /// Zone E: multi-use panel slot (stats banner / prioritized warnings).
-    static let statsBannerHeight: CGFloat = 60
+    /// Zone E: multi-use panel slot (stats banner / prioritized warnings);
+    /// same height as the adjustment card.
+    static let statsBannerHeight: CGFloat = 54
     /// Zone E: total height including padding.
     static var bottomZoneHeight: CGFloat {
         bottomPanelHeight + bottomZoneSpacing + statsBannerHeight + bottomZoneTopPadding + bottomZoneBottomPadding
