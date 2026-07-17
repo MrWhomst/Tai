@@ -9,16 +9,24 @@ import Testing
     private var stale: Date { now.addingTimeInterval(-20 * 60) }
 
     private func resolve(
+        bolusInProgress: Bool = false,
         notificationsDisabled: Bool = false,
         pumpTimeMismatch: Bool = false,
         lastGlucoseDate: Date?,
-        maxIOB: Decimal = 10
+        maxIOB: Decimal = 10,
+        hasOverride: Bool = false,
+        hasTempTarget: Bool = false,
+        hasExtraProfiles: Bool = false
     ) -> MultiUsePanelState {
         MultiUsePanelState.resolve(
+            bolusInProgress: bolusInProgress,
             notificationsDisabled: notificationsDisabled,
             pumpTimeMismatch: pumpTimeMismatch,
             lastGlucoseDate: lastGlucoseDate,
             maxIOB: maxIOB,
+            hasOverride: hasOverride,
+            hasTempTarget: hasTempTarget,
+            hasExtraProfiles: hasExtraProfiles,
             now: now
         )
     }
@@ -54,5 +62,27 @@ import Testing
 
     @Test("MaxIOB zero shows its warning") func testMaxIOBZero() {
         #expect(resolve(lastGlucoseDate: fresh, maxIOB: 0) == .maxIOBZero)
+    }
+
+    @Test("Bolus in progress beats every warning") func bolusBeatsAll() {
+        #expect(resolve(
+            bolusInProgress: true,
+            notificationsDisabled: true,
+            lastGlucoseDate: stale,
+            maxIOB: 0,
+            hasOverride: true
+        ) == .bolusProgress)
+    }
+
+    @Test("Adjustments beat stats but not warnings") func adjustmentPriority() {
+        #expect(resolve(lastGlucoseDate: fresh, hasTempTarget: true) == .adjustments(.tempTarget))
+        #expect(resolve(lastGlucoseDate: stale, hasTempTarget: true) == .cgmStale)
+    }
+
+    @Test("Adjustment sub-state precedence") func adjustmentSubState() {
+        #expect(resolve(lastGlucoseDate: fresh, hasOverride: true, hasTempTarget: true) == .adjustments(.dual))
+        #expect(resolve(lastGlucoseDate: fresh, hasOverride: true) == .adjustments(.override))
+        #expect(resolve(lastGlucoseDate: fresh, hasExtraProfiles: true) == .adjustments(.profile))
+        #expect(resolve(lastGlucoseDate: fresh) == .stats)
     }
 }

@@ -25,14 +25,9 @@ enum HomeLayout {
     static let bottomZoneTopPadding: CGFloat = 8
     /// Zone E: air between panel and tab bar.
     static let bottomZoneBottomPadding: CGFloat = 8
-    /// Zone E: air between the adjustment panel and the multi-use panel.
-    static let bottomZoneSpacing: CGFloat = 8
-    /// Zone E: multi-use panel slot (stats banner / prioritized warnings);
-    /// same height as the adjustment card.
-    static let statsBannerHeight: CGFloat = 50
     /// Zone E: total height including padding.
     static var bottomZoneHeight: CGFloat {
-        bottomPanelHeight + bottomZoneSpacing + statsBannerHeight + bottomZoneTopPadding + bottomZoneBottomPadding
+        bottomPanelHeight + bottomZoneTopPadding + bottomZoneBottomPadding
     }
 
     /// Zone D: breathing room above and below the chart's pane stack.

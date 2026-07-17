@@ -28,18 +28,17 @@ extension Home {
         @State var isMenuPresented = false
         @State var showTreatments = false
         @State var selectedTab: Int = 0
+        @State var lastRealTab: Int = 0
+        // measured x-distance of the dead slot's center from screen center
+        @State var treatmentSlotOffsetX: CGFloat = 0
         @State var showQuickBolusPicker = false
         @State var showQuickBolusNoHistory = false
         @State var showPumpSelection: Bool = false
         @State var showCGMSelection: Bool = false
         @State var showSnoozeSheet: Bool = false
+        @State var alarmsSnoozeUntil: Date = .distantPast
         @State var showManualGlucose: Bool = false
         @State var notificationsDisabled = false
-
-        /// Tai's dead middle tab slot under the centered treatment button.
-        static let treatmentTabTag = 2
-        // measured x-distance of the dead slot's center from screen center
-        @State var treatmentSlotOffsetX: CGFloat = 0
 
         // Pull-down-to-force-loop (see HomeRootView+Refresh.swift)
         @State var pullOffset: CGFloat = 0
@@ -63,6 +62,14 @@ extension Home {
             ascending: false,
             fetchLimit: 1
         )) var activeProfile: FetchedResults<ProfileStored>
+
+        /// Count-only fetch, capped at 2 — profile surfaces hide when a user
+        /// has just one profile, so we only need to know whether the total is >1.
+        @FetchRequest(fetchRequest: ProfileStored.fetch(
+            NSPredicate(value: true),
+            ascending: false,
+            fetchLimit: 2
+        )) var profilesForCount: FetchedResults<ProfileStored>
 
         private var historySFSymbol: String {
             if #available(iOS 17.0, *) {
@@ -96,7 +103,8 @@ extension Home {
             }
             .overlay(alignment: .bottomTrailing) {
                 chartInfoButton
-                    .offset(x: 0, y: -10)
+                    // lifted above the hour labels on the x-axis
+                    .offset(x: 0, y: -28)
             }
             .padding(.vertical, HomeLayout.chartVerticalPadding)
         }
@@ -197,6 +205,7 @@ extension Home {
             }
             .onAppear {
                 configureView()
+                refreshAlarmsSnooze()
             }
             .navigationTitle("Home")
             .navigationBarHidden(true)
@@ -222,6 +231,12 @@ extension Home {
             }
             .sheet(isPresented: $state.isLegendPresented) {
                 ChartLegendView(state: state)
+            }
+            .sheet(isPresented: $showSnoozeSheet) {
+                SnoozeAlertsSheetView(resolver: resolver, isPresented: $showSnoozeSheet)
+            }
+            .onChange(of: showSnoozeSheet) {
+                if !showSnoozeSheet { refreshAlarmsSnooze() }
             }
             .sheet(isPresented: $showManualGlucose) {
                 ManualGlucoseEntryView(units: state.units, isPresented: $showManualGlucose) { amount in
@@ -310,13 +325,15 @@ extension Home {
             }
         }
 
-        /// Tai layout on the iOS 26 glass bar: icon-only items, dead middle
-        /// slot with the Tai treatment button overlaid; the slot's selection
-        /// is swallowed instead of bounced.
+        /// Tai layout on the iOS 26 glass bar: five slots like the legacy bar,
+        /// the middle one disabled so the system cannot select it — the Tai
+        /// treatment button overlays that gap. Belt and braces: if a selection
+        /// of the dead slot ever sneaks through, it bounces to the last real
+        /// tab and counts as a treatment-button press.
         @available(iOS 26.0, *)
         @ViewBuilder private func modernTabBar() -> some View {
             ZStack(alignment: .bottom) {
-                TabView(selection: modernTabSelection) {
+                TabView(selection: $selectedTab) {
                     let carbsRequiredBadge: String? = carbsRequiredBadgeValue
 
                     NavigationStack { mainView() }
@@ -328,15 +345,16 @@ extension Home {
                         .tabItem { Label("", systemImage: historySFSymbol) }.tag(1)
                         .accessibilityLabel(Text("History"))
 
-                    Spacer()
+                    Color.clear
                         // nbsp title + empty image: invisible item that still
-                        // holds a full-width slot for the overlaid button
+                        // holds a full-width slot under the overlaid button
                         .tabItem { Label {
                             Text(String(repeating: "\u{00A0}", count: 12))
                         } icon: {
                             Image(uiImage: UIImage())
                         } }
-                        .tag(RootView.treatmentTabTag)
+                        .tag(2)
+                        .disabled(true)
 
                     NavigationStack { Adjustments.RootView(resolver: resolver) }
                         .tabItem {
@@ -358,32 +376,30 @@ extension Home {
                 .tint(Color.tabBar)
 
                 treatmentButton
-                    // measured slot center; stays at screen center if the probe finds nothing
-                    .offset(x: treatmentSlotOffsetX)
-                    // the floating bar tracks the screen edge, not the safe area
-                    .padding(.bottom, 28)
+                    // measured slot center; stays at screen center if the probe finds nothing.
+                    // The glass bar dips into the home-indicator inset, so the
+                    // vertical center lies slightly BELOW the safe-area edge.
+                    .offset(x: treatmentSlotOffsetX, y: 6)
             }
             .background(TabBarSlotProbe { treatmentSlotOffsetX = $0 })
-            .ignoresSafeArea(.container, edges: .bottom)
             .ignoresSafeArea(.keyboard, edges: .bottom)
             .blur(radius: state.waitForSuggestion ? 8 : 0)
-            .onChange(of: selectedTab) {
-                if selectedTab != 4, !settingsPath.isEmpty {
+            .onChange(of: selectedTab) { _, newValue in
+                if newValue == 2 {
+                    // dead-slot selection slipped past .disabled: treat as a
+                    // treatment press and bounce to the last real tab
+                    state.showModal(for: .treatmentView)
+                    Task {
+                        try? await Task.sleep(for: .milliseconds(300))
+                        selectedTab = lastRealTab
+                    }
+                    return
+                }
+                lastRealTab = newValue
+                if newValue != 4, !settingsPath.isEmpty {
                     settingsPath = NavigationPath()
                 }
             }
-        }
-
-        /// Swallows the dead middle slot so a tap beside the button can't select it.
-        private var modernTabSelection: Binding<Int> {
-            Binding(
-                get: { selectedTab },
-                set: { newValue in
-                    if newValue != RootView.treatmentTabTag {
-                        selectedTab = newValue
-                    }
-                }
-            )
         }
 
         private var treatmentButton: some View {
@@ -902,19 +918,24 @@ private struct TabBarSlotProbe: UIViewRepresentable {
     final class ProbeView: UIView {
         var onResolve: ((CGFloat) -> Void)?
         private var attempts = 0
+        // Measure exactly once: the iOS 26 bar minimizes and shifts during
+        // use, and re-measuring made the overlaid button wander with it.
+        private var hasResolved = false
 
         override func didMoveToWindow() {
             super.didMoveToWindow()
+            guard !hasResolved else { return }
             attempts = 0
             scheduleResolve()
         }
 
         func scheduleResolve() {
+            guard !hasResolved else { return }
             DispatchQueue.main.async { [weak self] in self?.resolve() }
         }
 
         private func resolve() {
-            guard let window else { return }
+            guard !hasResolved, let window else { return }
             guard let offset = Self.middleSlotOffset(in: window) else {
                 // the bar may not be laid out yet; retry briefly
                 attempts += 1
@@ -923,6 +944,7 @@ private struct TabBarSlotProbe: UIViewRepresentable {
                 }
                 return
             }
+            hasResolved = true
             onResolve?(offset)
         }
 

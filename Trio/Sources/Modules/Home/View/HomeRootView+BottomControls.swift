@@ -163,41 +163,111 @@ extension Home.RootView {
         return components.isEmpty ? nil : components.joined(separator: ", ")
     }
 
-    /// Zone E: two fixed slots. Top row shows the bolus progress while a bolus
-    /// runs, otherwise the adjustments panel. Below it the multi-use panel:
-    /// stats banner by default, prioritized warnings when something needs
-    /// attention. The chart-legend button lives on the chart's lower right.
+    /// Zone E: one fixed slot. The multi-use panel shows the highest-priority
+    /// content — bolus progress, warnings, active adjustment, stats face —
+    /// with the alarms pill at the trailing edge.
     @ViewBuilder func bottomControls() -> some View {
-        VStack(spacing: HomeLayout.bottomZoneSpacing) {
-            Group {
-                if let progress = state.bolusProgress {
-                    bolusProgressView(progress)
-                } else {
-                    adjustmentView()
-                }
-            }
-            .frame(maxWidth: .infinity)
-            .frame(height: HomeLayout.bottomPanelHeight)
-            .animation(.easeInOut(duration: 0.2), value: state.bolusProgress != nil)
-
+        HStack(spacing: 8) {
             multiUsePanel()
-                .frame(height: HomeLayout.statsBannerHeight)
+                .frame(maxWidth: .infinity)
+
+            alarmsPill
         }
+        .frame(height: HomeLayout.bottomPanelHeight)
         .padding(.horizontal, HomeLayout.bottomPanelHorizontalPadding)
         .padding(.top, HomeLayout.bottomZoneTopPadding)
         .padding(.bottom, HomeLayout.bottomZoneBottomPadding)
     }
 
+    func refreshAlarmsSnooze() {
+        alarmsSnoozeUntil = UserDefaults.standard
+            .object(forKey: "UserNotificationsManager.snoozeUntilDate") as? Date ?? .distantPast
+    }
+
+    /// Bell button; the remaining snooze minutes replace the plain icon while snoozed.
+    @ViewBuilder var alarmsPill: some View {
+        // timerDate keeps the countdown ticking
+        let isSnoozed = alarmsSnoozeUntil > state.timerDate
+        let remainingMinutes = max(Int(ceil(alarmsSnoozeUntil.timeIntervalSince(state.timerDate) / 60)), 0)
+
+        Button {
+            showSnoozeSheet = true
+        } label: {
+            HStack(spacing: 4) {
+                Image(systemName: isSnoozed ? "bell.slash.fill" : "bell.fill")
+                    .font(.system(size: 19))
+                if isSnoozed {
+                    Text("\(remainingMinutes) m")
+                        .font(.footnote).fontWeight(.bold).fontDesign(.rounded)
+                }
+            }
+            .foregroundStyle(isSnoozed ? AnyShapeStyle(.secondary) : AnyShapeStyle(.primary))
+            .frame(minWidth: 40)
+            .frame(height: 40)
+            .padding(.horizontal, isSnoozed ? 8 : 0)
+            .glassPanel(strokeOpacity: 0.15)
+            // glassEffect does not extend the hit area; make the whole pill tappable
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(Text("Alarms"))
+    }
+
     // MARK: - Multi-use panel (stats banner / prioritized warnings)
+
+    /// Active adjustment worth surfacing: override, temp target, or — only
+    /// when the user actually maintains several — the active profile.
+    var hasActiveAdjustment: Bool {
+        overrideString != nil || tempTargetString != nil
+            || (profilesForCount.count > 1 && activeProfile.first != nil)
+    }
 
     var multiUsePanelState: MultiUsePanelState {
         MultiUsePanelState.resolve(
+            bolusInProgress: state.bolusProgress != nil,
             notificationsDisabled: notificationsDisabled,
             pumpTimeMismatch: state.pumpStatusBadgeImage != nil,
             lastGlucoseDate: state.glucoseFromPersistence.last?.date,
             maxIOB: state.maxIOB,
+            hasOverride: overrideString != nil,
+            hasTempTarget: tempTargetString != nil,
+            hasExtraProfiles: profilesForCount.count > 1 && activeProfile.first != nil,
             now: state.timerDate
         )
+    }
+
+    /// One icon for the displaced adjustment while a warning owns the panel:
+    /// override wins over temp target, temp target over profile.
+    @ViewBuilder var adjustmentIndicator: some View {
+        if hasActiveAdjustment {
+            Button {
+                selectedTab = 3
+            } label: {
+                if overrideString != nil {
+                    Image(systemName: "clock.arrow.2.circlepath")
+                        .font(.system(size: 20))
+                        .foregroundStyle(Color.primary, Color(red: 0.6235294118, green: 0.4235294118, blue: 0.9803921569))
+                } else if tempTargetString != nil {
+                    Image(systemName: "arrow.up.circle.badge.clock")
+                        .font(.system(size: 20))
+                        .foregroundStyle(Color.primary, Color.loopGreen)
+                } else {
+                    // Tai's boxed profile badge, miniature
+                    Image(systemName: "person.2", variableValue: 0.58)
+                        .symbolRenderingMode(.palette)
+                        .foregroundStyle(Color.blue, Color.white, Color.white)
+                        .font(.system(size: 12, weight: .regular))
+                        .frame(width: 21, height: 21)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 5)
+                                .stroke(Color.blue, lineWidth: 1.5)
+                        )
+                }
+            }
+            .buttonStyle(.plain)
+            .contentShape(Rectangle())
+            .accessibilityLabel(Text("Active adjustment"))
+        }
     }
 
     @ViewBuilder func adjustmentIcon(_ systemName: String, tint: Color) -> some View {
@@ -235,13 +305,15 @@ extension Home.RootView {
 
                     Spacer(minLength: 8)
 
+                    adjustmentIndicator
+
                     Image(systemName: "chevron.right")
                         .font(.system(size: 15, weight: .semibold))
                         .foregroundStyle(.secondary)
                 }
                 .padding(.horizontal, 16)
             }
-            .frame(height: HomeLayout.statsBannerHeight)
+            .frame(height: HomeLayout.bottomPanelHeight)
             .glassPanel(
                 tint: tint,
                 tintOpacity: isCritical ? 0.30 : 0.12,
@@ -255,49 +327,92 @@ extension Home.RootView {
 
     /// One slot, highest-priority state wins; stats is the default face.
     @ViewBuilder func multiUsePanel() -> some View {
-        switch multiUsePanelState {
-        case .notificationsDisabled:
-            panelBanner(
-                systemImage: "bell.slash.fill",
-                title: String(localized: "Notifications Disabled"),
-                subtitle: String(localized: "Alarms cannot alert you. Tap to fix."),
-                tint: .red,
-                isCritical: true
-            ) {
-                UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
-            }
-        case .pumpTimeMismatch:
-            panelBanner(
-                systemImage: "clock.badge.exclamationmark.fill",
-                title: String(localized: "Time Change Detected"),
-                subtitle: String(localized: "Pump clock differs from phone. Tap to review."),
-                tint: .orange
-            ) {
-                if state.pumpDisplayState != nil {
-                    state.shouldDisplayPumpSetupSheet.toggle()
+        Group {
+            switch multiUsePanelState {
+            case .bolusProgress:
+                if let progress = state.bolusProgress {
+                    bolusProgressView(progress)
+                        .transition(.blurReplace)
                 }
+            case .adjustments(.profile):
+                // Profile is ambient info, unlike an override or temp target:
+                // it alternates with the stats face every 30s.
+                let showStats = Int(state.timerDate.timeIntervalSinceReferenceDate / 30).isMultiple(of: 2)
+                Group {
+                    if showStats {
+                        statsBanner()
+                            .transition(.blurReplace)
+                    } else {
+                        adjustmentView()
+                            .transition(.blurReplace)
+                    }
+                }
+                .animation(.easeInOut(duration: 0.7), value: showStats)
+                .transition(.blurReplace)
+            case .adjustments(.dual):
+                adjustmentView()
+                    .transition(.blurReplace)
+            case .adjustments(.override):
+                adjustmentView()
+                    .transition(.blurReplace)
+            case .adjustments(.tempTarget):
+                adjustmentView()
+                    .transition(.blurReplace)
+            case .notificationsDisabled:
+                panelBanner(
+                    systemImage: "bell.slash.fill",
+                    title: String(localized: "Notifications Disabled"),
+                    subtitle: String(localized: "Alarms cannot alert you. Tap to fix."),
+                    tint: .red,
+                    isCritical: true
+                ) {
+                    UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+                }
+                .transition(.blurReplace)
+            case .pumpTimeMismatch:
+                panelBanner(
+                    systemImage: "clock.badge.exclamationmark.fill",
+                    title: String(localized: "Time Change Detected"),
+                    subtitle: String(localized: "Pump clock differs from phone. Tap to review."),
+                    tint: .orange
+                ) {
+                    if state.pumpDisplayState != nil {
+                        state.shouldDisplayPumpSetupSheet.toggle()
+                    }
+                }
+                .transition(.blurReplace)
+            case .cgmStale:
+                panelBanner(
+                    systemImage: "drop.fill",
+                    title: String(localized: "No Recent Glucose"),
+                    subtitle: String(localized: "Tap to add a fingerstick reading."),
+                    tint: .orange
+                ) {
+                    showManualGlucose = true
+                }
+                .transition(.blurReplace)
+            case .maxIOBZero:
+                panelBanner(
+                    systemImage: "exclamationmark.triangle.fill",
+                    title: String(localized: "Max IOB is 0 U"),
+                    subtitle: String(localized: "Automated dosing is limited. Tap to review."),
+                    tint: .orange
+                ) {
+                    openMaxIOBSetting()
+                }
+                .transition(.blurReplace)
+            case .stats:
+                statsBanner()
+                    .transition(.blurReplace)
             }
-        case .cgmStale:
-            panelBanner(
-                systemImage: "drop.fill",
-                title: String(localized: "No Recent Glucose"),
-                subtitle: String(localized: "Tap to add a fingerstick reading."),
-                tint: .orange
-            ) {
-                showManualGlucose = true
-            }
-        case .maxIOBZero:
-            panelBanner(
-                systemImage: "exclamationmark.triangle.fill",
-                title: String(localized: "Max IOB is 0 U"),
-                subtitle: String(localized: "Automated dosing is limited. Tap to review."),
-                tint: .orange
-            ) {
-                openMaxIOBSetting()
-            }
-        case .stats:
-            statsBanner()
         }
+        // Branch changes ARE identity changes here (each case is a distinct
+        // view type/position), so transitions fire without a stringly .id —
+        // which corrupted SwiftUI's trait storage and crashed.
+        .animation(
+            .easeInOut(duration: multiUsePanelState == .bolusProgress ? 0.25 : 0.7),
+            value: multiUsePanelState
+        )
     }
 
     func openMaxIOBSetting() {
@@ -433,7 +548,7 @@ extension Home.RootView {
                 }
                 .padding(.horizontal, 16)
             }
-            .frame(height: HomeLayout.statsBannerHeight)
+            .frame(height: HomeLayout.bottomPanelHeight)
             .glassPanel()
             .contentShape(Rectangle())
         }
@@ -693,6 +808,7 @@ extension Home.RootView {
 
         let profileToShow: ProfileStored? = {
             guard overrideString == nil, tempTargetString == nil else { return nil }
+            guard profilesForCount.count > 1 else { return nil }
             return activeProfile.first
         }()
 
