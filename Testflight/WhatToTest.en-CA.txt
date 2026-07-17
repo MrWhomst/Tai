@@ -1,3 +1,2 @@
 based on Trio dev 0.8.4
-test O5 if registered
-Alarm feature set
+

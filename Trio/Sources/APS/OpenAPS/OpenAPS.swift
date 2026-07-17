@@ -3,6 +3,8 @@ import CoreData
 import Foundation
 
 final class OpenAPS {
+    private let processQueue = DispatchQueue(label: "OpenAPS.processQueue", qos: .utility)
+
     private let storage: FileStorage
     private let tddStorage: TDDStorage
     private let glucoseStorage: GlucoseStorage
