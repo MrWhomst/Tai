@@ -1,2 +1,2 @@
-based on Trio dev 0.8.4.16
-new smoothing algo
+based on Trio dev 0.8.4.22
+new glass home view

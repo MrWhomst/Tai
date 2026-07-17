@@ -214,11 +214,9 @@ extension History {
                         .padding(.horizontal)
                     } else {
                         Picker("Mode", selection: $state.mode) {
-                            ForEach(
-                                Mode.allCases.indexed(),
-                                id: \.1
-                            ) { index, item in
-                                Text(item.name).tag(index)
+                            // Meals are listed within the treatments list, so no separate mode.
+                            ForEach(Mode.allCases.filter { $0 != .meals }) { item in
+                                Text(item.name).tag(item)
                             }
                         }
                         .pickerStyle(SegmentedPickerStyle())
