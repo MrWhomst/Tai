@@ -346,12 +346,6 @@ extension Home.RootView {
             (.purple, CGFloat((distribution.highPct + distribution.veryHighPct) / 100))
         ] : [(Color.secondary.opacity(0.3), 1)]
 
-        // Border color doubles as a quality signal for today's time in range.
-        let quality: Color = !hasData ? .secondary
-            : distribution.inRangePct >= 70 ? .loopGreen
-            : distribution.inRangePct >= 50 ? .orange
-            : .loopRed
-
         Button {
             // Tai: jump to the 24h glucose statistics, not the daily overview.
             appState.statSelectedViewType = .glucose
@@ -369,7 +363,7 @@ extension Home.RootView {
                     .background(.ultraThinMaterial.opacity(colorScheme == .dark ? 0.35 : 0))
                     .overlay(
                         RoundedRectangle(cornerRadius: 17, style: .continuous)
-                            .strokeBorder(quality.opacity(0.35), lineWidth: 1)
+                            .strokeBorder(Color.insulin.opacity(0.35), lineWidth: 1)
                     )
                     .frame(height: HomeLayout.statsBannerHeight)
                     .clipShape(RoundedRectangle(cornerRadius: 17, style: .continuous))
