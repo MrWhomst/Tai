@@ -238,7 +238,7 @@ extension Home.RootView {
 
                     VStack(alignment: .leading, spacing: 1) {
                         Text(title)
-                            .font(.subheadline).fontWeight(.semibold)
+                            .font(.callout).fontWeight(.semibold)
                             .foregroundStyle(.primary)
                         Text(subtitle)
                             .font(.caption)
@@ -369,7 +369,7 @@ extension Home.RootView {
                     VStack(alignment: .leading, spacing: 4) {
                         HStack(alignment: .firstTextBaseline, spacing: 6) {
                             Text(tirString)
-                                .font(.title2).fontWeight(.bold).fontDesign(.rounded)
+                                .font(.callout).fontWeight(.bold).fontDesign(.rounded)
                                 .foregroundStyle(.primary)
                             // chart shows 72h; make the daily scope explicit
                             (
@@ -377,7 +377,7 @@ extension Home.RootView {
                                     + Text(" ")
                                     + Text("today", comment: "Stats banner scope")
                             )
-                            .font(.subheadline)
+                            .font(.footnote)
                             .foregroundStyle(.secondary)
                             .lineLimit(1)
                             .minimumScaleFactor(0.8)
