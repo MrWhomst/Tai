@@ -240,9 +240,11 @@ extension Home.RootView {
                         Text(title)
                             .font(.callout).fontWeight(.semibold)
                             .foregroundStyle(.primary)
+                            .lineLimit(1)
                         Text(subtitle)
                             .font(.caption)
                             .foregroundStyle(.secondary)
+                            .lineLimit(1)
                     }
 
                     Spacer(minLength: 8)
@@ -414,6 +416,7 @@ extension Home.RootView {
 
                 Text(overrideString)
                     .font(.caption)
+                    .foregroundStyle(.secondary)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -440,6 +443,7 @@ extension Home.RootView {
                     .frame(alignment: .leading)
                 Text(tempTargetString)
                     .font(.caption)
+                    .foregroundStyle(.secondary)
                     .frame(alignment: .leading)
             }
         }
@@ -468,7 +472,7 @@ extension Home.RootView {
                             .stroke(Color.blue, lineWidth: 1.5)
                     )
             }
-            VStack(alignment: .leading, spacing: 2) {
+            VStack(alignment: .leading) {
                 Text(profile.name ?? String(
                     localized: "Active Profile",
                     comment: "Fallback name on Home adjustments banner for the active profile when it has no name set"
@@ -477,7 +481,11 @@ extension Home.RootView {
                     .frame(alignment: .leading)
                 let subtitle = profileSubtitle(profile, now: state.timerDate)
                 if !subtitle.isEmpty {
-                    GreedyWrapText(subtitle, textStyle: .caption1, maxLines: 1)
+                    Text(subtitle)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                        .frame(alignment: .leading)
                 }
             }
         }
@@ -643,6 +651,12 @@ extension Home.RootView {
             return activeProfile.first
         }()
 
+        // Thin border in the state's color, same style as the multi-use panel.
+        let cardTint: Color? = overrideString != nil
+            ? Color(red: 0.6235294118, green: 0.4235294118, blue: 0.9803921569)
+            : tempTargetString != nil ? Color.loopGreen
+            : profileToShow != nil ? Color.blue : nil
+
         ZStack {
             /// rectangle as background
             RoundedRectangle(cornerRadius: 15)
@@ -656,6 +670,10 @@ extension Home.RootView {
                 )
                 .background(.ultraThinMaterial.opacity(colorScheme == .dark ? 0.35 : 0))
                 .clipShape(RoundedRectangle(cornerRadius: 15))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 15)
+                        .strokeBorder((cardTint ?? Color.clear).opacity(0.35), lineWidth: 1)
+                )
                 .frame(height: HomeLayout.bottomPanelHeight)
                 .shadow(
                     color: (overrideString != nil || tempTargetString != nil || profileToShow != nil) ?
@@ -836,45 +854,5 @@ extension Home.RootView {
                     .offset(y: offset)
             }.clipShape(RoundedRectangle(cornerRadius: 15))
         }
-    }
-}
-
-/// Multi-line caption that fills each line completely before wrapping.
-/// SwiftUI's `Text` applies TextKit's "push out" balancing on multi-line
-/// wraps (it breaks early so the last line isn't a single short word);
-/// `UILabel` with an empty `lineBreakStrategy` wraps greedily instead.
-struct GreedyWrapText: UIViewRepresentable {
-    let text: String
-    let textStyle: UIFont.TextStyle
-    let maxLines: Int
-
-    init(_ text: String, textStyle: UIFont.TextStyle, maxLines: Int) {
-        self.text = text
-        self.textStyle = textStyle
-        self.maxLines = maxLines
-    }
-
-    func makeUIView(context _: Context) -> UILabel {
-        let label = UILabel()
-        label.font = UIFont.preferredFont(forTextStyle: textStyle)
-        label.textColor = .label
-        label.numberOfLines = maxLines
-        label.lineBreakMode = .byTruncatingTail
-        label.lineBreakStrategy = []
-        // Let the label be narrower than its full text so it wraps to the
-        // width SwiftUI proposes instead of stretching the layout.
-        label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-        label.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        return label
-    }
-
-    func updateUIView(_ label: UILabel, context _: Context) {
-        label.text = text
-    }
-
-    func sizeThatFits(_ proposal: ProposedViewSize, uiView label: UILabel, context _: Context) -> CGSize? {
-        let width = proposal.width ?? UIView.layoutFittingExpandedSize.width
-        let size = label.sizeThatFits(CGSize(width: width, height: .greatestFiniteMagnitude))
-        return CGSize(width: min(size.width, width), height: size.height)
     }
 }
