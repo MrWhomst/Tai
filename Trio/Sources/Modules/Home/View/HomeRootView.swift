@@ -209,11 +209,7 @@ extension Home {
                     Rectangle().opacity(0).frame(height: 200)
                     popup
                         .padding(8)
-                        .background(
-                            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                .fill(Color("Chart"))
-                        )
-                        .opacity(0.85)
+                        .glassPanel()
                         .gesture(
                             DragGesture(minimumDistance: 10, coordinateSpace: .local)
                                 .onEnded { value in

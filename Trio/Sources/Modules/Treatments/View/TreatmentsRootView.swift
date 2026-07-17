@@ -571,23 +571,6 @@ extension Treatments {
             let bolusLabel = state.bolusStatus == .inProgress ? String(localized: "Bolusing") : String(localized: "Initiating…")
 
             ZStack {
-                // background card
-                RoundedRectangle(cornerRadius: 15)
-                    .fill(
-                        colorScheme == .dark
-                            ? Color(red: 0.03921568627, green: 0.133333333, blue: 0.2156862745)
-                            : Color.insulin.opacity(0.1)
-                    )
-                    .background(.ultraThinMaterial.opacity(colorScheme == .dark ? 0.35 : 0))
-                    .clipShape(RoundedRectangle(cornerRadius: 15))
-                    .frame(height: 56)
-                    .shadow(
-                        color: colorScheme == .dark
-                            ? Color(red: 0.02745098039, green: 0.1098039216, blue: 0.1411764706)
-                            : Color.black.opacity(0.33),
-                        radius: 3
-                    )
-
                 // bolus content
                 HStack {
                     Image("bolus")
@@ -622,13 +605,14 @@ extension Treatments {
                 }
                 .padding(.horizontal, 10)
             }
+            .frame(height: 56)
+            .glassPanel(tint: .insulin, tintOpacity: 0.18, strokeOpacity: 0.30)
             .overlay(alignment: .bottom) {
                 BolusProgressBar(progress: progress)
                     .padding(.horizontal, 28)
                     .padding(.bottom, 1)
             }
-            .clipShape(RoundedRectangle(cornerRadius: 15))
-            .frame(height: 56)
+            .clipShape(GlassChrome.panelShape)
         }
 
         private var taskButtonLabel: some View {
