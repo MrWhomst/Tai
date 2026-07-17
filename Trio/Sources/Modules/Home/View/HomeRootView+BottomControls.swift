@@ -163,57 +163,33 @@ extension Home.RootView {
         return components.isEmpty ? nil : components.joined(separator: ", ")
     }
 
-    /// Zone E: fixed-height bottom slot. Shows the bolus progress while a bolus
-    /// runs, otherwise the adjustments panel — flanked by the stats button on
-    /// the left and the chart-legend button on the right.
+    /// Zone E: two fixed slots. Top row shows the bolus progress while a bolus
+    /// runs, otherwise the adjustments panel, with the chart-legend button at
+    /// the trailing edge. Below it the multi-use panel: stats banner by
+    /// default, prioritized warnings when something needs attention.
     @ViewBuilder func bottomControls() -> some View {
-        HStack(spacing: 8) {
-            statsButton
-
-            Group {
-                if let progress = state.bolusProgress {
-                    bolusProgressView(progress)
-                } else {
-                    adjustmentView()
+        VStack(spacing: HomeLayout.bottomZoneSpacing) {
+            HStack(spacing: 8) {
+                Group {
+                    if let progress = state.bolusProgress {
+                        bolusProgressView(progress)
+                    } else {
+                        adjustmentView()
+                    }
                 }
-            }
-            .frame(maxWidth: .infinity)
+                .frame(maxWidth: .infinity)
 
-            infoButton
+                infoButton
+            }
+            .frame(height: HomeLayout.bottomPanelHeight)
+            .animation(.easeInOut(duration: 0.2), value: state.bolusProgress != nil)
+
+            multiUsePanel()
+                .frame(height: HomeLayout.statsBannerHeight)
         }
-        .frame(height: HomeLayout.bottomPanelHeight)
         .padding(.horizontal, HomeLayout.bottomPanelHorizontalPadding)
         .padding(.top, HomeLayout.bottomZoneTopPadding)
         .padding(.bottom, HomeLayout.bottomZoneBottomPadding)
-    }
-
-    var statsButton: some View {
-        Image(systemName: "chart.bar.xaxis.ascending.badge.clock")
-            .font(.system(size: 17))
-            .symbolRenderingMode(.palette)
-            .scaleEffect(x: -1)
-            .foregroundStyle(
-                Color.secondary,
-                TaiStyle.linearGradient(
-                    startPoint: .trailing, endPoint: .leading
-                )
-            )
-            .frame(width: 32, height: 32)
-            .background(
-                colorScheme == .dark ? Color(red: 0.1176470588, green: 0.2352941176, blue: 0.3725490196) :
-                    Color.white
-            )
-            .clipShape(Circle())
-            .contentShape(Circle())
-            .onTapGesture {
-                appState.statSelectedViewType = .glucose
-                appState.statSelectedInsulinTimeInterval = .day
-                state.showModal(for: .statistics)
-            }
-            .shadow(
-                color: Color.black.opacity(colorScheme == .dark ? 0.75 : 0.33),
-                radius: colorScheme == .dark ? 5 : 3
-            )
     }
 
     var infoButton: some View {
@@ -234,6 +210,217 @@ extension Home.RootView {
             color: Color.black.opacity(colorScheme == .dark ? 0.75 : 0.33),
             radius: colorScheme == .dark ? 5 : 3
         )
+    }
+
+    // MARK: - Multi-use panel (stats banner / prioritized warnings)
+
+    var multiUsePanelState: MultiUsePanelState {
+        MultiUsePanelState.resolve(
+            notificationsDisabled: notificationsDisabled,
+            pumpTimeMismatch: state.pumpStatusBadgeImage != nil,
+            lastGlucoseDate: state.glucoseFromPersistence.last?.date,
+            maxIOB: state.maxIOB,
+            now: state.timerDate
+        )
+    }
+
+    @ViewBuilder func adjustmentIcon(_ systemName: String, tint: Color) -> some View {
+        Image(systemName: systemName)
+            .font(.system(size: 15, weight: .semibold))
+            .foregroundStyle(tint)
+            .frame(width: 30, height: 30)
+            .background(Circle().fill(tint.opacity(0.18)))
+    }
+
+    /// Shared chrome for the non-stats panel states.
+    @ViewBuilder func panelBanner(
+        systemImage: String,
+        title: String,
+        subtitle: String,
+        tint: Color,
+        isCritical: Bool = false,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 17, style: .continuous)
+                    .fill(.ultraThinMaterial)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 17, style: .continuous)
+                            .fill(tint.opacity(isCritical ? 0.30 : 0.12))
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 17, style: .continuous)
+                            .strokeBorder(tint.opacity(isCritical ? 0.8 : 0.35), lineWidth: isCritical ? 1.5 : 1)
+                    )
+                    .frame(height: HomeLayout.statsBannerHeight)
+                    .clipShape(RoundedRectangle(cornerRadius: 17, style: .continuous))
+                    .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.25 : 0.10), radius: 3, y: 1)
+
+                HStack(spacing: 12) {
+                    adjustmentIcon(systemImage, tint: tint)
+
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text(title)
+                            .font(.subheadline).fontWeight(.semibold)
+                            .foregroundStyle(.primary)
+                        Text(subtitle)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    Spacer(minLength: 8)
+
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(.secondary)
+                }
+                .padding(.horizontal, 16)
+            }
+        }
+        .buttonStyle(.plain)
+    }
+
+    /// One slot, highest-priority state wins; stats is the default face.
+    @ViewBuilder func multiUsePanel() -> some View {
+        switch multiUsePanelState {
+        case .notificationsDisabled:
+            panelBanner(
+                systemImage: "bell.slash.fill",
+                title: String(localized: "Notifications Disabled"),
+                subtitle: String(localized: "Alarms cannot alert you. Tap to fix."),
+                tint: .red,
+                isCritical: true
+            ) {
+                UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+            }
+        case .pumpTimeMismatch:
+            panelBanner(
+                systemImage: "clock.badge.exclamationmark.fill",
+                title: String(localized: "Time Change Detected"),
+                subtitle: String(localized: "Pump clock differs from phone. Tap to review."),
+                tint: .orange
+            ) {
+                if state.pumpDisplayState != nil {
+                    state.shouldDisplayPumpSetupSheet.toggle()
+                }
+            }
+        case .cgmStale:
+            panelBanner(
+                systemImage: "drop.fill",
+                title: String(localized: "No Recent Glucose"),
+                subtitle: String(localized: "Tap to add a fingerstick reading."),
+                tint: .orange
+            ) {
+                showManualGlucose = true
+            }
+        case .maxIOBZero:
+            panelBanner(
+                systemImage: "exclamationmark.triangle.fill",
+                title: String(localized: "Max IOB is 0 U"),
+                subtitle: String(localized: "Automated dosing is limited. Tap to review."),
+                tint: .orange
+            ) {
+                openMaxIOBSetting()
+            }
+        case .stats:
+            statsBanner()
+        }
+    }
+
+    func openMaxIOBSetting() {
+        // same target search results push, so scroll + highlight wiggle match
+        selectedTab = 4
+        settingsPath.append(SearchResultTarget(
+            screen: .unitsAndLimits,
+            scrollLabel: "Maximum Insulin on Board (IOB)".localized
+        ))
+    }
+
+    func statsDistributionBar(_ segments: [(color: Color, fraction: CGFloat)]) -> some View {
+        GeometryReader { g in
+            let spacing: CGFloat = 2
+            let shown = segments.filter { $0.fraction > 0.005 }
+            let available = max(g.size.width - spacing * CGFloat(max(shown.count - 1, 0)), 0)
+            HStack(spacing: spacing) {
+                ForEach(Array(shown.enumerated()), id: \.offset) { _, segment in
+                    Capsule()
+                        .fill(segment.color)
+                        .frame(width: available * segment.fraction)
+                }
+            }
+            .frame(maxHeight: .infinity)
+        }
+    }
+
+    @ViewBuilder func statsBanner() -> some View {
+        let distribution = state.todayGlucoseDistribution
+        let coveragePct = distribution.veryLowPct + distribution.lowPct + distribution.inRangePct + distribution
+            .highPct + distribution.veryHighPct
+        let hasData = coveragePct > 0
+        let tirString = hasData
+            ? distribution.inRangePct.formatted(.number.precision(.fractionLength(0 ... 1))) + " %"
+            : "-- %"
+        let segments: [(color: Color, fraction: CGFloat)] = hasData ? [
+            (.red, CGFloat(distribution.veryLowPct / 100)),
+            (.orange, CGFloat(distribution.lowPct / 100)),
+            (.loopGreen, CGFloat(distribution.inRangePct / 100)),
+            (.purple, CGFloat((distribution.highPct + distribution.veryHighPct) / 100))
+        ] : [(Color.secondary.opacity(0.3), 1)]
+
+        Button {
+            // Tai: jump to the 24h glucose statistics, not the daily overview.
+            appState.statSelectedViewType = .glucose
+            appState.statSelectedInsulinTimeInterval = .day
+            state.showModal(for: .statistics)
+        } label: {
+            ZStack {
+                RoundedRectangle(cornerRadius: 17, style: .continuous)
+                    .fill(.ultraThinMaterial)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 17, style: .continuous)
+                            .fill(Color.insulin.opacity(0.08))
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 17, style: .continuous)
+                            .strokeBorder(Color.insulin.opacity(0.35), lineWidth: 1)
+                    )
+                    .frame(height: HomeLayout.statsBannerHeight)
+                    .clipShape(RoundedRectangle(cornerRadius: 17, style: .continuous))
+                    .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.25 : 0.10), radius: 3, y: 1)
+
+                HStack(alignment: .center, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack(alignment: .firstTextBaseline, spacing: 6) {
+                            Text(tirString)
+                                .font(.title2).fontWeight(.bold).fontDesign(.rounded)
+                                .foregroundStyle(.primary)
+                            // chart shows 72h; make the daily scope explicit
+                            (
+                                Text("Time in Range", comment: "Stats banner subtitle").fontWeight(.semibold)
+                                    + Text(" ")
+                                    + Text("today", comment: "Stats banner scope")
+                            )
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.8)
+                        }
+
+                        statsDistributionBar(segments)
+                            .frame(height: 6)
+                    }
+
+                    Spacer(minLength: 8)
+
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(.secondary)
+                }
+                .padding(.horizontal, 16)
+            }
+        }
+        .buttonStyle(.plain)
     }
 
     @ViewBuilder func adjustmentsOverrideView(_ overrideString: String) -> some View {

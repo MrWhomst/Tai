@@ -33,6 +33,7 @@ extension Home {
         @State var showPumpSelection: Bool = false
         @State var showCGMSelection: Bool = false
         @State var showSnoozeSheet: Bool = false
+        @State var showManualGlucose: Bool = false
         @State var notificationsDisabled = false
 
         // Pull-down-to-force-loop (see HomeRootView+Refresh.swift)
@@ -164,19 +165,8 @@ extension Home {
         }
 
         @ViewBuilder func mainView() -> some View {
-            VStack(spacing: 0) {
-                // Warnings live above the geometry: while one is visible the
-                // dashboard (and with it the chart) shrinks for its duration.
-                if notificationsDisabled {
-                    alertSafetyNotificationsView()
-                }
-                if let badgeImage = state.pumpStatusBadgeImage, let badgeColor = state.pumpStatusBadgeColor {
-                    pumpTimezoneView(badgeImage, badgeColor)
-                        .padding(.horizontal, 20)
-                }
-                GeometryReader { geo in
-                    mainViewElements(geo)
-                }
+            GeometryReader { geo in
+                mainViewElements(geo)
             }
             .onAppear {
                 configureView()
@@ -209,6 +199,11 @@ extension Home {
             }
             .sheet(isPresented: $state.isLegendPresented) {
                 ChartLegendView(state: state)
+            }
+            .sheet(isPresented: $showManualGlucose) {
+                ManualGlucoseEntryView(units: state.units, isPresented: $showManualGlucose) { amount in
+                    state.addManualGlucose(amount)
+                }
             }
             // PUMP RELATED
             .confirmationDialog("Pump Model", isPresented: $showPumpSelection) {

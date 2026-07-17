@@ -2,8 +2,8 @@ import CoreGraphics
 
 /// Fixed zone heights for the non-scrolling Home dashboard. The bobble is a fixed
 /// 130pt circle, so the header is constant; the chart gets the remainder. Tai has
-/// no permanent nav bar on Home — warnings render above the dashboard only while
-/// active, shrinking the chart for their duration.
+/// no permanent nav bar on Home — warnings surface through the multi-use panel
+/// in the bottom zone.
 enum HomeLayout {
     /// Zone B: air above the header; sized so an up-pointing trend arrow clears
     /// the status bar.
@@ -26,12 +26,16 @@ enum HomeLayout {
     static let bottomZoneTopPadding: CGFloat = 10
     /// Zone E: air between panel and tab bar.
     static let bottomZoneBottomPadding: CGFloat = 16
+    /// Zone E: air between the adjustment panel and the multi-use panel.
+    static let bottomZoneSpacing: CGFloat = 10
+    /// Zone E: multi-use panel slot (stats banner / prioritized warnings).
+    static let statsBannerHeight: CGFloat = 60
     /// Zone E: total height including padding.
-    static var bottomZoneHeight: CGFloat { bottomPanelHeight + bottomZoneTopPadding + bottomZoneBottomPadding }
+    static var bottomZoneHeight: CGFloat {
+        bottomPanelHeight + bottomZoneSpacing + statsBannerHeight + bottomZoneTopPadding + bottomZoneBottomPadding
+    }
     /// Zone D: breathing room above and below the chart's pane stack.
     static let chartVerticalPadding: CGFloat = 8
     /// Zone D: chart floor; must stay below the natural SE-class allocation.
     static let chartMinHeight: CGFloat = 240
-    /// Height of the safety-notifications warning banner shown above the dashboard.
-    static let warningBannerHeight: CGFloat = 64
 }

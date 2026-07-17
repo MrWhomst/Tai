@@ -72,8 +72,10 @@
 		7A11AC0DE000000000000106 /* HomeRootView+Refresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A11AC0DE000000000000006 /* HomeRootView+Refresh.swift */; };
 		7A11AC0DE000000000000102 /* HomeRootView+MealPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A11AC0DE000000000000002 /* HomeRootView+MealPanel.swift */; };
 		7A11AC0DE000000000000103 /* HomeRootView+BottomControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A11AC0DE000000000000003 /* HomeRootView+BottomControls.swift */; };
-		7A11AC0DE000000000000104 /* HomeRootView+Toolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A11AC0DE000000000000004 /* HomeRootView+Toolbar.swift */; };
 		7A11AC0DE000000000000105 /* HomeLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A11AC0DE000000000000005 /* HomeLayout.swift */; };
+		7A11AC0DE000000000000113 /* MultiUsePanelState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A11AC0DE000000000000013 /* MultiUsePanelState.swift */; };
+		7A11AC0DE000000000000114 /* ManualGlucoseEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A11AC0DE000000000000014 /* ManualGlucoseEntryView.swift */; };
+		7A11AC0DE000000000000115 /* MultiUsePanelStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A11AC0DE000000000000015 /* MultiUsePanelStateTests.swift */; };
 		3811DE3F25C9D4A100A708ED /* SettingsStateModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3811DE3925C9D4A100A708ED /* SettingsStateModel.swift */; };
 		3811DE4125C9D4A100A708ED /* SettingsRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3811DE3C25C9D4A100A708ED /* SettingsRootView.swift */; };
 		3811DE4225C9D4A100A708ED /* SettingsDataFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3811DE3D25C9D4A100A708ED /* SettingsDataFlow.swift */; };
@@ -1194,8 +1196,10 @@
 		7A11AC0DE000000000000006 /* HomeRootView+Refresh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HomeRootView+Refresh.swift"; sourceTree = "<group>"; };
 		7A11AC0DE000000000000002 /* HomeRootView+MealPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HomeRootView+MealPanel.swift"; sourceTree = "<group>"; };
 		7A11AC0DE000000000000003 /* HomeRootView+BottomControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HomeRootView+BottomControls.swift"; sourceTree = "<group>"; };
-		7A11AC0DE000000000000004 /* HomeRootView+Toolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HomeRootView+Toolbar.swift"; sourceTree = "<group>"; };
 		7A11AC0DE000000000000005 /* HomeLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeLayout.swift; sourceTree = "<group>"; };
+		7A11AC0DE000000000000013 /* MultiUsePanelState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiUsePanelState.swift; sourceTree = "<group>"; };
+		7A11AC0DE000000000000014 /* ManualGlucoseEntryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualGlucoseEntryView.swift; sourceTree = "<group>"; };
+		7A11AC0DE000000000000015 /* MultiUsePanelStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiUsePanelStateTests.swift; sourceTree = "<group>"; };
 		3811DE3925C9D4A100A708ED /* SettingsStateModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsStateModel.swift; sourceTree = "<group>"; };
 		3811DE3C25C9D4A100A708ED /* SettingsRootView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsRootView.swift; sourceTree = "<group>"; };
 		3811DE3D25C9D4A100A708ED /* SettingsDataFlow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsDataFlow.swift; sourceTree = "<group>"; };
@@ -2590,8 +2594,8 @@
 				7A11AC0DE000000000000006 /* HomeRootView+Refresh.swift */,
 				7A11AC0DE000000000000002 /* HomeRootView+MealPanel.swift */,
 				7A11AC0DE000000000000003 /* HomeRootView+BottomControls.swift */,
-				7A11AC0DE000000000000004 /* HomeRootView+Toolbar.swift */,
 				7A11AC0DE000000000000005 /* HomeLayout.swift */,
+				7A11AC0DE000000000000013 /* MultiUsePanelState.swift */,
 				3833B51E260264AC003021B3 /* Chart */,
 				3833B51F260264B6003021B3 /* Header */,
 				FDB1D1005DA54C048E622761 /* QuickPickBoluses */,
@@ -2885,6 +2889,7 @@
 				DD1745282C55642100211FAC /* SettingInputSection.swift */,
 				DD17452A2C556E8100211FAC /* SettingInputHintView.swift */,
 				DD17452C2C5564FF00211FA2 /* SettingsSearchHighlight.swift */,
+				7A11AC0DE000000000000014 /* ManualGlucoseEntryView.swift */,
 				DD500A712807000000000100 /* SnoozeAlertsSheetView.swift */,
 			);
 			path = Views;
@@ -3214,6 +3219,7 @@
 			children = (
 				DDDD0FFD2F4E231600F9C645 /* Mocks */,
 				DDDD0FFA2F4E22C000F9C645 /* GlucoseSmoothingTests.swift */,
+				7A11AC0DE000000000000015 /* MultiUsePanelStateTests.swift */,
 				49AD0CEE2F8797F2004301B6 /* UKFTestData.swift */,
 				49AD0CF02F8797F3004301B6 /* AdaptiveUKFSmootherTests.swift */,
 				49AD0CF22F8797F4004301B6 /* AdaptiveUKFOrderingRegressionTest.swift */,
@@ -5679,8 +5685,9 @@
 				7A11AC0DE000000000000106 /* HomeRootView+Refresh.swift in Sources */,
 				7A11AC0DE000000000000102 /* HomeRootView+MealPanel.swift in Sources */,
 				7A11AC0DE000000000000103 /* HomeRootView+BottomControls.swift in Sources */,
-				7A11AC0DE000000000000104 /* HomeRootView+Toolbar.swift in Sources */,
 				7A11AC0DE000000000000105 /* HomeLayout.swift in Sources */,
+				7A11AC0DE000000000000113 /* MultiUsePanelState.swift in Sources */,
+				7A11AC0DE000000000000114 /* ManualGlucoseEntryView.swift in Sources */,
 				584C79A91D034426A1DE60CB /* SlideToConfirmView.swift in Sources */,
 				DECF1903237041E2BBBE4033 /* QuickPickBolusesInfoView.swift in Sources */,
 				3F23E18680094E6DA98628E4 /* QuickPickBolusesView.swift in Sources */,
@@ -6219,6 +6226,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				49AD0CF12F8797F3004301B6 /* AdaptiveUKFSmootherTests.swift in Sources */,
+				7A11AC0DE000000000000115 /* MultiUsePanelStateTests.swift in Sources */,
 				49AD0CF32F8797F4004301B6 /* AdaptiveUKFOrderingRegressionTest.swift in Sources */,
 				3B5CD2C92D4AECD500CE213C /* ProfileCarbsTests.swift in Sources */,
 				3BEDC9932EEB27B600AC6492 /* IobConsecutiveEventsTests.swift in Sources */,
