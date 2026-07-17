@@ -408,7 +408,6 @@ extension Home.RootView {
             Image(systemName: "clock.arrow.2.circlepath")
                 .font(.title2)
                 .foregroundStyle(Color.primary, Color.purple)
-                .frame(width: 28)
             VStack(alignment: .leading) {
                 Text(latestOverride.first?.name ?? String(
                     localized: "Custom Override",
@@ -437,7 +436,6 @@ extension Home.RootView {
                 .rotationEffect(.degrees(rotationValue))
                 .font(.system(size: 22))
                 .foregroundStyle(Color.primary, Color.loopGreen)
-                .frame(width: 28)
             VStack(alignment: .leading) {
                 Text(latestTempTarget.first?.name ?? String(
                     localized: "Temp Target",
@@ -460,25 +458,17 @@ extension Home.RootView {
 
     @ViewBuilder func adjustmentsProfileView(_ profile: ProfileStored) -> some View {
         HStack {
-            Group {
-                if profile.expiresAt != nil {
-                    Image(systemName: "person.2.arrow.trianglehead.counterclockwise")
-                        .font(.system(size: 24))
-                        .symbolRenderingMode(.palette)
-                        .foregroundStyle(Color.primary, Color.blue)
-                } else {
-                    Image(systemName: "person.2", variableValue: 0.58)
-                        .symbolRenderingMode(.palette)
-                        .foregroundStyle(Color.blue, Color.white, Color.white)
-                        .font(.system(size: 14, weight: .regular))
-                        .frame(width: 24, height: 24)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 5)
-                                .stroke(Color.blue, lineWidth: 1.5)
-                        )
-                }
+            if profile.expiresAt != nil {
+                Image(systemName: "person.2.arrow.trianglehead.counterclockwise")
+                    .font(.system(size: 22))
+                    .symbolRenderingMode(.palette)
+                    .foregroundStyle(Color.primary, Color.blue)
+            } else {
+                Image(systemName: "person.2.fill")
+                    .font(.system(size: 22))
+                    .symbolRenderingMode(.palette)
+                    .foregroundStyle(Color.primary, Color.blue)
             }
-            .frame(width: 28)
             VStack(alignment: .leading) {
                 Text(profile.name ?? String(
                     localized: "Active Profile",
