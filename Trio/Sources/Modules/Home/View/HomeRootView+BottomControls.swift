@@ -325,7 +325,36 @@ extension Home.RootView {
         }
     }
 
+    private var todayMeanGlucose: Double? {
+        let startOfDay = Calendar.current.startOfDay(for: Date())
+        let values = state.glucoseFromPersistence
+            .filter { ($0.date ?? .distantPast) >= startOfDay }
+            .map { Double($0.glucose) }
+        guard !values.isEmpty else { return nil }
+        return values.reduce(0, +) / Double(values.count)
+    }
+
+    private var todayAverageString: String {
+        guard let mean = todayMeanGlucose else { return "--" }
+        if state.units == .mmolL {
+            return Decimal(mean).asMmolL.formatted(.number.precision(.fractionLength(1))) + " " + GlucoseUnits.mmolL.rawValue
+        }
+        return "\(Int(mean.rounded())) " + GlucoseUnits.mgdL.rawValue
+    }
+
+    private var todayGMIString: String {
+        guard let mean = todayMeanGlucose else { return "--" }
+        let gmiPercentage = 3.31 + 0.02392 * mean
+        // settingsManager is injected after first render; default until then
+        if state.settingsManager?.settings.eA1cDisplayUnit == .mmolMol {
+            let gmiMmolMol = (gmiPercentage - 2.152) * 10.929
+            return "\(Int(gmiMmolMol.rounded())) mmol/mol"
+        }
+        return gmiPercentage.formatted(.number.precision(.fractionLength(1))) + " %"
+    }
+
     @ViewBuilder func statsBanner() -> some View {
+        let face = state.settingsManager?.settings.homeStatsPanelFace ?? .timeInRange
         let distribution = state.todayGlucoseDistribution
         let coveragePct = distribution.veryLowPct + distribution.lowPct + distribution.inRangePct + distribution
             .highPct + distribution.veryHighPct
@@ -348,12 +377,30 @@ extension Home.RootView {
         } label: {
             ZStack {
                 HStack(alignment: .center, spacing: 12) {
-                    VStack(alignment: .leading, spacing: 4) {
-                        HStack(alignment: .firstTextBaseline, spacing: 6) {
-                            Text(tirString)
-                                .font(.callout).fontWeight(.bold).fontDesign(.rounded)
-                                .foregroundStyle(.primary)
-                            // chart shows 72h; make the daily scope explicit
+                    switch face {
+                    case .timeInRange:
+                        VStack(alignment: .leading, spacing: 4) {
+                            HStack(alignment: .firstTextBaseline, spacing: 6) {
+                                Text(tirString)
+                                    .font(.callout).fontWeight(.bold).fontDesign(.rounded)
+                                    .foregroundStyle(.primary)
+                                // chart shows 72h; make the daily scope explicit
+                                (
+                                    Text("Time in Range", comment: "Stats banner subtitle").fontWeight(.semibold)
+                                        + Text(" ")
+                                        + Text("today", comment: "Stats banner scope")
+                                )
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.8)
+                            }
+
+                            statsDistributionBar(segments)
+                                .frame(height: 6)
+                        }
+                    case .distributionBar:
+                        VStack(alignment: .leading, spacing: 6) {
                             (
                                 Text("Time in Range", comment: "Stats banner subtitle").fontWeight(.semibold)
                                     + Text(" ")
@@ -363,10 +410,19 @@ extension Home.RootView {
                             .foregroundStyle(.secondary)
                             .lineLimit(1)
                             .minimumScaleFactor(0.8)
-                        }
 
-                        statsDistributionBar(segments)
-                            .frame(height: 6)
+                            statsDistributionBar(segments)
+                                .frame(height: 6)
+                        }
+                    case .averages:
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text("\u{2300} \(todayAverageString) \u{00B7} GMI \(todayGMIString)")
+                                .font(.callout).fontWeight(.semibold)
+                                .foregroundStyle(.primary)
+                            Text("Today's average", comment: "Stats banner subtitle")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
                     }
 
                     Spacer(minLength: 8)
