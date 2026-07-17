@@ -90,8 +90,8 @@ struct CurrentGlucoseView: View {
         // icon mirrors the badge across BOTH axes so it lands in the truly
         // opposite corner — badge at 7-8 o'clock, icon at 1-2 o'clock.
         let arcVisible = cgmProgress != nil && shouldShowArc
-        let badgeOffsetX: CGFloat = arcVisible ? -76 : -69
-        let badgeOffsetY: CGFloat = arcVisible ? 76 : 69
+        let badgeOffsetX: CGFloat = arcVisible ? -72 : -65
+        let badgeOffsetY: CGFloat = arcVisible ? 72 : 65
 
         ZStack {
             if let progress = cgmProgress, shouldShowArc {
@@ -127,7 +127,7 @@ struct CurrentGlucoseView: View {
                         sensorLifecycleSandColor,
                         sensorLifecycleSandColor
                     )
-                    .offset(x: -badgeOffsetX - 8, y: -badgeOffsetY + 8)
+                    .offset(x: -badgeOffsetX - 4, y: -badgeOffsetY + 4)
                     .zIndex(1)
             }
         }
