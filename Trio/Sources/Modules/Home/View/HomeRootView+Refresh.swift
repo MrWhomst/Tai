@@ -65,7 +65,9 @@ extension Home.RootView {
     private func forceLoop() {
         isForcingLoop = true
         state.runLoop()
-        Task {
+        // Main actor: the poll reads observable state that mutates on main,
+        // and it only sleeps between reads, so it never blocks the UI.
+        Task { @MainActor in
             let start = Date()
             while !state.isLooping, Date().timeIntervalSince(start) < 3 {
                 try? await Task.sleep(for: .milliseconds(100))
