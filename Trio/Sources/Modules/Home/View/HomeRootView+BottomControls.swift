@@ -722,7 +722,9 @@ extension Home.RootView {
                 }
         }
         .frame(height: HomeLayout.bottomPanelHeight)
-        .glassPanel(tint: cardTint, tintOpacity: 0.12, strokeOpacity: cardTint == nil ? 0.08 : 0.35)
+        // Neutral glass like the stats face; the state color survives only as
+        // the slight border.
+        .glassPanel(tint: cardTint, tintOpacity: 0, strokeOpacity: cardTint == nil ? 0.08 : 0.35)
     }
 
     @ViewBuilder func bolusProgressBar(_ progress: Decimal) -> some View {
