@@ -37,6 +37,7 @@ enum HomeLayout {
 
     /// Zone D: breathing room above and below the chart's pane stack.
     static let chartVerticalPadding: CGFloat = 8
-    /// Zone D: chart floor; must stay below the natural SE-class allocation.
-    static let chartMinHeight: CGFloat = 240
+    /// last-resort chart floor; must stay below the tightest natural allocation
+    /// (SE under the iOS 26 tab bar + accessory leaves ~140) or the bottom zone overflows
+    static let chartMinHeight: CGFloat = 130
 }

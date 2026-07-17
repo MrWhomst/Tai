@@ -74,6 +74,7 @@
 		7A11AC0DE000000000000103 /* HomeRootView+BottomControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A11AC0DE000000000000003 /* HomeRootView+BottomControls.swift */; };
 		7A11AC0DE000000000000105 /* HomeLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A11AC0DE000000000000005 /* HomeLayout.swift */; };
 		7A11AC0DE000000000000113 /* MultiUsePanelState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A11AC0DE000000000000013 /* MultiUsePanelState.swift */; };
+		7A11AC0DE000000000000116 /* GlassChrome.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A11AC0DE000000000000016 /* GlassChrome.swift */; };
 		7A11AC0DE000000000000114 /* ManualGlucoseEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A11AC0DE000000000000014 /* ManualGlucoseEntryView.swift */; };
 		7A11AC0DE000000000000115 /* MultiUsePanelStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A11AC0DE000000000000015 /* MultiUsePanelStateTests.swift */; };
 		3811DE3F25C9D4A100A708ED /* SettingsStateModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3811DE3925C9D4A100A708ED /* SettingsStateModel.swift */; };
@@ -1198,6 +1199,7 @@
 		7A11AC0DE000000000000003 /* HomeRootView+BottomControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HomeRootView+BottomControls.swift"; sourceTree = "<group>"; };
 		7A11AC0DE000000000000005 /* HomeLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeLayout.swift; sourceTree = "<group>"; };
 		7A11AC0DE000000000000013 /* MultiUsePanelState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiUsePanelState.swift; sourceTree = "<group>"; };
+		7A11AC0DE000000000000016 /* GlassChrome.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassChrome.swift; sourceTree = "<group>"; };
 		7A11AC0DE000000000000014 /* ManualGlucoseEntryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualGlucoseEntryView.swift; sourceTree = "<group>"; };
 		7A11AC0DE000000000000015 /* MultiUsePanelStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiUsePanelStateTests.swift; sourceTree = "<group>"; };
 		3811DE3925C9D4A100A708ED /* SettingsStateModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsStateModel.swift; sourceTree = "<group>"; };
@@ -2596,6 +2598,7 @@
 				7A11AC0DE000000000000003 /* HomeRootView+BottomControls.swift */,
 				7A11AC0DE000000000000005 /* HomeLayout.swift */,
 				7A11AC0DE000000000000013 /* MultiUsePanelState.swift */,
+				7A11AC0DE000000000000016 /* GlassChrome.swift */,
 				3833B51E260264AC003021B3 /* Chart */,
 				3833B51F260264B6003021B3 /* Header */,
 				FDB1D1005DA54C048E622761 /* QuickPickBoluses */,
@@ -5687,6 +5690,7 @@
 				7A11AC0DE000000000000103 /* HomeRootView+BottomControls.swift in Sources */,
 				7A11AC0DE000000000000105 /* HomeLayout.swift in Sources */,
 				7A11AC0DE000000000000113 /* MultiUsePanelState.swift in Sources */,
+				7A11AC0DE000000000000116 /* GlassChrome.swift in Sources */,
 				7A11AC0DE000000000000114 /* ManualGlucoseEntryView.swift in Sources */,
 				584C79A91D034426A1DE60CB /* SlideToConfirmView.swift in Sources */,
 				DECF1903237041E2BBBE4033 /* QuickPickBolusesInfoView.swift in Sources */,

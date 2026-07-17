@@ -219,20 +219,6 @@ extension Home.RootView {
     ) -> some View {
         Button(action: action) {
             ZStack {
-                RoundedRectangle(cornerRadius: 17, style: .continuous)
-                    .fill(.ultraThinMaterial)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 17, style: .continuous)
-                            .fill(tint.opacity(isCritical ? 0.30 : 0.12))
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 17, style: .continuous)
-                            .strokeBorder(tint.opacity(isCritical ? 0.8 : 0.35), lineWidth: isCritical ? 1.5 : 1)
-                    )
-                    .frame(height: HomeLayout.statsBannerHeight)
-                    .clipShape(RoundedRectangle(cornerRadius: 17, style: .continuous))
-                    .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.25 : 0.10), radius: 3, y: 1)
-
                 HStack(spacing: 12) {
                     adjustmentIcon(systemImage, tint: tint)
 
@@ -255,6 +241,14 @@ extension Home.RootView {
                 }
                 .padding(.horizontal, 16)
             }
+            .frame(height: HomeLayout.statsBannerHeight)
+            .glassPanel(
+                tint: tint,
+                tintOpacity: isCritical ? 0.30 : 0.12,
+                strokeOpacity: isCritical ? 0.8 : 0.35,
+                strokeWidth: isCritical ? 1.5 : 1
+            )
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
     }
@@ -353,22 +347,6 @@ extension Home.RootView {
             state.showModal(for: .statistics)
         } label: {
             ZStack {
-                // Same chrome as the adjustment card above, tinted border only.
-                RoundedRectangle(cornerRadius: 17, style: .continuous)
-                    .fill(
-                        colorScheme == .dark ?
-                            Color(red: 0.03921568627, green: 0.133333333, blue: 0.2156862745) :
-                            Color.insulin.opacity(0.1)
-                    )
-                    .background(.ultraThinMaterial.opacity(colorScheme == .dark ? 0.35 : 0))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 17, style: .continuous)
-                            .strokeBorder(Color.insulin.opacity(0.35), lineWidth: 1)
-                    )
-                    .frame(height: HomeLayout.statsBannerHeight)
-                    .clipShape(RoundedRectangle(cornerRadius: 17, style: .continuous))
-                    .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.25 : 0.10), radius: 3, y: 1)
-
                 HStack(alignment: .center, spacing: 12) {
                     VStack(alignment: .leading, spacing: 4) {
                         HStack(alignment: .firstTextBaseline, spacing: 6) {
@@ -399,6 +377,9 @@ extension Home.RootView {
                 }
                 .padding(.horizontal, 16)
             }
+            .frame(height: HomeLayout.statsBannerHeight)
+            .glassPanel(tint: .insulin, tintOpacity: 0.10, strokeOpacity: 0.30)
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
     }
@@ -666,31 +647,6 @@ extension Home.RootView {
             : profileToShow != nil ? Color.blue : nil
 
         ZStack {
-            /// rectangle as background
-            RoundedRectangle(cornerRadius: 15)
-                .fill(
-                    (overrideString != nil || tempTargetString != nil || profileToShow != nil) ?
-                        (
-                            colorScheme == .dark ?
-                                Color(red: 0.03921568627, green: 0.133333333, blue: 0.2156862745) :
-                                Color.insulin.opacity(0.1)
-                        ) : Color.clear // Use clear and add the Material in the background
-                )
-                .background(.ultraThinMaterial.opacity(colorScheme == .dark ? 0.35 : 0))
-                .clipShape(RoundedRectangle(cornerRadius: 15))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 15)
-                        .strokeBorder((cardTint ?? Color.clear).opacity(0.35), lineWidth: 1)
-                )
-                .frame(height: HomeLayout.bottomPanelHeight)
-                .shadow(
-                    color: (overrideString != nil || tempTargetString != nil || profileToShow != nil) ?
-                        (
-                            colorScheme == .dark ? Color(red: 0.02745098039, green: 0.1098039216, blue: 0.1411764706) :
-                                Color.black.opacity(0.33)
-                        ) : Color.clear,
-                    radius: 3
-                )
             HStack {
                 if let overrideString = overrideString, let tempTargetString = tempTargetString {
                     HStack {
@@ -765,6 +721,8 @@ extension Home.RootView {
                     Text("Select Adjustment")
                 }
         }
+        .frame(height: HomeLayout.bottomPanelHeight)
+        .glassPanel(tint: cardTint, tintOpacity: 0.12, strokeOpacity: cardTint == nil ? 0.08 : 0.35)
     }
 
     @ViewBuilder func bolusProgressBar(_ progress: Decimal) -> some View {
@@ -800,25 +758,6 @@ extension Home.RootView {
                 .bolusStatus == .inProgress ? String(localized: "Bolusing") : String(localized: "Initiating…")
 
             ZStack {
-                /// rectangle as background
-                RoundedRectangle(cornerRadius: 15)
-                    .fill(
-                        colorScheme == .dark ? Color(red: 0.03921568627, green: 0.133333333, blue: 0.2156862745) : Color
-                            .insulin
-                            .opacity(0.1)
-                    )
-                    .background(.ultraThinMaterial.opacity(colorScheme == .dark ? 0.35 : 0))
-                    .clipShape(RoundedRectangle(cornerRadius: 15))
-                    .frame(height: HomeLayout.bottomPanelHeight)
-                    .shadow(
-                        color: (overrideString != nil || tempTargetString != nil) ?
-                            (
-                                colorScheme == .dark ? Color(red: 0.02745098039, green: 0.1098039216, blue: 0.1411764706) :
-                                    Color.black.opacity(0.33)
-                            ) : Color.clear,
-                        radius: 3
-                    )
-
                 /// actual bolus view
                 HStack {
                     Image("bolus")
@@ -854,13 +793,15 @@ extension Home.RootView {
                     }
                 }.padding(.horizontal, 10)
             }
+            .frame(height: HomeLayout.bottomPanelHeight)
+            .glassPanel(tint: .insulin, tintOpacity: 0.18, strokeOpacity: 0.30)
             .overlay(alignment: .bottom) {
                 let offset = HomeLayout.bottomPanelHeight * 0.75
                 bolusProgressBar(progress)
                     .padding(.leading, 42)
                     .padding(.trailing, 50)
                     .offset(y: offset)
-            }.clipShape(RoundedRectangle(cornerRadius: 15))
+            }.clipShape(GlassChrome.panelShape)
         }
     }
 }
