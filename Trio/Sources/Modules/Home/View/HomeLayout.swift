@@ -34,6 +34,7 @@ enum HomeLayout {
     static var bottomZoneHeight: CGFloat {
         bottomPanelHeight + bottomZoneSpacing + statsBannerHeight + bottomZoneTopPadding + bottomZoneBottomPadding
     }
+
     /// Zone D: breathing room above and below the chart's pane stack.
     static let chartVerticalPadding: CGFloat = 8
     /// Zone D: chart floor; must stay below the natural SE-class allocation.

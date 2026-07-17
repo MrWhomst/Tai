@@ -66,5 +66,4 @@ extension Home.StateModel {
         let glucose = units == .mmolL ? amount.asMgdL : amount
         glucoseStorage.addManualGlucose(glucose: Int(glucose))
     }
-
 }
