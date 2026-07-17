@@ -459,7 +459,8 @@ extension Home.RootView {
     }
 
     @ViewBuilder func adjustmentsProfileView(_ profile: ProfileStored) -> some View {
-        HStack {
+        // Wider gap than OR/TT: the badge box has a hard edge, glyphs have air.
+        HStack(spacing: 12) {
             Group {
                 if profile.expiresAt != nil {
                     Image(systemName: "person.2.arrow.trianglehead.counterclockwise")
