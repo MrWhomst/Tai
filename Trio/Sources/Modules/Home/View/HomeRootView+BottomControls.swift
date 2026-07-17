@@ -164,23 +164,19 @@ extension Home.RootView {
     }
 
     /// Zone E: two fixed slots. Top row shows the bolus progress while a bolus
-    /// runs, otherwise the adjustments panel, with the chart-legend button at
-    /// the trailing edge. Below it the multi-use panel: stats banner by
-    /// default, prioritized warnings when something needs attention.
+    /// runs, otherwise the adjustments panel. Below it the multi-use panel:
+    /// stats banner by default, prioritized warnings when something needs
+    /// attention. The chart-legend button lives on the chart's lower right.
     @ViewBuilder func bottomControls() -> some View {
         VStack(spacing: HomeLayout.bottomZoneSpacing) {
-            HStack(spacing: 8) {
-                Group {
-                    if let progress = state.bolusProgress {
-                        bolusProgressView(progress)
-                    } else {
-                        adjustmentView()
-                    }
+            Group {
+                if let progress = state.bolusProgress {
+                    bolusProgressView(progress)
+                } else {
+                    adjustmentView()
                 }
-                .frame(maxWidth: .infinity)
-
-                infoButton
             }
+            .frame(maxWidth: .infinity)
             .frame(height: HomeLayout.bottomPanelHeight)
             .animation(.easeInOut(duration: 0.2), value: state.bolusProgress != nil)
 
@@ -190,26 +186,6 @@ extension Home.RootView {
         .padding(.horizontal, HomeLayout.bottomPanelHorizontalPadding)
         .padding(.top, HomeLayout.bottomZoneTopPadding)
         .padding(.bottom, HomeLayout.bottomZoneBottomPadding)
-    }
-
-    var infoButton: some View {
-        Button(action: {
-            state.isLegendPresented.toggle()
-        }) {
-            Image(systemName: "info")
-                .font(.system(size: 17))
-                .foregroundColor(colorScheme == .dark ? Color.white : Color.black).opacity(0.9)
-                .frame(width: 32, height: 32)
-                .background(
-                    colorScheme == .dark ? Color(red: 0.1176470588, green: 0.2352941176, blue: 0.3725490196) :
-                        Color.white
-                )
-                .clipShape(Circle())
-        }
-        .shadow(
-            color: Color.black.opacity(colorScheme == .dark ? 0.75 : 0.33),
-            radius: colorScheme == .dark ? 5 : 3
-        )
     }
 
     // MARK: - Multi-use panel (stats banner / prioritized warnings)

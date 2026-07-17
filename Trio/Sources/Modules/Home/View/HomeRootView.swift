@@ -89,7 +89,29 @@ extension Home {
                     showCobIobChart: state.showCobIobChart
                 )
             }
+            .overlay(alignment: .bottomTrailing) {
+                chartInfoButton
+                    .offset(x: 0, y: -10)
+            }
             .padding(.vertical, HomeLayout.chartVerticalPadding)
+        }
+
+        /// Chart-legend button pinned to the chart's lower-right; the chart
+        /// frame is fixed, so it stays put with the COB/IOB pane on or off.
+        @ViewBuilder private var chartInfoButton: some View {
+            Button {
+                state.isLegendPresented.toggle()
+            } label: {
+                Image(systemName: "info")
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(.secondary)
+                    .frame(width: 32, height: 32)
+                    .background(Circle().fill(.ultraThinMaterial))
+                    .overlay(Circle().strokeBorder(Color.primary.opacity(0.12), lineWidth: 1))
+            }
+            .contentShape(Circle())
+            .padding(.bottom, 6)
+            .padding(.trailing, 8)
         }
 
         @ViewBuilder func mainViewElements(_ geo: GeometryProxy) -> some View {
