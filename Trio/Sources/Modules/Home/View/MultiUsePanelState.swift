@@ -31,7 +31,7 @@ enum MultiUsePanelState: Equatable {
         maxIOB: Decimal,
         hasOverride: Bool,
         hasTempTarget: Bool,
-        hasExtraProfiles: Bool,
+        hasTempProfile: Bool,
         now: Date
     ) -> MultiUsePanelState {
         if bolusInProgress { return .bolusProgress }
@@ -42,7 +42,9 @@ enum MultiUsePanelState: Equatable {
         if hasOverride, hasTempTarget { return .adjustments(.dual) }
         if hasOverride { return .adjustments(.override) }
         if hasTempTarget { return .adjustments(.tempTarget) }
-        if hasExtraProfiles { return .adjustments(.profile) }
+        // temporary (expiring) profiles always surface; indefinite ones only
+        // via the stats-face setting
+        if hasTempProfile { return .adjustments(.profile) }
         return .stats
     }
 }

@@ -219,7 +219,7 @@ extension Home.RootView {
     /// when the user actually maintains several — the active profile.
     var hasActiveAdjustment: Bool {
         overrideString != nil || tempTargetString != nil
-            || (profilesForCount.count > 1 && activeProfile.first != nil)
+            || activeProfile.first?.expiresAt != nil
     }
 
     var multiUsePanelState: MultiUsePanelState {
@@ -231,7 +231,7 @@ extension Home.RootView {
             maxIOB: state.maxIOB,
             hasOverride: overrideString != nil,
             hasTempTarget: tempTargetString != nil,
-            hasExtraProfiles: profilesForCount.count > 1 && activeProfile.first != nil,
+            hasTempProfile: activeProfile.first?.expiresAt != nil,
             now: state.timerDate
         )
     }
@@ -394,8 +394,14 @@ extension Home.RootView {
                 }
                 .transition(.blurReplace)
             case .stats:
-                statsBanner()
-                    .transition(.blurReplace)
+                // The face setting can put the (indefinite) profile card here.
+                if state.settingsManager?.settings.homeStatsPanelFace == .profile, activeProfile.first != nil {
+                    adjustmentView()
+                        .transition(.blurReplace)
+                } else {
+                    statsBanner()
+                        .transition(.blurReplace)
+                }
             }
         }
         // Branch changes ARE identity changes here (each case is a distinct
@@ -485,7 +491,8 @@ extension Home.RootView {
             ZStack {
                 HStack(alignment: .center, spacing: 12) {
                     switch face {
-                    case .timeInRange:
+                    case .timeInRange,
+                         .profile:
                         VStack(alignment: .leading, spacing: 4) {
                             HStack(alignment: .firstTextBaseline, spacing: 6) {
                                 Text(tirString)
@@ -800,7 +807,6 @@ extension Home.RootView {
 
         let profileToShow: ProfileStored? = {
             guard overrideString == nil, tempTargetString == nil else { return nil }
-            guard profilesForCount.count > 1 else { return nil }
             return activeProfile.first
         }()
 

@@ -63,14 +63,6 @@ extension Home {
             fetchLimit: 1
         )) var activeProfile: FetchedResults<ProfileStored>
 
-        /// Count-only fetch, capped at 2 — profile surfaces hide when a user
-        /// has just one profile, so we only need to know whether the total is >1.
-        @FetchRequest(fetchRequest: ProfileStored.fetch(
-            NSPredicate(value: true),
-            ascending: false,
-            fetchLimit: 2
-        )) var profilesForCount: FetchedResults<ProfileStored>
-
         private var historySFSymbol: String {
             if #available(iOS 17.0, *) {
                 return "book.pages"

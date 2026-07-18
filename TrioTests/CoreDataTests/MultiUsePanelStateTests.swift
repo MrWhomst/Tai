@@ -16,7 +16,7 @@ import Testing
         maxIOB: Decimal = 10,
         hasOverride: Bool = false,
         hasTempTarget: Bool = false,
-        hasExtraProfiles: Bool = false
+        hasTempProfile: Bool = false
     ) -> MultiUsePanelState {
         MultiUsePanelState.resolve(
             bolusInProgress: bolusInProgress,
@@ -26,7 +26,7 @@ import Testing
             maxIOB: maxIOB,
             hasOverride: hasOverride,
             hasTempTarget: hasTempTarget,
-            hasExtraProfiles: hasExtraProfiles,
+            hasTempProfile: hasTempProfile,
             now: now
         )
     }
@@ -82,7 +82,7 @@ import Testing
     @Test("Adjustment sub-state precedence") func adjustmentSubState() {
         #expect(resolve(lastGlucoseDate: fresh, hasOverride: true, hasTempTarget: true) == .adjustments(.dual))
         #expect(resolve(lastGlucoseDate: fresh, hasOverride: true) == .adjustments(.override))
-        #expect(resolve(lastGlucoseDate: fresh, hasExtraProfiles: true) == .adjustments(.profile))
+        #expect(resolve(lastGlucoseDate: fresh, hasTempProfile: true) == .adjustments(.profile))
         #expect(resolve(lastGlucoseDate: fresh) == .stats)
     }
 }
