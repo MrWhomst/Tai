@@ -241,6 +241,10 @@ extension Home.RootView {
     @ViewBuilder var adjustmentIndicator: some View {
         if hasActiveAdjustment {
             Button {
+                // land on the sub-tab matching the shown icon
+                let tab: Adjustments.Tab = overrideString != nil ? .overrides
+                    : tempTargetString != nil ? .tempTargets : .profiles
+                UserDefaults.standard.set(tab.rawValue, forKey: Adjustments.pendingTabKey)
                 selectedTab = 3
             } label: {
                 if overrideString != nil {
@@ -656,7 +660,7 @@ extension Home.RootView {
             // to Overrides and Temp Targets. We can't reach AdjustmentsRootView's local
             // tab state directly, so we leave a flag in UserDefaults that the view
             // consumes on its next .onAppear.
-            UserDefaults.standard.set(true, forKey: Adjustments.pendingProfilesTabKey)
+            UserDefaults.standard.set(Adjustments.Tab.profiles.rawValue, forKey: Adjustments.pendingTabKey)
             selectedTab = 3
         }
     }
