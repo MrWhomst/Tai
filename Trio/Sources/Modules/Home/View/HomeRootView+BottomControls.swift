@@ -202,8 +202,9 @@ extension Home.RootView {
                 }
             }
             .foregroundStyle(isSnoozed ? AnyShapeStyle(.secondary) : AnyShapeStyle(.primary))
-            .frame(minWidth: 40)
-            .frame(height: 40)
+            .frame(minWidth: HomeLayout.bottomPanelHeight)
+            // full slot height, congruent with the multi-use panel beside it
+            .frame(height: HomeLayout.bottomPanelHeight)
             .padding(.horizontal, isSnoozed ? 8 : 0)
             .glassPanel(strokeOpacity: 0.15)
             // glassEffect does not extend the hit area; make the whole pill tappable
@@ -491,8 +492,8 @@ extension Home.RootView {
             ZStack {
                 HStack(alignment: .center, spacing: 12) {
                     switch face {
-                    case .timeInRange,
-                         .profile:
+                    case .profile,
+                         .timeInRange:
                         VStack(alignment: .leading, spacing: 4) {
                             HStack(alignment: .firstTextBaseline, spacing: 6) {
                                 Text(tirString)
