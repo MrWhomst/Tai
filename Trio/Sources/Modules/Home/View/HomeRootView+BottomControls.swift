@@ -339,20 +339,8 @@ extension Home.RootView {
                         .transition(.blurReplace)
                 }
             case .adjustments(.profile):
-                // Profile is ambient info, unlike an override or temp target:
-                // it alternates with the stats face every 30s.
-                let showStats = Int(state.timerDate.timeIntervalSinceReferenceDate / 30).isMultiple(of: 2)
-                Group {
-                    if showStats {
-                        statsBanner()
-                            .transition(.blurReplace)
-                    } else {
-                        adjustmentView()
-                            .transition(.blurReplace)
-                    }
-                }
-                .animation(.easeInOut(duration: 0.7), value: showStats)
-                .transition(.blurReplace)
+                adjustmentView()
+                    .transition(.blurReplace)
             case .adjustments(.dual):
                 adjustmentView()
                     .transition(.blurReplace)
