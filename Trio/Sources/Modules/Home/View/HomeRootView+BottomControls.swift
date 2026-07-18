@@ -577,6 +577,7 @@ extension Home.RootView {
         .frame(maxWidth: .infinity, alignment: .leading)
         .contentShape(Rectangle())
         .onTapGesture {
+            UserDefaults.standard.set(Adjustments.Tab.overrides.rawValue, forKey: Adjustments.pendingTabKey)
             selectedTab = 3
         }
     }
@@ -606,6 +607,7 @@ extension Home.RootView {
         .frame(maxWidth: .infinity, alignment: .leading)
         .contentShape(Rectangle())
         .onTapGesture {
+            UserDefaults.standard.set(Adjustments.Tab.tempTargets.rawValue, forKey: Adjustments.pendingTabKey)
             selectedTab = 3
         }
     }
