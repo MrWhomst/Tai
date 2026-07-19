@@ -366,6 +366,7 @@
 		492B89D82DAE5E1B00D5E42B /* HorizontalPumpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 492B89D72DAE5E1B00D5E42B /* HorizontalPumpView.swift */; };
 		492DD6B42F86C65900EA69C1 /* UnscentedKalmanFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 492DD6B32F86C65900EA69C1 /* UnscentedKalmanFilter.swift */; };
 		492DD6B52F86C65900EA69C1 /* AdaptiveUKFSmoother.swift in Sources */ = {isa = PBXBuildFile; fileRef = 492DD6B62F86C65900EA69C1 /* AdaptiveUKFSmoother.swift */; };
+		492DD6C02F86C65900EA69C1 /* GlucoseBucketing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 492DD6C12F86C65900EA69C1 /* GlucoseBucketing.swift */; };
 		495A42CB2F891191005B0044 /* CarbSensitivities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 495A42CA2F891191005B0044 /* CarbSensitivities.swift */; };
 		495A42CF2F8911CC005B0044 /* CSFEditorDataFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 495A42CE2F8911CC005B0044 /* CSFEditorDataFlow.swift */; };
 		495A42D12F8911D7005B0044 /* CSFEditorProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 495A42D02F8911D7005B0044 /* CSFEditorProvider.swift */; };
@@ -380,6 +381,7 @@
 		49AC5B642D7F2833005A47F3 /* CustomDateTimePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49AC5B632D7F2833005A47F3 /* CustomDateTimePicker.swift */; };
 		49AD0CEF2F8797F2004301B6 /* UKFTestData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49AD0CEE2F8797F2004301B6 /* UKFTestData.swift */; };
 		49AD0CF12F8797F3004301B6 /* AdaptiveUKFSmootherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49AD0CF02F8797F3004301B6 /* AdaptiveUKFSmootherTests.swift */; };
+		49AD0D012F8797F3004301B6 /* GlucoseBucketingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49AD0D002F8797F3004301B6 /* GlucoseBucketingTests.swift */; };
 		49AD0CF32F8797F4004301B6 /* AdaptiveUKFOrderingRegressionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49AD0CF22F8797F4004301B6 /* AdaptiveUKFOrderingRegressionTest.swift */; };
 		49AD0CF52F8797F5004301B6 /* ukf_python_reference.json in Resources */ = {isa = PBXBuildFile; fileRef = 49AD0CF42F8797F5004301B6 /* ukf_python_reference.json */; };
 		49B21BBD2D7F102100D0B6C3 /* MainChartHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49B21BBC2D7F102100D0B6C3 /* MainChartHelper.swift */; };
@@ -1505,6 +1507,7 @@
 		492B89D72DAE5E1B00D5E42B /* HorizontalPumpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HorizontalPumpView.swift; sourceTree = "<group>"; };
 		492DD6B32F86C65900EA69C1 /* UnscentedKalmanFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnscentedKalmanFilter.swift; sourceTree = "<group>"; };
 		492DD6B62F86C65900EA69C1 /* AdaptiveUKFSmoother.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveUKFSmoother.swift; sourceTree = "<group>"; };
+		492DD6C12F86C65900EA69C1 /* GlucoseBucketing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlucoseBucketing.swift; sourceTree = "<group>"; };
 		495A42CA2F891191005B0044 /* CarbSensitivities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarbSensitivities.swift; sourceTree = "<group>"; };
 		495A42CE2F8911CC005B0044 /* CSFEditorDataFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSFEditorDataFlow.swift; sourceTree = "<group>"; };
 		495A42D02F8911D7005B0044 /* CSFEditorProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSFEditorProvider.swift; sourceTree = "<group>"; };
@@ -1523,6 +1526,7 @@
 		49AC5CE22D7F5F39005A47F3 /* WhatToTest.en-CA.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = "WhatToTest.en-CA.txt"; path = "Testflight/WhatToTest.en-CA.txt"; sourceTree = "<group>"; };
 		49AD0CEE2F8797F2004301B6 /* UKFTestData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UKFTestData.swift; sourceTree = "<group>"; };
 		49AD0CF02F8797F3004301B6 /* AdaptiveUKFSmootherTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveUKFSmootherTests.swift; sourceTree = "<group>"; };
+		49AD0D002F8797F3004301B6 /* GlucoseBucketingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlucoseBucketingTests.swift; sourceTree = "<group>"; };
 		49AD0CF22F8797F4004301B6 /* AdaptiveUKFOrderingRegressionTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveUKFOrderingRegressionTest.swift; sourceTree = "<group>"; };
 		49AD0CF42F8797F5004301B6 /* ukf_python_reference.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "Fixtures/ukf_python_reference.json"; sourceTree = "<group>"; };
 		49B21BBC2D7F102100D0B6C3 /* MainChartHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainChartHelper.swift; sourceTree = "<group>"; };
@@ -3085,6 +3089,7 @@
 			children = (
 				492DD6B32F86C65900EA69C1 /* UnscentedKalmanFilter.swift */,
 				492DD6B62F86C65900EA69C1 /* AdaptiveUKFSmoother.swift */,
+				492DD6C12F86C65900EA69C1 /* GlucoseBucketing.swift */,
 				492B87002D9EC02700D5E42B /* TaiStyle.swift */,
 				49CCD2102CAE5E99002A9476 /* BulletList.swift */,
 				E06B9119275B5EEA003C04B6 /* Array+Extension.swift */,
@@ -3277,6 +3282,7 @@
 				7A11AC0DE000000000000015 /* MultiUsePanelStateTests.swift */,
 				49AD0CEE2F8797F2004301B6 /* UKFTestData.swift */,
 				49AD0CF02F8797F3004301B6 /* AdaptiveUKFSmootherTests.swift */,
+				49AD0D002F8797F3004301B6 /* GlucoseBucketingTests.swift */,
 				49AD0CF22F8797F4004301B6 /* AdaptiveUKFOrderingRegressionTest.swift */,
 				49AD0CF42F8797F5004301B6 /* ukf_python_reference.json */,
 				C2AA6D9B2E1AAC6300BF6C16 /* TDDStorageTimezoneTests.swift */,
@@ -5936,6 +5942,7 @@
 				9825E5E923F0B8FA80C8C7C7 /* NightscoutConfigStateModel.swift in Sources */,
 				492DD6B42F86C65900EA69C1 /* UnscentedKalmanFilter.swift in Sources */,
 				492DD6B52F86C65900EA69C1 /* AdaptiveUKFSmoother.swift in Sources */,
+				492DD6C02F86C65900EA69C1 /* GlucoseBucketing.swift in Sources */,
 				DDA6E3222D25901100C2988C /* TempTargetHelpView.swift in Sources */,
 				58645B9D2CA2D275008AFCE7 /* DeterminationSetup.swift in Sources */,
 				DDFF202F2DB1D14500AB8A96 /* NotificationPermissionStepView.swift in Sources */,
@@ -6305,6 +6312,7 @@
 			files = (
 				49AD0CF12F8797F3004301B6 /* AdaptiveUKFSmootherTests.swift in Sources */,
 				7A11AC0DE000000000000115 /* MultiUsePanelStateTests.swift in Sources */,
+				49AD0D012F8797F3004301B6 /* GlucoseBucketingTests.swift in Sources */,
 				49AD0CF32F8797F4004301B6 /* AdaptiveUKFOrderingRegressionTest.swift in Sources */,
 				3B5CD2C92D4AECD500CE213C /* ProfileCarbsTests.swift in Sources */,
 				3BEDC9932EEB27B600AC6492 /* IobConsecutiveEventsTests.swift in Sources */,

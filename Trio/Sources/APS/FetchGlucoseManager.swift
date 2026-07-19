@@ -800,7 +800,7 @@ extension BaseFetchGlucoseManager {
                 }
 
                 // The engine requires NEWEST-first input; fetchGlucose returns oldest-first.
-                // Reverse once and keep readings/values index-aligned for the write-back.
+                // Reverse once and keep readings/timestamps aligned for the write-back.
                 let newestFirst = Array(glucoseReadings.reversed())
                 let input = newestFirst.map { stored in
                     AdaptiveUKFGlucoseValue(
@@ -809,20 +809,37 @@ extension BaseFetchGlucoseManager {
                     )
                 }
 
+                // AAPS feeds its smoother 5-min-BUCKETED data, not raw readings. Bucketing regularises
+                // sub-2-min-spaced backfills/catch-ups onto a 5-min grid, which stops `findDataSegments`
+                // from breaking the segment and re-initialising the filter from a raw value (the
+                // "V-spike" glitch). Pure preprocessing — the smoother core is untouched.
+                let bucketed = GlucoseBucketing.bucketed(input)
+
                 let engine = AdaptiveUKFSmoother(iobAt: { timestamp in
                     Self.iobAt(timestamp, in: iobTimeline)
                 })
-                let output = engine.smooth(input)
+                let grid = engine.smooth(bucketed)
 
+                // Write-back: AAPS displays bucketed data directly, but Trio stores `smoothedGlucose`
+                // per `GlucoseStored` row (oref doses off `recalculated = smoothed ?? value`), so each
+                // raw row samples the smoothed grid at its own timestamp by linear interpolation.
                 // Store as integer mg/dL, consistent with the raw values and the other algorithms;
                 // fractional filter output is false precision for oref, which rounds on read anyway.
-                for (stored, value) in zip(newestFirst, output) {
-                    let smoothed = value.smoothed ?? max(value.value, 39.0)
-                    stored.smoothedGlucose = NSDecimalNumber(value: Int(smoothed.rounded()))
+                for (stored, value) in zip(newestFirst, input) {
+                    // `Int(_: Double)` traps on NaN/infinity, so a non-finite filter output would kill the
+                    // app rather than degrade. Fall back to the raw reading, which is what oref uses when
+                    // `smoothedGlucose` is unset anyway.
+                    let interpolated = GlucoseBucketing.interpolatedSmoothed(at: value.timestamp, grid: grid)
+                    let smoothed = interpolated.flatMap { $0.isFinite ? $0 : nil } ?? value.value
+                    stored.smoothedGlucose = NSDecimalNumber(value: Int(max(smoothed, 39.0).rounded()))
                 }
 
                 try context.save()
-                debug(.deviceManager, "Adaptive UKF smoothing: saved \(output.count) smoothed values to CoreData")
+                debug(
+                    .deviceManager,
+                    "Adaptive UKF smoothing: saved \(newestFirst.count) smoothed values " +
+                        "(buckets=\(bucketed.count)) to CoreData"
+                )
             }
 
             // Force viewContext to refresh so UI sees updated smoothed values immediately
