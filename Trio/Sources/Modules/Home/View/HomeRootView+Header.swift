@@ -39,11 +39,6 @@ extension Home.RootView {
                 state.shouldDisplayCGMSetupSheet.toggle()
             }
         }
-        .onLongPressGesture {
-            let impactHeavy = UIImpactFeedbackGenerator(style: .heavy)
-            impactHeavy.impactOccurred()
-            showSnoozeSheet = true
-        }
     }
 
     @ViewBuilder func rightHeaderPanel() -> some View {
