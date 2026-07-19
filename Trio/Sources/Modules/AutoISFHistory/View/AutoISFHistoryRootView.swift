@@ -109,25 +109,28 @@ extension AutoISFHistory {
                                 .foregroundColor(.secondary)
                                 .frame(maxWidth: .infinity, alignment: .trailing)
 
+                            // Neutral on purpose: the values below take the hue of
+                            // whichever factor won, so a fixed hue here would read
+                            // as a claim about which one that is.
                             Text(String(localized: "final", comment: "Label for final"))
                                 .bold()
-                                .foregroundColor(.uam)
+                                .foregroundColor(.primary)
                                 .frame(maxWidth: .infinity, alignment: .trailing)
 
                             Text(String(localized: "acce", comment: "Label for acce"))
-                                .foregroundColor(.loopYellow)
+                                .foregroundColor(ISFFactor.acce.color)
                                 .frame(maxWidth: .infinity, alignment: .trailing)
 
                             Text(String(localized: "bg", comment: "Label for bg"))
-                                .foregroundColor(.loopYellow)
+                                .foregroundColor(ISFFactor.bg.color)
                                 .frame(maxWidth: .infinity, alignment: .trailing)
 
                             Text(String(localized: "pp", comment: "Label for pp"))
-                                .foregroundColor(.loopYellow)
+                                .foregroundColor(ISFFactor.pp.color)
                                 .frame(maxWidth: .infinity, alignment: .trailing)
 
                             Text(String(localized: "dura", comment: "Label for dura"))
-                                .foregroundColor(.loopYellow)
+                                .foregroundColor(ISFFactor.dura.color)
                                 .frame(maxWidth: .infinity, alignment: .trailing)
                         }
                     }
@@ -185,6 +188,50 @@ extension AutoISFHistory {
             )
         }
 
+        /// The four autoISF sub-factors, each with its own hue. `final` borrows the
+        /// hue of whichever factor drove it (see `dominant`), so a glance down the
+        /// final column shows which signal was in charge at any point in time.
+        enum ISFFactor {
+            case acce
+            case bg
+            case pp
+            case dura
+
+            /// `bg` and `pp` deliberately borrow the hues of the quantities they
+            /// derive from — the BG value column (`loopGreen`) and the SMB column
+            /// (`insulin`) — so a factor is visually tied to its input.
+            var color: Color {
+                switch self {
+                case .acce: return .uam
+                case .bg: return .loopGreen
+                case .pp: return .insulin
+                case .dura: return .zt
+                }
+            }
+
+            /// `AutoISFAdjust` lifts by `max(dura, bg, acce, pp)` above target and
+            /// brakes by `min(bg, acce)` below it — in both cases the deciding factor
+            /// is the one furthest from the neutral 1.00. Ties keep the declaration
+            /// order (acce, bg, pp, dura). All-neutral means autoISF did nothing.
+            static func dominant(
+                acce: Decimal?,
+                bg: Decimal?,
+                pp: Decimal?,
+                dura: Decimal?
+            ) -> ISFFactor? {
+                let candidates: [(ISFFactor, Decimal)] = [
+                    (.acce, acce ?? 1),
+                    (.bg, bg ?? 1),
+                    (.pp, pp ?? 1),
+                    (.dura, dura ?? 1)
+                ]
+                guard let winner = candidates.max(by: { abs($0.1 - 1) < abs($1.1 - 1) }),
+                      abs(winner.1 - 1) >= Decimal(0.005) // below display precision = neutral
+                else { return nil }
+                return winner.0
+            }
+        }
+
         private struct GridEntryRow: View {
             let entry: AutoISFHistoryEntry
             let glucoseFormatter: NumberFormatter
@@ -212,6 +259,15 @@ extension AutoISFHistory {
                 }
             }
 
+            private var dominantFactor: ISFFactor? {
+                ISFFactor.dominant(
+                    acce: entry.acce_ratio,
+                    bg: entry.bg_ratio,
+                    pp: entry.pp_ratio,
+                    dura: entry.dura_ratio
+                )
+            }
+
             var body: some View {
                 Grid(alignment: .leading, horizontalSpacing: 8) {
                     GridRow {
@@ -233,24 +289,28 @@ extension AutoISFHistory {
                             .foregroundColor(.secondary)
                             .frame(maxWidth: .infinity, alignment: .trailing)
 
+                        // Bold on purpose — this is the applied result. Note it makes
+                        // the hue read brighter here than the same color in the factor
+                        // column it was taken from; that is the weight, not a tint.
                         Text(formatRatio(entry.autoISF_ratio))
-                            .foregroundColor(.uam)
+                            .bold()
+                            .foregroundColor(dominantFactor?.color ?? .secondary)
                             .frame(maxWidth: .infinity, alignment: .trailing)
 
                         Text(formatRatio(entry.acce_ratio))
-                            .foregroundColor(.loopYellow)
+                            .foregroundColor(ISFFactor.acce.color)
                             .frame(maxWidth: .infinity, alignment: .trailing)
 
                         Text(formatRatio(entry.bg_ratio))
-                            .foregroundColor(.loopYellow)
+                            .foregroundColor(ISFFactor.bg.color)
                             .frame(maxWidth: .infinity, alignment: .trailing)
 
                         Text(formatRatio(entry.pp_ratio))
-                            .foregroundColor(.loopYellow)
+                            .foregroundColor(ISFFactor.pp.color)
                             .frame(maxWidth: .infinity, alignment: .trailing)
 
                         Text(formatRatio(entry.dura_ratio))
-                            .foregroundColor(.loopYellow)
+                            .foregroundColor(ISFFactor.dura.color)
                             .frame(maxWidth: .infinity, alignment: .trailing)
                     }
                 }

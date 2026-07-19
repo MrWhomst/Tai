@@ -113,8 +113,9 @@ struct CurrentGlucoseView: View {
         }
         .overlay {
             // Icon-only — text doesn't fit in the bobble corner. Hourglass
-            // variant tracks lifecycle position (sand at bottom = fresh,
-            // sand at top = expiring); palette renders Tai colors with a
+            // variant tracks lifecycle position; the glyph is rotated 180° so
+            // the filled half sits on the opposite side of the neck from the
+            // SF Symbol default. Palette renders Tai colors with a
             // severity-driven outline. Hidden when the trend arrow swings
             // into the icon's top-right corner (fortyFiveUp → arrow at
             // ~1-2 o'clock).
@@ -127,7 +128,8 @@ struct CurrentGlucoseView: View {
                         sensorLifecycleSandColor,
                         sensorLifecycleSandColor
                     )
-                    .offset(x: -badgeOffsetX - 4, y: -badgeOffsetY + 4)
+                    .rotationEffect(.degrees(180))
+                    .offset(x: -badgeOffsetX - 6, y: -badgeOffsetY + 6)
                     .zIndex(1)
             }
         }
