@@ -54,9 +54,9 @@ enum Screen: Identifiable, Hashable {
     case appDiagnostics
     case settingsExport
     case autoISFSettings
-    case B30Conf
-    case KetoConfig
-    case autoisfHistory
+    case b30Settings
+    case ketoProtectSettings
+    case autoISFHistory
     case insulinConcentration
     case adaptProfile
     case profileScheduler
@@ -184,11 +184,11 @@ extension Screen {
             SettingsExport.RootView(resolver: resolver)
         case .autoISFSettings:
             AutoISFSettings.RootView(resolver: resolver)
-        case .B30Conf:
+        case .b30Settings:
             B30Settings.RootView(resolver: resolver)
-        case .KetoConfig:
+        case .ketoProtectSettings:
             KetoProtectSettings.RootView(resolver: resolver)
-        case .autoisfHistory:
+        case .autoISFHistory:
             AutoISFHistory.RootView(resolver: resolver)
         case .insulinConcentration:
             InsulinConcentration.RootView(resolver: resolver)

@@ -261,7 +261,7 @@ enum SettingItems {
         ),
         SettingItem(
             title: "AIMI B30",
-            view: .B30Conf,
+            view: .b30Settings,
             searchContents: [
                 "Eating Soon",
                 "Activate B30 EatingSoon",
@@ -276,7 +276,7 @@ enum SettingItems {
         ),
         SettingItem(
             title: "Keto Protection",
-            view: .KetoConfig,
+            view: .ketoProtectSettings,
             searchContents: [
                 "Acidosis",
                 "Activate KetoProtection",

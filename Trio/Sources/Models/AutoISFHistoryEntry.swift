@@ -1,6 +1,6 @@
 import Foundation
 
-struct autoISFHistory: JSON, Equatable, Hashable {
+struct AutoISFHistoryEntry: JSON, Equatable, Hashable {
     let smb: Decimal?
     let insulin_req: Decimal?
     let sensitivity_ratio: Decimal?
@@ -27,7 +27,7 @@ struct autoISFHistory: JSON, Equatable, Hashable {
     let dura_avg: Decimal?
     let bg_acce: Decimal?
 
-    static func == (lhs: autoISFHistory, rhs: autoISFHistory) -> Bool {
+    static func == (lhs: AutoISFHistoryEntry, rhs: AutoISFHistoryEntry) -> Bool {
         lhs.timestamp == rhs.timestamp &&
             lhs.bg == rhs.bg &&
             lhs.isf == rhs.isf
@@ -40,7 +40,7 @@ struct autoISFHistory: JSON, Equatable, Hashable {
     }
 }
 
-extension autoISFHistory {
+extension AutoISFHistoryEntry {
     private enum CodingKeys: String, CodingKey {
         case smb
         case insulin_req

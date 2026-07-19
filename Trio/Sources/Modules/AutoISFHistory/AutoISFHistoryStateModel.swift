@@ -16,7 +16,7 @@ extension AutoISFHistory {
         var selectedEndTime = Date() { didSet { Task { await createEntries() }}}
         var selectedTimeIntervalIndex = 1 { didSet { Task { await createEntries() }}} // Default to 2 hours
         var units: GlucoseUnits = .mgdL
-        var autoISFEntries: [autoISFHistory] = []
+        var autoISFEntries: [AutoISFHistoryEntry] = []
         var timeIntervalOptions = [1, 2, 4, 8] // Hours
         var isPopupPresented: Bool = false
         var iobThresholdPercent: Decimal = 1
@@ -30,7 +30,7 @@ extension AutoISFHistory {
             Task { await createEntries() }
         }
 
-        private func fetchedAutoISF() async throws -> [autoISFHistory] {
+        private func fetchedAutoISF() async throws -> [AutoISFHistoryEntry] {
             let endTime = selectedEndTime
             let intervalHours = timeIntervalOptions[selectedTimeIntervalIndex]
             let startTime = Calendar.current.date(byAdding: .hour, value: -intervalHours, to: endTime)!
@@ -54,7 +54,7 @@ extension AutoISFHistory {
                         throw CoreDataError.fetchError(function: #function, file: #file)
                     }
                     return fetchedResults.compactMap { determination in
-                        autoISFHistory(
+                        AutoISFHistoryEntry(
                             smb: determination.smbToDeliver as? Decimal,
                             insulin_req: determination.insulinReq as? Decimal,
                             sensitivity_ratio: determination.sensitivityRatio as? Decimal,

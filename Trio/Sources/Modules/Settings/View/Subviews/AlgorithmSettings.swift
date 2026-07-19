@@ -32,8 +32,8 @@ struct AlgorithmSettings: BaseView {
                 content: {
                     Text("DynamicISF").navigationLink(to: .dynamicISF, from: self)
                     Text("autoISF").navigationLink(to: .autoISFSettings, from: self)
-                    Text("AIMI B30").navigationLink(to: .B30Conf, from: self)
-                    Text("Keto Protection").navigationLink(to: .KetoConfig, from: self)
+                    Text("AIMI B30").navigationLink(to: .b30Settings, from: self)
+                    Text("Keto Protection").navigationLink(to: .ketoProtectSettings, from: self)
                     Text("Middleware")
                         .navigationLink(to: .configEditor(file: OpenAPS.Middleware.determineBasal), from: self)
                 }
