@@ -2,13 +2,13 @@ import SwiftUI
 
 struct DetailPopupView: View {
     @Environment(\.colorScheme) var colorScheme
-    let entry: autoISFHistory
+    let entry: AutoISFHistoryEntry
     @Binding var isPopupPresented: Bool
     var units: GlucoseUnits
     var maxIOB: Decimal
     var iobThresholdPercent: Decimal
-    var entries: [autoISFHistory] // Receive all entries
-    @Binding var selectedEntry: autoISFHistory? // Selected entry
+    var entries: [AutoISFHistoryEntry] // Receive all entries
+    @Binding var selectedEntry: AutoISFHistoryEntry? // Selected entry
     var moveToPreviousEntry: () -> Void // Function for UP
     var moveToNextEntry: () -> Void // Function for DOWN
 

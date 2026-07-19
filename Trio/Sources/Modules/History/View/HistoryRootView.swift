@@ -205,7 +205,7 @@ extension History {
                             .background(Color.clear)
                             .cornerRadius(8)
                             .onTapGesture {
-                                state.showModal(for: .autoisfHistory)
+                                state.showModal(for: .autoISFHistory)
                             }
                         }
                         .font(.footnote)

@@ -18,7 +18,7 @@ extension AutoISFHistory {
         @State private var selectedEndTime = Date()
         @State private var selectedTimeIntervalIndex = 1 // Default to 2 hours
         @State private var timeIntervalOptions = []
-        @State private var selectedEntry: autoISFHistory? // Track selected entry
+        @State private var selectedEntry: AutoISFHistoryEntry? // Track selected entry
         @State private var isPopupPresented = false
         @State private var tapped: Bool = false
 
@@ -186,7 +186,7 @@ extension AutoISFHistory {
         }
 
         private struct GridEntryRow: View {
-            let entry: autoISFHistory
+            let entry: AutoISFHistoryEntry
             let glucoseFormatter: NumberFormatter
             let units: GlucoseUnits
 

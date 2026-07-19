@@ -54,7 +54,7 @@ extension Home.RootView {
             },
             onAISRTap: {
                 // Show autoISF history
-                state.showModal(for: .autoisfHistory)
+                state.showModal(for: .autoISFHistory)
             },
             concentration: state.concentration
         )
