@@ -167,7 +167,10 @@ struct InsulinView: ChartContent {
             )?.glucose {
                 let yPosition = (units == .mgdL ? Decimal(glucose) : Decimal(glucose).asMmolL) + MainChartHelper
                     .bolusOffset(units: units) * 2
-                let size = (CGFloat(truncating: amount) * MainChartHelper.Config.bolusScale / 2)
+                // Relative sizing: scale based on ratio to max bolus, similar to bar height scaling
+                let amountDecimal = amount.decimalValue
+                let ratio = CGFloat(truncating: NSDecimalNumber(decimal: amountDecimal / maxBolusValue))
+                let size = (sqrt(ratio / .pi) * MainChartHelper.Config.bolusScale * 2 + 8)
 
                 PointMark(
                     x: .value("Time", bolusDate, unit: .second),
