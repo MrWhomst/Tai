@@ -110,10 +110,6 @@ extension PumpConfig {
                                     .frame(maxWidth: .infinity, minHeight: 50, alignment: .center)
                                     .font(.title2)
                                 }.padding()
-                                if state.hasUnacknowledgedAlert {
-                                    Spacer()
-                                    Button("Acknowledge all alerts") { state.ack() }
-                                }
                                 Spacer()
                             } else {
                                 VStack {

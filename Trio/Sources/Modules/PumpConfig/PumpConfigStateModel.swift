@@ -23,7 +23,6 @@ extension PumpConfig {
         @Published var allowDilution: Bool = false
         @Published var hideInsulinBadge: Bool = false
         @Injected() var bluetoothManager: BluetoothStateManager!
-        @Injected() var trioAlertManager: TrioAlertManager!
 
         var pumpSettings: PumpSettings {
             provider.settings()
@@ -45,13 +44,6 @@ extension PumpConfig {
                 .receive(on: DispatchQueue.main)
                 .assign(to: \.pumpState, on: self)
                 .store(in: &lifetime)
-
-            hasUnacknowledgedAlert = provider.hasInitialUnacknowledgedAlerts()
-            provider.unacknowledgedAlertsPublisher
-                .receive(on: DispatchQueue.main)
-                .assign(to: \.hasUnacknowledgedAlert, on: self)
-                .store(in: &lifetime)
-
             Task {
                 let basalSchedule = BasalRateSchedule(
                     dailyItems: await provider.getBasalProfile().map {
@@ -111,29 +103,6 @@ extension PumpConfig {
         func addPump(_ type: PumpType) {
             setupPumpType = type
             setupPump = true
-        }
-
-        func ack() {
-            trioAlertManager.acknowledgeAllOutstanding()
-        }
-
-        /// Checks if the pump simulator is selected and resets it if Bundle.main.simulatorVisibility.isHidden is true
-        private func checkAndResetPumpSimulatorIfNeeded() {
-            // Only proceed if simulators should be hidden
-            guard Bundle.main.simulatorVisibility.isHidden else { return }
-
-            // Check if the current pump is a simulator
-            if provider.apsManager.pumpManager is MockPumpManager {
-                // Reset the pump manager to nil to allow selecting a new pump
-                provider.apsManager.pumpManager = nil
-
-                // Update UI state
-                DispatchQueue.main.async {
-                    self.pumpState = nil
-                }
-
-                debug(.service, "Pump simulator was reset because simulators are hidden")
-            }
         }
     }
 }
