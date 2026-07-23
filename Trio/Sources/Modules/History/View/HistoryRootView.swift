@@ -262,8 +262,8 @@ extension History {
                                     Image(systemName: "chart.bar.xaxis.ascending.badge.clock", variableValue: 0.5)
                                         .symbolRenderingMode(.palette)
                                         .foregroundStyle(
-                                            Color.tabBar.opacity(0.4), // first layer: the bars
-                                            Color.tabBar.opacity(0.3),
+                                            Color.tabBar.opacity(0.7), // first layer: the bars
+                                            Color.tabBar.opacity(0.9),
                                             Color.tabBar // second layer: the clock badge
                                         )
                                         .scaleEffect(x: -1)
