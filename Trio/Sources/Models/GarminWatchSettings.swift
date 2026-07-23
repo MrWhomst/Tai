@@ -121,8 +121,4 @@ struct GarminWatchSettings: Codable, Hashable {
     var primaryAttributeChoice: GarminPrimaryAttributeChoice = .cob
     var secondaryAttributeChoice: GarminSecondaryAttributeChoice = .tbr
     var isWatchfaceDataEnabled: Bool = false
-
-    /// When enabled, automatically switches between watchface and datafield based on activity detection.
-    /// When disabled, broadcasts to all configured apps simultaneously.
-    var smartGarminMessageSwitching: Bool = true
 }

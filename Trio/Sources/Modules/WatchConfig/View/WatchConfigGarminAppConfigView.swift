@@ -7,7 +7,6 @@ struct WatchConfigGarminAppConfigView: View {
     @State private var shouldDisplayHint2: Bool = false
     @State private var shouldDisplayHint3: Bool = false
     @State private var shouldDisplayHint4: Bool = false
-    @State private var shouldDisplayHint5: Bool = false
     @State var hintDetent = PresentationDetent.large
     @State private var shouldShowWatchfaceSwitchConfirmDialog: Bool = false
 
@@ -194,38 +193,6 @@ struct WatchConfigGarminAppConfigView: View {
                             ).buttonStyle(BorderlessButtonStyle())
                         }.padding(.top)
                     }.padding(.bottom)
-                }
-            ).listRowBackground(Color.chart)
-
-            // MARK: - Advanced Settings Section
-
-            Section(
-                header: Text("Advanced Settings"),
-                content: {
-                    VStack {
-                        Toggle("Smart Message Switching", isOn: $state.garminSettings.smartGarminMessageSwitching)
-                            .padding(.top)
-
-                        HStack(alignment: .center) {
-                            Text(
-                                "Automatically switches data delivery between watchface and datafield based on activity detection."
-                            )
-                            .font(.footnote)
-                            .foregroundColor(.secondary)
-                            .lineLimit(nil)
-                            Spacer()
-                            Button(
-                                action: {
-                                    shouldDisplayHint5.toggle()
-                                },
-                                label: {
-                                    HStack {
-                                        Image(systemName: "questionmark.circle")
-                                    }
-                                }
-                            ).buttonStyle(BorderlessButtonStyle())
-                        }.padding(.top)
-                    }.padding(.vertical)
                 }
             ).listRowBackground(Color.chart)
         }
