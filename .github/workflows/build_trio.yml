@@ -1,5 +1,5 @@
-name: 4. Build Trio
-run-name: Build Trio (${{ github.ref_name }})
+name: 4. Build Tai
+run-name: Build Tai (${{ github.ref_name }})
 on:
   workflow_dispatch:
   schedule:
@@ -9,7 +9,7 @@ on:
 
 env:
   GH_PAT: ${{ secrets.GH_PAT }}
-  UPSTREAM_REPO: mountrcg/Tai
+  UPSTREAM_REPO: mountrcg/tai
   UPSTREAM_BRANCH: ${{ github.ref_name }} # branch on upstream repository to sync from (replace with specific branch name if needed)
   TARGET_BRANCH: ${{ github.ref_name }} # target branch on fork to be kept in sync
 
@@ -132,7 +132,7 @@ jobs:
         run: |
           echo "### :calendar: Scheduled Sync and Build Disabled :mobile_phone_off:" >> $GITHUB_STEP_SUMMARY
           echo "You have not yet configured the scheduled sync and build for Tai's browser build." >> $GITHUB_STEP_SUMMARY
-          echo "Synchronizing your fork of <code>Tai</code> with the upstream repository <code>mountrcg/Tai</code> will be skipped." >> $GITHUB_STEP_SUMMARY
+          echo "Synchronizing your fork of <code>Tai</code> with the upstream repository <code>mountrcg/tai</code> will be skipped." >> $GITHUB_STEP_SUMMARY
           echo "If you want to enable automatic builds and updates for your Tai, please follow the instructions \
               under the following path <code>Tai/fastlane/testflight.md</code>." >> $GITHUB_STEP_SUMMARY
 
@@ -161,7 +161,7 @@ jobs:
           (vars.SCHEDULED_BUILD != 'false' && needs.check_status.outputs.IS_SECOND_IN_MONTH == 'true') ||
           (vars.SCHEDULED_SYNC != 'false' && needs.check_status.outputs.NEW_COMMITS == 'true' )
 
-  # Builds Trio
+  # Builds Tai
   build:
     name: Build
     needs: [check_certs, check_status]
@@ -184,8 +184,8 @@ jobs:
           submodules: recursive
           ref: ${{ env.TARGET_BRANCH }}
 
-      # Customize Trio: Use patches or download and apply patches from GitHub
-      - name: Customize Trio
+      # Customize Tai: Use patches or download and apply patches from GitHub
+      - name: Customize Tai
         run: |
 
           # Trio workspace patches

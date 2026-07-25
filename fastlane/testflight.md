@@ -83,7 +83,7 @@ The first time you build with the GitHub Browser Build method for any DIY app, y
 
 ## Setup Github Tai repository
 
-1. Fork https://github.com/mountrcg/Tai into your GitHub username (using your organization if you have one). If you already have a fork of Tai in that username, you should not make another one. Do not rename the repository. You can continue to work with your existing fork, or delete that from GitHub and then fork again.
+1. Fork https://github.com/mountrcg/tai into your GitHub username (using your organization if you have one). If you already have a fork of Tai in that username, you should not make another one. Do not rename the repository. You can continue to work with your existing fork, or delete that from GitHub and then fork again.
 1. If you are using an organization, do this step at the organization level, e.g., username-org. If you are not using an organization, do this step at the repository level, e.g., username/Tai:
     * Go to Settings -> Secrets and variables -> Actions and make sure the Secrets tab is open
 1. For each of the following secrets, tap on "New organization secret" or "New repository secret", then add the name of the secret, along with the value you recorded for it:
@@ -119,9 +119,9 @@ This step validates most of your six Secrets and provides error messages if it d
 
 ## Create App Group
 
-If you previously built Trio using Mac with Xcode with this Apple ID, skip ahead to [Optional: App Group Description Modification](#optional-app-group-description-modification).
+If you previously built Trio or Tai using a Mac with Xcode with this Apple ID, or you already have the `Trio App Group` registered, skip ahead to [Optional: App Group Description Modification](#optional-app-group-description-modification).
 
-_Please note that Trio uses a Trio-specific app group, not the same as Loop. This enables other apps such as xDrip4iOS to share data with Trio. It may require some caution if transfering between Trio and Loop._
+_Please note that Tai intentionally uses the **Trio app group** (`group.org.nightscout.TEAMID.trio.trio-app-group`), not a separate Tai-specific one. This is required so Tai can share data with other apps such as xDrip4iOS, exactly like Trio. Do not change this app group._
 
 1. Go to [Register an App Group](https://developer.apple.com/account/resources/identifiers/applicationGroup/add/) on the apple developer site.
 1. For Description, use "Trio App Group".
@@ -156,35 +156,33 @@ _Referring to the table below, tap on each **IDENTIFIER** that has a different *
 
 ### Table of Identifiers
 
-* If you built previously using a Mac with Xcode, you may see the Xcode version in your **NAME** column - it starts with XC and then the **IDENTIFIER** is appended where the `.` is replaced with a space, the example for Trio is shown in detail
-* If you built during early beta testing, you might not have `Trio` at the beginning of each **IDENTIFIER** and the full **NAME** may be slightly different
-* If you built during early beta testing, you might have the Loop App Group associated with the Trio identifiers. If so, use instructions to [Create App Group](#create-app-group) for Trio. Subsequently, modify the App Group associated with the Trio Identifiers using [Add App Group to Bundle Identifiers](#add-app-group-to-bundle-identifiers).
+The `2. Add Identifiers` action creates these four identifiers for you automatically, named as shown in the **NAME** column below. Note that Tai's bundle identifiers use the `.tai` suffix (not `.trio`), while the shared **app group** remains the Trio app group.
+
+* If you built previously using a Mac with Xcode, you may see the Xcode version in your **NAME** column - it starts with XC and then the **IDENTIFIER** is appended where the `.` is replaced with a space.
 
 | NAME | Xcode version | IDENTIFIER |
 |:--|:--|:--|
-| Trio | XC org nightscout TEAMID trio | org.nightscout.TEAMID.trio |
-| Trio LiveActivity | - | org.nightscout.TEAMID.trio.LiveActivity |
-| Trio Watch App | XC IDENTIFIER | org.nightscout.TEAMID.trio.watchkitapp |
-| Trio Watch Complication | XC IDENTIFIER | org.nightscout.TEAMID.trio.watchkitapp.TrioWatchComplication |
+| Tai | XC org nightscout TEAMID tai | org.nightscout.TEAMID.tai |
+| Tai LiveActivity | - | org.nightscout.TEAMID.tai.LiveActivity |
+| Tai Watch App | XC IDENTIFIER | org.nightscout.TEAMID.tai.watchkitapp |
+| Tai Watch Complication | XC IDENTIFIER | org.nightscout.TEAMID.tai.watchkitapp.TrioWatchComplication |
 
 ## Add App Group to Bundle Identifiers
 
 > This step is required for first-time builders using GitHub Actions (Browser Build).
 
-> If you previously built using a Mac with Xcode you can skip ahead to [Create Trio App in App Store Connect](#create-trio-app-in-app-store-connect).
-
-> If you have previously built Trio as a beta tester (between May 13th, 2024, and today), you will already have an app group (`Loop App Group`) created and configured for your bundle identifiers. In this case, please *do not* skip this section; you are required to create the `Trio App Group` and configure it for your identifiers, as described below.
+> If you previously built using a Mac with Xcode you can skip ahead to [Create Tai App in App Store Connect](#create-tai-app-in-app-store-connect).
 
 > While you have the `Trio` identifier open in the steps below, you also need to enable the **Time Sensitive Notifications** capability before saving it - see [Enable Time Sensitive Notifications](#enable-time-sensitive-notifications) below.
 
 1. Go to [Certificates, Identifiers & Profiles](https://developer.apple.com/account/resources/identifiers/list) on the Apple developer site.
 1. Repeat this step for these three Identifier **NAMES** - refer to the [Table](#table-of-identifiers) above if your Names look different; if they do, see [Optional: Identifier Description Modification](#optional-identifier-description-modification)
-    * Trio
-    * Trio Watch App
-    * Trio Watch Complication
+    * Tai
+    * Tai Watch App
+    * Tai Watch Complication
 1. Click on the **IDENTIFIER** row.
 1. Scroll down to the "App Groups" capabilies row, click on the "Configure" (or "Edit") button.
-1. Select the "Trio App Group" _(yes, "Trio App Group" is correct)_
+1. Select the "Trio App Group" _(yes, "Trio App Group" is correct — Tai shares the Trio app group)_
 1. Click "Continue".
 1. Click "Save".
 1. Click "Confirm".
@@ -192,27 +190,27 @@ _Referring to the table below, tap on each **IDENTIFIER** that has a different *
 
 There is an additional identifier, but it does not need the App Group added to it:
 
-* Trio LiveActivity
+* Tai LiveActivity
 
 ## Enable Time Sensitive Notifications
 
-The `Trio` identifier requires the **Time Sensitive Notifications** capability to be enabled manually. This is only required for the `Trio` identifier, not the others. You can do this at the same time you add the `Trio App Group` to the `Trio` identifier - just check the box before you Save.
+The `Tai` identifier requires the **Time Sensitive Notifications** capability to be enabled manually. This is only required for the `Tai` identifier, not the others. You can do this at the same time you add the `Trio App Group` to the `Tai` identifier - just check the box before you Save.
 
 1. Go to [Certificates, Identifiers & Profiles](https://developer.apple.com/account/resources/identifiers/list) on the Apple developer site.
-1. Click on the `Trio` **IDENTIFIER** row (`org.nightscout.TEAMID.trio`, substituting your team id for `TEAMID`).
+1. Click on the `Tai` **IDENTIFIER** row (`org.nightscout.TEAMID.tai`, substituting your team id for `TEAMID`).
 1. Scroll down until you see the "Time Sensitive Notifications" capability, and check its box to enable it.
 1. Click "Save".
 
-## Create Trio App in App Store Connect
+## Create Tai App in App Store Connect
 
-If you created a Trio app in App Store Connect before, skip ahead to [Create Building Certificates](#create-building-certificates).
+If you created a Tai app in App Store Connect before, skip ahead to [Create Building Certificates](#create-building-certificates).
 
 1. Go to the [apps list](https://appstoreconnect.apple.com/apps) on App Store Connect and click the blue "plus" icon to create a New App.
     * Select "iOS".
     * Select a name: this will have to be unique, so you may have to try a few different names here, but it will not be the name you see on your phone, so it's not that important.
     * Select your primary language.
     * Choose the bundle ID that matches the `BUNDLE_IDENTIFIER` in your `Config.xcconfig` file
-    * This is typically `org.nightscout.TEAMID.trio` with `TEAMID` matching your team id
+    * This is typically `org.nightscout.TEAMID.tai` with `TEAMID` matching your team id
     * SKU can be anything; e.g. "123".
     * Select "Full Access".
 1. Click Create
@@ -221,14 +219,14 @@ You do not need to fill out the next form. That is for submitting to the app sto
 
 ## Create Building Certificates
 
-This step is no longer required. The Build Trio function now takes care of this for you. It does not hurt to run it but is not needed.
+This step is no longer required. The Build Tai function now takes care of this for you. It does not hurt to run it but is not needed.
 
 Once a year, you will get an email from Apple indicating your certificate will expire in 30 days. You can ignore that email. When it does expire, the next time an automatic or manual build happens, the expired certificate information will be removed (nuked) from your Match-Secrets repository and a new one created. This should happen without you needing to take any action.
 
-## Build Trio!
+## Build Tai!
 
 1. Click on the "Actions" tab of your Tai repository.
-1. On the left side, select "4. Build Trio".
+1. On the left side, select "4. Build Tai".
 1. Click "Run Workflow", select your branch, and tap the green button.
 1. You have some time now. Go enjoy a coffee. The build should take about 15 minutes.
 1. Your app should eventually appear on [App Store Connect](https://appstoreconnect.apple.com/apps).
@@ -306,7 +304,7 @@ Your build will run on the following conditions:
   * Run weekly every Sunday
       - If updates are detected, it will update your repository and build
       - If it is the second Sunday of the month, it will build even when no changes are detected
-* If you disable any automation (both variables set to `false`), no updates or building happens when Build Trio runs
+* If you disable any automation (both variables set to `false`), no updates or building happens when Build Tai runs
 * If you disabled just scheduled synchronization (`SCHEDULED_SYNC` set to`false`), it will still build once a month, but no update will happen
 * If you disabled just scheduled build (`SCHEDULED_BUILD` set to`false`), it will run once weekly, to check for changes; if there are changes, it will update and build
 

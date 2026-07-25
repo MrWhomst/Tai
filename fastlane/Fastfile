@@ -51,7 +51,7 @@ ENV["BUNDLE_ID"] = xcconfig["BUNDLE_IDENTIFIER"]
 
 # limit lane names to letters and underscores
 platform :ios do
-  desc "Build Trio"
+  desc "Build Tai"
   lane :build_trio do
     setup_ci if ENV['CI']
     BUNDLE_ID = ENV["BUNDLE_ID"]
@@ -199,23 +199,23 @@ platform :ios do
       end
     end
 
-    configure_bundle_id("Trio", "#{BUNDLE_ID}", [
+    configure_bundle_id("Tai", "#{BUNDLE_ID}", [
       Spaceship::ConnectAPI::BundleIdCapability::Type::APP_GROUPS,
       Spaceship::ConnectAPI::BundleIdCapability::Type::HEALTHKIT,
       Spaceship::ConnectAPI::BundleIdCapability::Type::NFC_TAG_READING,
       Spaceship::ConnectAPI::BundleIdCapability::Type::PUSH_NOTIFICATIONS
     ])
 
-    configure_bundle_id("Trio Watch Complication", "#{BUNDLE_ID}.watchkitapp.TrioWatchComplication", [
+    configure_bundle_id("Tai Watch Complication", "#{BUNDLE_ID}.watchkitapp.TrioWatchComplication", [
       Spaceship::ConnectAPI::BundleIdCapability::Type::APP_GROUPS
     ])
-    
-    configure_bundle_id("Trio Watch App", "#{BUNDLE_ID}.watchkitapp", [
+
+    configure_bundle_id("Tai Watch App", "#{BUNDLE_ID}.watchkitapp", [
       Spaceship::ConnectAPI::BundleIdCapability::Type::APP_GROUPS,
       Spaceship::ConnectAPI::BundleIdCapability::Type::HEALTHKIT
     ])
 
-    configure_bundle_id("Trio LiveActivity", "#{BUNDLE_ID}.LiveActivity", [])
+    configure_bundle_id("Tai LiveActivity", "#{BUNDLE_ID}.LiveActivity", [])
     
   end
 
