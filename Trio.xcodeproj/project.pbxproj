@@ -1204,7 +1204,7 @@
 		7A11AC0DE000000000000016 /* GlassChrome.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassChrome.swift; sourceTree = "<group>"; };
 		7A11AC0DE000000000000120 /* HomeStatsPanelFace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeStatsPanelFace.swift; sourceTree = "<group>"; };
 		7A11AC0DE000000000000014 /* ManualGlucoseEntryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualGlucoseEntryView.swift; sourceTree = "<group>"; };
-		7A11AC0DE000000000000015 /* MultiUsePanelStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiUsePanelStateTests.swift; sourceTree = "<group>"; };
+		7A11AC0DE000000000000015 /* MultiUsePanelStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataTests/MultiUsePanelStateTests.swift; sourceTree = "<group>"; };
 		3811DE3925C9D4A100A708ED /* SettingsStateModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsStateModel.swift; sourceTree = "<group>"; };
 		3811DE3C25C9D4A100A708ED /* SettingsRootView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsRootView.swift; sourceTree = "<group>"; };
 		3811DE3D25C9D4A100A708ED /* SettingsDataFlow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsDataFlow.swift; sourceTree = "<group>"; };
