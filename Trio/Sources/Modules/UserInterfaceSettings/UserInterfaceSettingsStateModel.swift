@@ -19,6 +19,7 @@ extension UserInterfaceSettings {
         @Published var eA1cDisplayUnit: EstimatedA1cDisplayUnit = .percent
         @Published var timeInRangeType: TimeInRangeType = .timeInTightRange
         @Published var requireAdjustmentsConfirmation: Bool = false
+        @Published var currentGlucoseTarget: Decimal = 100
 
         var units: GlucoseUnits = .mgdL
 
@@ -57,6 +58,16 @@ extension UserInterfaceSettings {
 
             subscribeSetting(\.requireAdjustmentsConfirmation, on: $requireAdjustmentsConfirmation) {
                 requireAdjustmentsConfirmation = $0 }
+
+            Task { await getCurrentGlucoseTarget() }
+        }
+
+        /// Resolves the glucose target active right now from the BG target schedule.
+        func getCurrentGlucoseTarget() async {
+            let bgTargets = await provider.getBGTargets()
+            if let target = bgTargets.currentTarget() {
+                await MainActor.run { currentGlucoseTarget = target }
+            }
         }
     }
 }
