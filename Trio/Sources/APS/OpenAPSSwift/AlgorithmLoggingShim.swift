@@ -19,6 +19,7 @@ import Foundation
             case service
             case businessLogic
             case openAPS
+            case openAPSSwift
             case deviceManager
             case apsManager
             case nightscout
