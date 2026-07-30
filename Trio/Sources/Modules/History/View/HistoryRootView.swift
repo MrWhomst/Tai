@@ -248,6 +248,30 @@ extension History {
                 .navigationTitle("History")
                 .navigationBarTitleDisplayMode(.large)
                 .toolbar {
+                    // fallback pathway: the home panel's stats face can be
+                    // displaced by higher-priority states
+                    ToolbarItem(placement: .topBarLeading, content: {
+                        Button(
+                            action: {
+                                appState.statSelectedViewType = .glucose
+                                appState.statSelectedInsulinTimeInterval = .day
+                                state.showModal(for: .statistics)
+                            },
+                            label: {
+                                HStack {
+                                    Image(systemName: "chart.bar.xaxis.ascending.badge.clock", variableValue: 0.5)
+                                        .symbolRenderingMode(.palette)
+                                        .foregroundStyle(
+                                            Color.tabBar.opacity(0.7), // first layer: the bars
+                                            Color.tabBar.opacity(0.9),
+                                            Color.tabBar // second layer: the clock badge
+                                        )
+                                        .scaleEffect(x: -1)
+                                    Text("Statistics")
+                                }
+                            }
+                        )
+                    })
                     ToolbarItem(placement: .topBarTrailing, content: {
                         addButton({
                             showManualGlucose = true

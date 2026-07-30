@@ -894,11 +894,8 @@ struct PopupView: View {
                 }
             }
 
-            // Recommended Bolus card with accent-colored background
+            // Recommended Bolus card on glass with accent tint
             ZStack {
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.accentColor.opacity(0.1))
-
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Recommended Bolus").font(.headline)
@@ -927,6 +924,7 @@ struct PopupView: View {
                 .padding(.horizontal, 16)
                 .padding(.vertical, 12)
             }
+            .glassPanel(tint: .accentColor, tintOpacity: 0.10, strokeOpacity: 0.25)
             .fixedSize(horizontal: false, vertical: true)
         }
     }

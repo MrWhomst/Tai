@@ -5,6 +5,11 @@ extension Decimal {
     init(algorithmValue value: Double) {
         self = Decimal(string: value.description) ?? Decimal(value)
     }
+
+    /// Converts a `Double` to a `Decimal` using JSON style conversion
+    init(algorithmValue value: Double) {
+        self = Decimal(string: value.description) ?? Decimal(value)
+    }
 }
 
 extension Collection where Element == Decimal {

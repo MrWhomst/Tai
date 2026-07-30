@@ -20,6 +20,23 @@ struct ChartLegendView: View {
 
                 List {
                     VStack(alignment: .leading) {
+                        Text("Glucose Bobble").bold().padding(.bottom, 5).textCase(.uppercase)
+                        HStack {
+                            if #available(iOS 18.0, *) {
+                                Image(systemName: "arrow.down.circle.fill")
+                                    .symbolEffect(.rotate.counterClockwise.byLayer, options: .repeat(.periodic(delay: 5.0)))
+                            } else {
+                                Image(systemName: "arrow.down.circle.fill")
+                            }
+                            Text(
+                                "Pull it down to force a loop!"
+                            )
+                            .font(.subheadline)
+                            .foregroundColor(.primary)
+                        }
+                    }.listRowBackground(Color.gray.opacity(0.1))
+
+                    VStack(alignment: .leading) {
                         Text("Forecasts").bold().padding(.bottom, 5).textCase(.uppercase)
                         Text(
                             "The oref algorithm determines insulin dosing based on a number of scenarios that it estimates with different types of forecasts."

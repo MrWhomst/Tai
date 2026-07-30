@@ -93,11 +93,14 @@ struct LoopView: View {
 }
 
 struct CircleProgress: View {
-    @State private var rotationAngle = 0.0
-    @State private var pulse = false
+    /// Spin speed of the gradient: 24° per 30 ms, as the old timer did.
+    private static let degreesPerSecond = 800.0
+    /// One pulse direction (thick -> thin), autoreversing.
+    private static let pulseHalfPeriod = 1.5
 
-    private let rect = CGRect(x: 0, y: 0, width: 16, height: 16) // Same dimensions as in LoopView
-    private var backgroundGradient: AngularGradient {
+    @State private var startDate = Date()
+
+    private func backgroundGradient(rotationAngle: Double) -> AngularGradient {
         // Create a custom angular gradient based on TaiStyle colors but with custom rotation
         AngularGradient(
             stops: [
@@ -114,28 +117,29 @@ struct CircleProgress: View {
         )
     }
 
-    let timer = Timer.publish(every: 0.03, on: .main, in: .common).autoconnect()
-
     var body: some View {
         let rect = CGRect(x: 0, y: 0, width: 18, height: 18)
 
-        ZStack {
+        // Both spin and pulse are computed from elapsed time instead of a
+        // repeatForever animation: an ancestor transaction (e.g. the animated
+        // pull-to-refresh insertion) can cancel repeatForever, but it cannot
+        // stop a TimelineView.
+        TimelineView(.animation) { timeline in
+            let elapsed = timeline.date.timeIntervalSince(startDate)
+            let rotationAngle = (elapsed * Self.degreesPerSecond).truncatingRemainder(dividingBy: 360)
+            // Triangle wave 0 -> 1 -> 0 over two half-periods, eased in/out.
+            let phase = elapsed.truncatingRemainder(dividingBy: 2 * Self.pulseHalfPeriod) / Self.pulseHalfPeriod
+            let triangle = phase < 1 ? phase : 2 - phase
+            let pulse = 0.5 - cos(.pi * triangle) / 2
+
             Circle()
                 .trim(from: 0, to: 1)
-//                .stroke(backgroundGradient, style: StrokeStyle(lineWidth: 3))
-                .stroke(backgroundGradient, style: StrokeStyle(lineWidth: pulse ? 6 : 3.2))
-                .scaleEffect(pulse ? 0.5 : 1)
-                .animation(
-                    Animation.easeInOut(duration: 1.5).repeatForever(autoreverses: true),
-                    value: pulse
+                .stroke(
+                    backgroundGradient(rotationAngle: rotationAngle),
+                    style: StrokeStyle(lineWidth: 3.2 + pulse * (6 - 3.2))
                 )
+                .scaleEffect(1 - pulse * 0.5)
                 .frame(width: rect.width, height: rect.height, alignment: .center)
-                .onReceive(timer) { _ in
-                    rotationAngle = (rotationAngle + 24).truncatingRemainder(dividingBy: 360)
-                }
-                .onAppear {
-                    self.pulse = true
-                }
         }
     }
 }

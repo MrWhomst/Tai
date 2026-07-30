@@ -23,10 +23,11 @@ enum Adjustments {
         }
     }
 
-    /// UserDefaults key used by Home's profile banner to request the Profiles tab on next
-    /// appearance of `AdjustmentsRootView`. The banner can't reach the local `@State` of the
-    /// not-yet-mounted Adjustments view, so it leaves a flag for the view to consume on appear.
-    static let pendingProfilesTabKey = "Adjustments.pendingProfilesTab"
+    /// UserDefaults key used by Home's cards and indicators to request a specific tab
+    /// (stored as `Tab.rawValue`) on next appearance of `AdjustmentsRootView`. Home can't
+    /// reach the local `@State` of the not-yet-mounted Adjustments view, so it leaves a
+    /// flag for the view to consume on appear.
+    static let pendingTabKey = "Adjustments.pendingTab"
 }
 
 protocol AdjustmentsProvider: Provider {}

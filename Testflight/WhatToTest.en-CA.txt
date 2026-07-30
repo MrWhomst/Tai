@@ -1,2 +1,2 @@
-based on Trio dev 0.8.4.22
-without #1315 as buggy
+based on Trio dev 0.8.4.34
+new glass home view

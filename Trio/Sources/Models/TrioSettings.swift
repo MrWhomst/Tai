@@ -19,6 +19,7 @@ enum GlucoseSmoothingAlgorithm: String, JSON, CaseIterable, Identifiable {
     var id: String { rawValue }
     case exponential
     case ukf
+    case adaptiveUkf
 
     var displayName: String {
         switch self {
@@ -26,6 +27,8 @@ enum GlucoseSmoothingAlgorithm: String, JSON, CaseIterable, Identifiable {
             return String(localized: "2nd Order Exponential", comment: "Exponential smoothing algorithm display name")
         case .ukf:
             return String(localized: "Unscented Kalman Filter", comment: "UKF smoothing algorithm display name")
+        case .adaptiveUkf:
+            return String(localized: "Adaptive UKF Smoothing", comment: "Adaptive UKF smoothing algorithm display name")
         }
     }
 }
@@ -65,6 +68,7 @@ struct TrioSettings: JSON, Equatable, Encodable {
     var allowDilution: Bool = false
     var insulinConcentration: Decimal = 1
     var showCobIobChart: Bool = true
+    var homeStatsPanelFace: HomeStatsPanelFace = .timeInRange
     var rulerMarks: Bool = true
     var bolusDisplayThreshold: BolusDisplayThreshold = .allUnits
     var forecastDisplayType: ForecastDisplayType = .cone
@@ -269,6 +273,10 @@ extension TrioSettings: Decodable {
 
         if let showCobIobChart = try? container.decode(Bool.self, forKey: .showCobIobChart) {
             settings.showCobIobChart = showCobIobChart
+        }
+
+        if let homeStatsPanelFace = try? container.decode(HomeStatsPanelFace.self, forKey: .homeStatsPanelFace) {
+            settings.homeStatsPanelFace = homeStatsPanelFace
         }
 
         if let hideInsulinBadge = try? container.decode(Bool.self, forKey: .hideInsulinBadge) {
