@@ -16,8 +16,11 @@ extension NSPredicate {
     }
 
     static var tempTargetsForMainChart: NSPredicate {
-        let date = Date.oneDayAgo
-        return NSPredicate(
+        tempTargetsForMainChart(since: .oneDayAgo)
+    }
+
+    static func tempTargetsForMainChart(since date: Date) -> NSPredicate {
+        NSPredicate(
             format: "(date >= %@ AND enabled == %@) OR (date >= %@ AND enabled == %@ AND isPreset == %@)",
             date as NSDate,
             true as NSNumber,
