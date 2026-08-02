@@ -240,9 +240,15 @@ final class BaseGarminManager: NSObject, GarminManager, Injectable {
         settingsManager.settings.garminSettings.watchface
     }
 
-    /// Returns the currently configured Garmin datafield from settings
-    private var currentDatafield: GarminDatafield {
-        settingsManager.settings.garminSettings.datafield
+    /// Returns the currently configured Garmin datafields from settings.
+    /// Empty when the user has not selected any datafield.
+    private var currentDatafields: [GarminDatafield] {
+        settingsManager.settings.garminSettings.datafields
+    }
+
+    /// Returns the configured datafield registered under the given app UUID, if any
+    private func datafield(for uuid: UUID) -> GarminDatafield? {
+        currentDatafields.first { $0.datafieldUUID == uuid }
     }
 
     /// Returns whether watchface data transmission is enabled in settings
@@ -250,10 +256,20 @@ final class BaseGarminManager: NSObject, GarminManager, Injectable {
         settingsManager.settings.garminSettings.isWatchfaceDataEnabled
     }
 
-    /// SwissAlpine watchface uses historical glucose data (24 entries)
-    /// Trio watchface only uses current reading
+    /// SwissAlpine watchface, the Loop Graph datafield and the complication app use
+    /// historical glucose data (24 entries). Trio watchface only uses current reading.
+    ///
+    /// The complication app needs it for the 2 h graph in its own view; the complications
+    /// it publishes read only element 0 and work without history.
+    ///
+    /// Note: the payload is built once and broadcast to every registered app, so enabling
+    /// this for either app also sends the full array to the other. Both the Trio watchface
+    /// and the Trio datafield read only element 0 and ignore the rest, and SwissAlpine caps
+    /// at 24 entries — so 24 is the maximum that is safe to send here.
     private var needsHistoricalGlucoseData: Bool {
         currentWatchface == .swissalpine
+            || currentWatchface == .complication
+            || currentDatafields.contains(.loopgraph)
     }
 
     /// Returns the display name for an app UUID (watchface or datafield).
@@ -261,8 +277,8 @@ final class BaseGarminManager: NSObject, GarminManager, Injectable {
     private func appDisplayName(for uuid: UUID) -> String {
         if uuid == currentWatchface.watchfaceUUID {
             return "watchface:\(currentWatchface.displayName)"
-        } else if uuid == currentDatafield.datafieldUUID {
-            return "datafield:\(currentDatafield.displayName)"
+        } else if let datafield = datafield(for: uuid) {
+            return "datafield:\(datafield.displayName)"
         } else {
             return "unknown app"
         }
@@ -274,8 +290,8 @@ final class BaseGarminManager: NSObject, GarminManager, Injectable {
     private func appDetailedName(for uuid: UUID) -> String {
         if uuid == currentWatchface.watchfaceUUID {
             return "watchface:\(currentWatchface.displayName) (\(uuid.uuidString))"
-        } else if uuid == currentDatafield.datafieldUUID {
-            return "datafield:\(currentDatafield.displayName) (\(uuid.uuidString))"
+        } else if let datafield = datafield(for: uuid) {
+            return "datafield:\(datafield.displayName) (\(uuid.uuidString))"
         } else {
             return "unknown app (\(uuid.uuidString))"
         }
@@ -775,10 +791,12 @@ final class BaseGarminManager: NSObject, GarminManager, Injectable {
                 debugGarmin("Garmin: Watchface data disabled - skipping watchface registration")
             }
 
-            // Always register datafield (if configured)
-            if let datafieldUUID = currentDatafield.datafieldUUID,
-               let datafieldApp = IQApp(uuid: datafieldUUID, store: UUID(), device: device)
-            {
+            // Always register every configured datafield - all of them receive the same payload
+            for datafield in currentDatafields {
+                guard let datafieldUUID = datafield.datafieldUUID,
+                      let datafieldApp = IQApp(uuid: datafieldUUID, store: UUID(), device: device)
+                else { continue }
+
                 debugGarmin("Garmin: Registered \(appDetailedName(for: datafieldUUID))")
                 watchApps.append(datafieldApp)
                 connectIQ?.register(forAppMessages: datafieldApp, delegate: self)
@@ -1098,7 +1116,7 @@ extension BaseGarminManager: SettingsObserver {
         let unitsChanged = currentUnits != units
         let colorSchemeChanged = currentColorScheme != glucoseColorScheme
         let watchfaceChanged = currentGarminSettings.watchface != previousGarminSettings.watchface
-        let datafieldChanged = currentGarminSettings.datafield != previousGarminSettings.datafield
+        let datafieldChanged = currentGarminSettings.datafields != previousGarminSettings.datafields
         let watchfaceDataEnabledChanged = currentGarminSettings.isWatchfaceDataEnabled != previousGarminSettings
             .isWatchfaceDataEnabled
         let displayAttributesChanged = currentGarminSettings.primaryAttributeChoice != previousGarminSettings

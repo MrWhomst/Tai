@@ -95,20 +95,33 @@ struct WatchConfigGarminAppConfigView: View {
             Section(
                 header: Text("Datafield Settings"),
                 content: {
-                    VStack {
-                        Picker(
-                            selection: $state.garminSettings.datafield,
-                            label: Text("Datafield Selection").multilineTextAlignment(.leading)
-                        ) {
-                            ForEach(GarminDatafield.allCases) { selection in
-                                Text(selection.displayName).tag(selection)
+                    ForEach(GarminDatafield.selectableCases) { selection in
+                        Button(
+                            action: {
+                                state.toggleDatafield(selection)
+                            },
+                            label: {
+                                HStack {
+                                    Text(selection.displayName)
+                                        .foregroundStyle(
+                                            state.canSelectDatafield(selection) ? Color.primary : Color.secondary
+                                        )
+                                    Spacer()
+                                    if state.garminSettings.datafields.contains(selection) {
+                                        Image(systemName: "checkmark")
+                                            .foregroundStyle(Color.accentColor)
+                                    }
+                                }
                             }
-                        }
-                        .padding(.top)
+                        )
+                        .buttonStyle(BorderlessButtonStyle())
+                        .disabled(!state.canSelectDatafield(selection))
+                    }
 
+                    VStack {
                         HStack(alignment: .center) {
                             Text(
-                                "Choose which datafield to support. Can be used independently of watchface selection."
+                                "Choose which datafields to support. Up to four can receive data at the same time, or select none at all. Can be used independently of watchface selection."
                             )
                             .font(.footnote)
                             .foregroundColor(.secondary)
@@ -207,13 +220,7 @@ struct WatchConfigGarminAppConfigView: View {
                 hintDetent: $hintDetent,
                 shouldDisplayHint: $shouldDisplayHint1,
                 hintLabel: "Choose Garmin Watchface",
-                hintText: Text(
-                    "Choose which watchface on your Garmin device you wish to provide data for. You can independently select which datafield to use in the next section.\n\n" +
-                        "• Trio – The original Trio watchface, developed by Ivan Valkou.\n" +
-                        "• Swissalpine – Originally developed for AAPS, adapted to work with Trio.\n\n" +
-                        "You must use this configuration setting here BEFORE you switch the watchface on your Garmin device to another watchface.\n\n" +
-                        "⚠️ Changing the watchface will automatically disable data transmission. You will be prompted to resume data transmission after you have changed the watchface on your Garmin device."
-                ),
+                hintText: watchfaceHintText,
                 sheetTitle: String(localized: "Help", comment: "Help sheet title")
             )
         }
@@ -223,10 +230,11 @@ struct WatchConfigGarminAppConfigView: View {
                 shouldDisplayHint: $shouldDisplayHint4,
                 hintLabel: "Choose Garmin Datafield",
                 hintText: Text(
-                    "Choose which datafield on your Garmin device you wish to provide data for. The datafield can be used independently from the watchface selection.\n\n" +
+                    "Choose which datafields on your Garmin device you wish to provide data for. Tap an entry to select or deselect it; up to four datafields can receive data at the same time. The datafields can be used independently from the watchface selection.\n\n" +
                         "• Trio – The original Trio datafield, developed by Pierre.\n" +
-                        "• Swissalpine – Originally developed for AAPS, adapted to work with Trio.\n\n" +
-                        "Select 'None' if you don't want to use a datafield, or want to preserve battery while not exercising."
+                        "• Swissalpine – Originally developed for AAPS, adapted to work with Trio.\n" +
+                        "• Loop Graph – Shows the glucose history and the predicted glucose envelope.\n\n" +
+                        "Deselect all datafields if you don't want to use one, or want to preserve battery while not exercising."
                 ),
                 sheetTitle: String(localized: "Help", comment: "Help sheet title")
             )
@@ -269,6 +277,39 @@ struct WatchConfigGarminAppConfigView: View {
             Text(
                 "Data transmission has been disabled. Now select the new watchface on your Garmin device and resume data transmission once done."
             )
+        }
+    }
+
+    // MARK: - Hint Contents
+
+    private var garminAppsURL: URL? {
+        URL(string: "https://apps.garmin.com/developer/eae8d754-7a90-4cc7-85f1-95d12ea93490/apps")
+    }
+
+    private var watchfaceHintText: some View {
+        let description = """
+        Choose which watchface on your Garmin device you wish to provide data for. You can independently select which \
+        datafield to use in the next section.
+
+        • Trio – The original Trio watchface, developed by Ivan Valkou.
+        • Swissalpine – Originally developed for AAPS, adapted to work with Trio.
+        • Complication – Not a watchface. A watch app that publishes glucose, IOB, COB and sensitivity ratio as \
+        complications, so you can use any watchface that has Connect IQ complication slots. Pick this when you are not \
+        running a Trio watchface.
+
+        You must use this configuration setting here BEFORE you switch the watchface on your Garmin device to another \
+        watchface.
+
+        ⚠️ Changing the watchface will automatically disable data transmission. You will be prompted to resume data \
+        transmission after you have changed the watchface on your Garmin device.
+        """
+
+        return VStack(alignment: .leading, spacing: 10) {
+            if let url = garminAppsURL {
+                SwiftUI.Link("See compatible Trio apps on Garmin ConnectIQ.", destination: url)
+                    .foregroundStyle(Color.blue)
+            }
+            Text(description)
         }
     }
 }

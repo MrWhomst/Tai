@@ -50,6 +50,11 @@ enum GarminWatchface: String, JSON, CaseIterable, Identifiable, Codable, Hashabl
 
     case trio
     case swissalpine
+    /// Not a watchface but a Connect IQ watch app that republishes the payload as
+    /// complications, so any watchface with complication slots can show Trio data.
+    /// It takes the watchface slot because someone on complications is by definition
+    /// not running one of the Trio watchfaces, which leaves that slot free.
+    case complication
 
     var displayName: String {
         switch self {
@@ -57,10 +62,12 @@ enum GarminWatchface: String, JSON, CaseIterable, Identifiable, Codable, Hashabl
             return String(localized: "Trio", comment: "")
         case .swissalpine:
             return String(localized: "Swissalpine", comment: "")
+        case .complication:
+            return String(localized: "Complication", comment: "")
         }
     }
 
-    /// The UUID for the watchface application in Garmin Connect IQ
+    /// The UUID for the watchface applications in Garmin Connect IQ
     var watchfaceUUID: UUID? {
         switch self {
         case .trio:
@@ -70,6 +77,9 @@ enum GarminWatchface: String, JSON, CaseIterable, Identifiable, Codable, Hashabl
         case .swissalpine:
             // return UUID(uuidString: "5A643C13-D5A7-40D4-B809-84789FDF4A1F") // ConnectIQ test build
             return UUID(uuidString: "4cea4efd-4aaf-4db4-8891-ef36dde14303") // ConnectIQ live build
+        case .complication:
+            return UUID(uuidString: "0986fd19-604b-4bcb-a931-6f8621738682") // ConnectIQ live build
+            // return UUID(uuidString: "a897ce34-1135-4632-b855-1c75f1ec27bf") // ConnectIQ beta build
         }
     }
 }
@@ -82,6 +92,7 @@ enum GarminDatafield: String, JSON, CaseIterable, Identifiable, Codable, Hashabl
 
     case trio
     case swissalpine
+    case loopgraph
     case none
 
     var displayName: String {
@@ -90,6 +101,8 @@ enum GarminDatafield: String, JSON, CaseIterable, Identifiable, Codable, Hashabl
             return String(localized: "Trio", comment: "")
         case .swissalpine:
             return String(localized: "Swissalpine", comment: "")
+        case .loopgraph:
+            return String(localized: "LoopGraph", comment: "")
         case .none:
             return String(localized: "None", comment: "")
         }
@@ -105,9 +118,34 @@ enum GarminDatafield: String, JSON, CaseIterable, Identifiable, Codable, Hashabl
         case .swissalpine:
             // return UUID(uuidString: "7A2268F6-3381-4474-81BD-0A3E7F458CB7") // ConnectIQ test build
             return UUID(uuidString: "dec5292a-74b0-41bc-8e45-cd93f1d5e137") // ConnectIQ live build
+        case .loopgraph:
+            return UUID(uuidString: "986105b6-5d20-4895-a5c1-b98248ddde4c") // beta build Robert
+        // return UUID(uuidString: "2e18aaa2-2b57-47d3-8ace-f9cd27c0d765") // original build (local)
         case .none:
             return nil
         }
+    }
+
+    /// The datafields the user can pick from. `.none` is not offered as a choice any more:
+    /// "no datafield" is expressed by an empty selection.
+    static var selectableCases: [GarminDatafield] {
+        allCases.filter { $0 != .none }
+    }
+
+    /// Maximum number of datafields that can receive data at the same time.
+    /// Every selected datafield is registered as its own Connect IQ app and gets the
+    /// same broadcast payload, so this caps how many apps a single update fans out to.
+    static let maxSelectionCount = 4
+
+    /// Normalizes a selection read from settings: drops `.none`, removes duplicates
+    /// and enforces `maxSelectionCount`, preserving the original order.
+    static func sanitizedSelection(_ datafields: [GarminDatafield]) -> [GarminDatafield] {
+        var selection = [GarminDatafield]()
+        for datafield in datafields where datafield != .none && !selection.contains(datafield) {
+            selection.append(datafield)
+            if selection.count == maxSelectionCount { break }
+        }
+        return selection
     }
 }
 
@@ -117,8 +155,24 @@ enum GarminDatafield: String, JSON, CaseIterable, Identifiable, Codable, Hashabl
 /// Both watchfaces use the same settings: primaryAttributeChoice and secondaryAttributeChoice.
 struct GarminWatchSettings: Codable, Hashable {
     var watchface: GarminWatchface = .trio
-    var datafield: GarminDatafield = .trio
+    /// Datafields that receive data, in selection order. Empty means no datafield is used.
+    /// Never holds more than `GarminDatafield.maxSelectionCount` entries.
+    var datafields: [GarminDatafield] = [.trio]
     var primaryAttributeChoice: GarminPrimaryAttributeChoice = .cob
     var secondaryAttributeChoice: GarminSecondaryAttributeChoice = .tbr
     var isWatchfaceDataEnabled: Bool = false
+
+    /// Adds or removes a datafield from the selection, ignoring additions beyond the maximum.
+    mutating func toggleDatafield(_ datafield: GarminDatafield) {
+        if let index = datafields.firstIndex(of: datafield) {
+            datafields.remove(at: index)
+        } else if datafields.count < GarminDatafield.maxSelectionCount {
+            datafields.append(datafield)
+        }
+    }
+
+    /// Whether the given datafield can still be added to the selection.
+    func canSelectDatafield(_ datafield: GarminDatafield) -> Bool {
+        datafields.contains(datafield) || datafields.count < GarminDatafield.maxSelectionCount
+    }
 }
