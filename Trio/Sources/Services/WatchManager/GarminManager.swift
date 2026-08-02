@@ -630,9 +630,15 @@ final class BaseGarminManager: NSObject, GarminManager, Injectable {
             if let latestDetermination = allDeterminationObjects.first {
                 cobValue = Double(latestDetermination.cob)
 
-                if let ratio = latestDetermination.sensitivityRatio {
-                    sensRatioValue = Double(truncating: ratio)
-                }
+                // Tai sends the AutoISF ratio - the "final" factor from the autoISF
+                // calculations screen, the same number the home header shows as
+                // aiSR. NOT sensitivityRatio, which carries only the autosens
+                // value and sits at 1.0 while AutoISF does the adjusting.
+                //
+                // Upstream Trio has no AutoISF, so it reads sensitivityRatio here;
+                // that upstream form arrived with the updateGarmin rewrite and
+                // left every Garmin app showing 1.0.
+                sensRatioValue = Double(truncating: latestDetermination.autoISFratio ?? 1)
 
                 if let isf = latestDetermination.insulinSensitivity {
                     isfValue = Int16(truncating: isf)
