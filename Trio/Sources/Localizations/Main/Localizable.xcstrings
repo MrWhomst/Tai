@@ -118195,6 +118195,9 @@
         }
       }
     },
+    "Enable this feature to show the forecast on the Apple Watch" : {
+
+    },
     "Enable UAM" : {
       "comment" : "Enable UAM",
       "localizations" : {
@@ -246412,6 +246415,9 @@
     "Show COB-IOB Chart" : {
 
     },
+    "Show forcast on Watch" : {
+
+    },
     "Show Future" : {
       "comment" : "Toggle button in History — show entries with future timestamps\nToggle button on History Carb Entries view — show entries with future timestamps",
       "localizations" : {
@@ -247822,6 +247828,9 @@
       }
     },
     "Shows decreasing Pump Reservoir levels, progressively colorized from green to red." : {
+
+    },
+    "Shows Forecast on the Apple Watch" : {
 
     },
     "Shows the COB value calculated by the algorithm at a specific time in the past. These values are snapshots and won’t change if carbs are added or removed after the fact." : {
