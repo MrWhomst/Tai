@@ -32,7 +32,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Tai"
+            "value" : ""
           }
         },
         "es" : {
@@ -164,7 +164,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Tai"
+            "value" : ""
           }
         },
         "es" : {
@@ -809,12 +809,6 @@
             "value" : "Calendar is used to create a new glucose events."
           }
         },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Календарът се използва за създаване на нови събития за кръвна захар."
-          }
-        },
         "cs" : {
           "stringUnit" : {
             "state" : "new",
@@ -823,8 +817,8 @@
         },
         "da" : {
           "stringUnit" : {
-            "state" : "new",
-            "value" : "Calendar is used to create new glucose events."
+            "state" : "translated",
+            "value" : "Календарът се използва за създаване на нови събития за кръвна захар."
           }
         },
         "de" : {
@@ -911,18 +905,6 @@
             "value" : "Calendar is used to create a new glucose events."
           }
         },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kalendarz jest używany do tworzenia nowych zdarzeń o glikemii."
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Calendar is used to create new glucose events."
-          }
-        },
         "ro" : {
           "stringUnit" : {
             "state" : "new",
@@ -931,8 +913,8 @@
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "new",
-            "value" : "Calendar is used to create new glucose events."
+            "state" : "translated",
+            "value" : "Kalendarz jest używany do tworzenia nowych zdarzeń o glikemii."
           }
         },
         "sv" : {
@@ -1114,12 +1096,6 @@
             "value" : "For authorized acces to bolus"
           }
         },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "За оторизиран достъп до болус"
-          }
-        },
         "cs" : {
           "stringUnit" : {
             "state" : "new",
@@ -1128,8 +1104,8 @@
         },
         "da" : {
           "stringUnit" : {
-            "state" : "new",
-            "value" : "For authorized access to bolus"
+            "state" : "translated",
+            "value" : "За оторизиран достъп до болус"
           }
         },
         "de" : {
@@ -1216,18 +1192,6 @@
             "value" : "For authorized acces to bolus"
           }
         },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Autoryzowanie podawania bolusa"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "For authorized access to bolus"
-          }
-        },
         "ro" : {
           "stringUnit" : {
             "state" : "new",
@@ -1236,8 +1200,8 @@
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "new",
-            "value" : "For authorized access to bolus"
+            "state" : "translated",
+            "value" : "Autoryzowanie podawania bolusa"
           }
         },
         "sv" : {
@@ -1540,127 +1504,127 @@
       "localizations" : {
         "bg" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "needs_review",
             "value" : ""
           }
         },
         "cs" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "needs_review",
             "value" : ""
           }
         },
         "da" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "needs_review",
             "value" : ""
           }
         },
         "de" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "needs_review",
             "value" : ""
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "autoISF 3.01"
+            "value" : ""
           }
         },
         "es" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "needs_review",
             "value" : ""
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "needs_review",
             "value" : ""
           }
         },
         "he" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "needs_review",
             "value" : ""
           }
         },
         "it" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "needs_review",
             "value" : ""
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "needs_review",
             "value" : ""
           }
         },
         "nb-NO" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "needs_review",
             "value" : ""
           }
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "needs_review",
             "value" : ""
           }
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "needs_review",
             "value" : ""
           }
         },
         "pt-PT" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "needs_review",
             "value" : ""
           }
         },
         "ro" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "needs_review",
             "value" : ""
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "needs_review",
             "value" : ""
           }
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "needs_review",
             "value" : ""
           }
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "needs_review",
             "value" : ""
           }
         },
         "uk" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "needs_review",
             "value" : ""
           }
         },
         "vi" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "needs_review",
             "value" : ""
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "needs_review",
             "value" : ""
           }
         }
