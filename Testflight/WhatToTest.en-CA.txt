@@ -1,3 +1,3 @@
 based on Trio dev 0.8.4.37
 new glass home view
-Garmin stuff
+Garmin live complication

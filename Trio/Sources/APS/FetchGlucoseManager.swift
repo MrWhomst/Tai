@@ -268,6 +268,10 @@ final class BaseFetchGlucoseManager: FetchGlucoseManager, Injectable {
                 UserDefaults.standard.set(Config.defaultMinimumGlucose, forKey: Config.UserDefaultsKey.minimumGlucose)
             }
         }
+
+        // Only an active plugin CGM with its own BLE connection can wake the app; otherwise the pump must heartbeat
+        let cgmProvidesHeartbeat = cgmGlucoseSourceType == .plugin && (cgmManager?.providesBLEHeartbeat ?? false)
+        deviceDataManager.updateCGMHeartbeatCapability(providesBLEHeartbeat: cgmProvidesHeartbeat)
     }
 
     /// Upload cgmManager from raw value
@@ -329,6 +333,12 @@ final class BaseFetchGlucoseManager: FetchGlucoseManager, Injectable {
 
         // Only trigger heartbeat if new glucose was stored (not backfill)
         if hasStoredNew {
+            // Push the fresh reading schedule so the pump can align its BLE heartbeat
+            deviceDataManager.updatePumpBLEHeartbeat(
+                lastCGMReadingDate: filtered.map(\.dateString).max(),
+                expectedCGMReadingInterval: cgmManager?.expectedGlucoseSampleInterval
+            )
+
             deviceDataManager.heartbeat(date: Date())
         }
 
