@@ -63,14 +63,6 @@ extension Home {
             fetchLimit: 1
         )) var activeProfile: FetchedResults<ProfileStored>
 
-        private var historySFSymbol: String {
-            if #available(iOS 17.0, *) {
-                return "book.pages"
-            } else {
-                return "book"
-            }
-        }
-
         @ViewBuilder func mainChart(geo: GeometryProxy) -> some View {
             let chartHeight = max(
                 geo.size.height - HomeLayout.headerTopPadding - HomeLayout.headerHeight - HomeLayout.mealSlotHeight
@@ -336,7 +328,7 @@ extension Home {
                         .accessibilityLabel(Text("Main"))
 
                     NavigationStack { History.RootView(resolver: resolver) }
-                        .tabItem { Label("", systemImage: historySFSymbol) }.tag(1)
+                        .tabItem { Label("", systemImage: "list.bullet") }.tag(1)
                         .accessibilityLabel(Text("History"))
 
                     Color.clear
@@ -459,7 +451,7 @@ extension Home {
                         .badge(carbsRequiredBadge).tag(0)
 
                     NavigationStack { History.RootView(resolver: resolver) }
-                        .tabItem { Label("History", systemImage: historySFSymbol) }.tag(1)
+                        .tabItem { Label("History", systemImage: "list.bullet") }.tag(1)
 
                     // Tag-2 placeholder for the central "+" button slot. iOS divides the
                     // bar into 5 equal slots; without an explicit tag here, the strips of
