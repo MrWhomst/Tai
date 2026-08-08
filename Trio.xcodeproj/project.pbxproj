@@ -344,6 +344,8 @@
 		3BF92F362D86DEE9006B545A /* autotune-core.js in Resources */ = {isa = PBXBuildFile; fileRef = 3BF92F222D86DEE9006B545A /* autotune-core.js */; };
 		3BF92F3A2D86F1AA006B545A /* iob-error-log.json in Resources */ = {isa = PBXBuildFile; fileRef = 3BF92F392D86F1AA006B545A /* iob-error-log.json */; };
 		3E28F2AB2EB5337F00FB9EEB /* ConnectIQ in Frameworks */ = {isa = PBXBuildFile; productRef = 3E28F2AA2EB5337F00FB9EEB /* ConnectIQ */; };
+		3E5308A53002BC970075629E /* AccuChekKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E5308A43002BC970075629E /* AccuChekKit.framework */; };
+		3E5308A63002BC970075629E /* AccuChekKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3E5308A43002BC970075629E /* AccuChekKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3E54EF2C2E476DA40006F54D /* MedtrumKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E54EF2B2E476DA40006F54D /* MedtrumKit.framework */; };
 		3E54EF2D2E476DA40006F54D /* MedtrumKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3E54EF2B2E476DA40006F54D /* MedtrumKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3E62C7822F54CC1B00433237 /* BolusDisplayThreshold.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E62C7812F54CC1600433237 /* BolusDisplayThreshold.swift */; };
@@ -377,7 +379,6 @@
 		498ED7062D80515B00D18CAF /* InsulinConcentrationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 498ED7032D80515B00D18CAF /* InsulinConcentrationProvider.swift */; };
 		498ED7072D80515B00D18CAF /* InsulinConcentrationStateModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 498ED7042D80515B00D18CAF /* InsulinConcentrationStateModel.swift */; };
 		498ED7092D80516F00D18CAF /* InsulinConcentrationRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 498ED7082D80516F00D18CAF /* InsulinConcentrationRootView.swift */; };
-		498ED7BE2D80811800D18CAF /* HorizontalPumpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 498ED7BD2D80811800D18CAF /* HorizontalPumpView.swift */; };
 		49AC5B642D7F2833005A47F3 /* CustomDateTimePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49AC5B632D7F2833005A47F3 /* CustomDateTimePicker.swift */; };
 		49AD0CEF2F8797F2004301B6 /* UKFTestData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49AD0CEE2F8797F2004301B6 /* UKFTestData.swift */; };
 		49AD0CF12F8797F3004301B6 /* AdaptiveUKFSmootherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49AD0CF02F8797F3004301B6 /* AdaptiveUKFSmootherTests.swift */; };
@@ -392,7 +393,6 @@
 		49B21BF52D7F222600D0B6C3 /* DetailPopupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49B21BF42D7F222600D0B6C3 /* DetailPopupView.swift */; };
 		49B21BF72D7F231500D0B6C3 /* AutoISFHistoryEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49B21BF62D7F231500D0B6C3 /* AutoISFHistoryEntry.swift */; };
 		49B9B57F2D5768D2009C6B59 /* AdjustmentStored+Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49B9B57E2D5768D2009C6B59 /* AdjustmentStored+Helper.swift */; };
-		49C13F832DE1AFD900556D78 /* Trio.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = 49C13F822DE1AFD900556D78 /* Trio.entitlements */; };
 		49C27EC92E1BBBCA00FC65DF /* TaiStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 492B87002D9EC02700D5E42B /* TaiStyle.swift */; };
 		49C7B1BB2ECC4B8A0092ABD0 /* AutoISFGlucoseStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49C7B1BA2ECC4B8A0092ABD0 /* AutoISFGlucoseStatus.swift */; };
 		49C7B1BD2ECC53720092ABD0 /* AutoISFGlucose+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49C7B1BC2ECC53720092ABD0 /* AutoISFGlucose+Helpers.swift */; };
@@ -1119,6 +1119,7 @@
 				3B4BA7912D8DC0EC0069D5B8 /* TidepoolServiceKitUI.framework in Embed Frameworks */,
 				CE95BF602BA7715800DC3DE3 /* MockKit.framework in Embed Frameworks */,
 				B6E925142EB3932A0076D719 /* OmnipodKit.framework in Embed Frameworks */,
+				3E5308A63002BC970075629E /* AccuChekKit.framework in Embed Frameworks */,
 				CE95BF5E2BA770C300DC3DE3 /* LoopKitUI.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -1488,6 +1489,7 @@
 		3BF92F292D86DEE9006B545A /* meal.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = meal.js; sourceTree = "<group>"; };
 		3BF92F2A2D86DEE9006B545A /* profile.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = profile.js; sourceTree = "<group>"; };
 		3BF92F392D86F1AA006B545A /* iob-error-log.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "iob-error-log.json"; sourceTree = "<group>"; };
+		3E5308A43002BC970075629E /* AccuChekKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AccuChekKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3E54EF2B2E476DA40006F54D /* MedtrumKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MedtrumKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3E62C7812F54CC1600433237 /* BolusDisplayThreshold.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BolusDisplayThreshold.swift; sourceTree = "<group>"; };
 		3E705AFA2FF94FAB0007F96B /* BolusStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BolusStatus.swift; sourceTree = "<group>"; };
@@ -1522,7 +1524,6 @@
 		498ED7032D80515B00D18CAF /* InsulinConcentrationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsulinConcentrationProvider.swift; sourceTree = "<group>"; };
 		498ED7042D80515B00D18CAF /* InsulinConcentrationStateModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsulinConcentrationStateModel.swift; sourceTree = "<group>"; };
 		498ED7082D80516F00D18CAF /* InsulinConcentrationRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsulinConcentrationRootView.swift; sourceTree = "<group>"; };
-		498ED7BD2D80811800D18CAF /* HorizontalPumpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HorizontalPumpView.swift; sourceTree = "<group>"; };
 		499FF4492E917B0100C76622 /* GarminWatchSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GarminWatchSettings.swift; sourceTree = "<group>"; };
 		49AC5B632D7F2833005A47F3 /* CustomDateTimePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDateTimePicker.swift; sourceTree = "<group>"; };
 		49AC5CB32D7F5EB2005A47F3 /* ci_post_xcodebuild.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; name = ci_post_xcodebuild.sh; path = ci_scripts/ci_post_xcodebuild.sh; sourceTree = "<group>"; };
@@ -2219,6 +2220,7 @@
 				38E87401274F77E400975559 /* CoreNFC.framework in Frameworks */,
 				3B4BA78A2D8DC0EC0069D5B8 /* ShareClient.framework in Frameworks */,
 				B6E925132EB3932A0076D719 /* OmnipodKit.framework in Frameworks */,
+				3E5308A53002BC970075629E /* AccuChekKit.framework in Frameworks */,
 				3811DE1025C9D37700A708ED /* Swinject in Frameworks */,
 				3B4BA78E2D8DC0EC0069D5B8 /* TidepoolServiceKit.framework in Frameworks */,
 				B958F1B72BA0711600484851 /* MKRingProgressView in Frameworks */,
@@ -2837,6 +2839,7 @@
 		3818AA48274C267000843DB3 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				3E5308A43002BC970075629E /* AccuChekKit.framework */,
 				B6E925122EB3932A0076D719 /* OmnipodKit.framework */,
 				3E54EF2B2E476DA40006F54D /* MedtrumKit.framework */,
 				3E84DA3F2F48D96000033608 /* EversenseKit.framework */,
@@ -2905,7 +2908,6 @@
 				38AAF85425FFF846004AF583 /* CurrentGlucoseView.swift */,
 				BD11C002000000000000C000 /* SensorLifecycle */,
 				38DAB27F260CBB7F00F74C1A /* PumpView.swift */,
-				498ED7BD2D80811800D18CAF /* HorizontalPumpView.swift */,
 			);
 			path = Header;
 			sourceTree = "<group>";
@@ -5348,7 +5350,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				49C13F832DE1AFD900556D78 /* Trio.entitlements in Resources */,
 				8A91342C2D63D9A2007F8874 /* InfoPlist.xcstrings in Resources */,
 				CE1F6DE72BAF1A180064EB8D /* BuildDetails.plist in Resources */,
 				3B3B57C92DA07B3400849D16 /* GoogleService-Info.plist in Resources */,
@@ -5457,6 +5458,7 @@
 		3B47C6112DA0A52C00B0E5EF /* Run Script: Copy dSYM to Crashlytics */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
+			alwaysOutOfDate = 1;
 			files = (
 			);
 			inputFileListPaths = (
@@ -6051,7 +6053,6 @@
 				3B2F77882D7E5387005ED9FA /* CurrentTDDSetup.swift in Sources */,
 				DBA5254DBB2586C98F61220C /* ISFEditorProvider.swift in Sources */,
 				BDF34EBE2C0A31D100D51995 /* CustomNotification.swift in Sources */,
-				498ED7BE2D80811800D18CAF /* HorizontalPumpView.swift in Sources */,
 				3B139EF32DF06CE100D40797 /* AutosensGenerator.swift in Sources */,
 				DDC38E102D9B377800ADCB46 /* OnboardingView+Util.swift in Sources */,
 				BDC2EA472C3045AD00E5BBD0 /* Override.swift in Sources */,
@@ -6143,7 +6144,6 @@
 				49F299362D2D82EA00E4C00D /* B30SettingsStateModel.swift in Sources */,
 				49F299372D2D82EA00E4C00D /* B30SettingsRootView.swift in Sources */,
 				3B506FD92E635304000740B9 /* IOBService.swift in Sources */,
-				BD2FF1A02AE29D43005D1C5D /* ToggleStyles.swift in Sources */,
 				DDD163162C4C690300CD525A /* AdjustmentsDataFlow.swift in Sources */,
 				49B21BBD2D7F102100D0B6C3 /* MainChartHelper.swift in Sources */,
 				BDF34F932C10D0E100D51995 /* LiveActivityAttributes+Helper.swift in Sources */,
@@ -6236,7 +6236,6 @@
 				DD88C8E22C50420800F2D558 /* DefinitionRow.swift in Sources */,
 				71D44AAB2CA5F5EA0036EE9E /* AlertPermissionsChecker.swift in Sources */,
 				DDF691032DA2CA1E008BF16C /* AppDiagnosticsProvider.swift in Sources */,
-				CE94598729E9E4110047C9C6 /* WatchConfigRootView.swift in Sources */,
 				DD9E6DA22D59A12700514CEC /* MealHistory.swift in Sources */,
 				19E1F7E829D082D0005C8D20 /* IconConfigDataFlow.swift in Sources */,
 				5A2325522BFCBF55003518CA /* NightscoutUploadView.swift in Sources */,

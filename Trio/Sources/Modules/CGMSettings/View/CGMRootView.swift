@@ -260,10 +260,12 @@ extension CGMSettings {
                         hintLabel: "CGM Models",
                         hintText: Text(
                             "Current CGM Models Supported:\n\n" +
+                                "• Accu-Chek SmartGuide\n" +
                                 "• Dexcom G5\n" +
                                 "• Dexcom G6 / ONE\n" +
                                 "• Dexcom G7 / ONE+\n" +
                                 "• Dexcom Share\n" +
+                                "• Eversense E3/365\n" +
                                 "• Freestyle Libre\n" +
                                 "• Freestyle Libre Demo\n" +
                                 "• Glucose Simulator\n" +
