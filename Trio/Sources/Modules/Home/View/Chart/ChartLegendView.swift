@@ -20,20 +20,121 @@ struct ChartLegendView: View {
 
                 List {
                     VStack(alignment: .leading) {
-                        Text("Glucose Bobble").bold().padding(.bottom, 5).textCase(.uppercase)
-                        HStack {
-                            if #available(iOS 18.0, *) {
-                                Image(systemName: "arrow.down.circle.fill")
-                                    .symbolEffect(.rotate.counterClockwise.byLayer, options: .repeat(.periodic(delay: 5.0)))
-                            } else {
-                                Image(systemName: "arrow.down.circle.fill")
-                            }
-                            Text(
-                                "Pull it down to force a loop!"
-                            )
-                            .font(.subheadline)
-                            .foregroundColor(.primary)
+                        Text("Chart Gestures").bold().padding(.bottom, 5).textCase(.uppercase)
+
+                        DefinitionRow(
+                            term: String(localized: "Drag"),
+                            definition: Text(
+                                "Drag the chart sideways to pan through your history. Flick and let go to keep it gliding; panning far enough back loads up to 72 hours."
+                            ),
+                            color: Color.primary,
+                            iconString: "hand.draw"
+                        )
+
+                        DefinitionRow(
+                            term: String(localized: "Pinch"),
+                            definition: Text(
+                                "Pinch to zoom the visible time window continuously, between 1 and 24 hours."
+                            ),
+                            color: Color.primary,
+                            iconString: "arrow.down.left.and.arrow.up.right"
+                        )
+
+                        DefinitionRow(
+                            term: String(localized: "Double Tap"),
+                            definition: Text("Cycles the zoom through the 6, 12 and 24 hour presets."),
+                            color: Color.primary,
+                            iconString: "hand.tap"
+                        )
+
+                        DefinitionRow(
+                            term: String(localized: "Triple Tap"),
+                            definition: Text(
+                                "Recenters the chart on now, from wherever you have panned to. The zoom level stays as it is."
+                            ),
+                            color: Color.primary,
+                            iconString: "hand.tap.fill"
+                        )
+
+                        DefinitionRow(
+                            term: String(localized: "Touch and Hold"),
+                            definition: VStack(alignment: .leading, spacing: 10) {
+                                Text(
+                                    "Rest your finger on the chart to inspect a single reading with its IOB and COB."
+                                )
+                                Text(
+                                    "Keep your finger down and slide to scrub along the curve; slide to either edge and the chart pans along with you."
+                                )
+                            },
+                            color: Color.primary,
+                            iconString: "hand.point.up.left"
+                        )
+                    }.listRowBackground(Color.gray.opacity(0.1))
+
+                    VStack(alignment: .leading) {
+                        Text("Home Screen Gestures").bold().padding(.bottom, 5).textCase(.uppercase)
+
+                        VStack(alignment: .leading) {
+                            HStack {
+                                if #available(iOS 18.0, *) {
+                                    Image(systemName: "arrow.down.circle.fill")
+                                        .symbolEffect(
+                                            .rotate.counterClockwise.byLayer,
+                                            options: .repeat(.periodic(delay: 5.0))
+                                        )
+                                        .foregroundStyle(Color.primary)
+                                } else {
+                                    Image(systemName: "arrow.down.circle.fill")
+                                        .foregroundStyle(Color.primary)
+                                }
+                                Text("Pull Down").font(.subheadline).fontWeight(.semibold)
+                            }.padding(.bottom, 5)
+                            Text("Pull the home screen down past the hint to force a loop.")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
                         }
+                        .padding(.vertical, 5)
+
+                        DefinitionRow(
+                            term: String(localized: "Tap Trio Button"),
+                            definition: Text("Opens the treatment view to add carbs, insulin or a manual glucose reading."),
+                            color: Color.primary,
+                            iconString: "hand.tap"
+                        )
+
+                        if state.enableQuickBolus {
+                            DefinitionRow(
+                                term: String(localized: "Hold Trio Button"),
+                                definition: Text(
+                                    "Opens the quick bolus picker with your recent boluses, so a repeat dose takes one slide to confirm."
+                                ),
+                                color: Color.primary,
+                                iconString: "hand.point.up.left"
+                            )
+                        }
+
+                        DefinitionRow(
+                            term: String(localized: "Tap Loop Pill"),
+                            definition: Text("Shows the status popup with the details of the last loop cycle."),
+                            color: Color.primary,
+                            iconString: "hand.tap"
+                        )
+
+                        DefinitionRow(
+                            term: String(localized: "Swipe Up on Status Popup"),
+                            definition: Text("Dismisses the loop status popup again."),
+                            color: Color.primary,
+                            iconString: "hand.draw"
+                        )
+
+                        DefinitionRow(
+                            term: String(localized: "Tap Glucose or Pump Panel"),
+                            definition: Text(
+                                "Opens the setup for that device — or, if none is set up yet, the picker to add one."
+                            ),
+                            color: Color.primary,
+                            iconString: "hand.tap"
+                        )
                     }.listRowBackground(Color.gray.opacity(0.1))
 
                     VStack(alignment: .leading) {

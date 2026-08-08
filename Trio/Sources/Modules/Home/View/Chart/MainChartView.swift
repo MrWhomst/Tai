@@ -103,6 +103,10 @@ struct MainChartView: View {
     /// Auto-pans the chart while a scrubbing finger rests in the viewport's edge zones.
     @State private var edgePanTask: Task<Void, Never>?
 
+    /// Taps of the current multi-tap sequence, and the timer that resolves it.
+    @State private var pendingTapCount = 0
+    @State private var tapResolveTask: Task<Void, Never>?
+
     var body: some View {
         ZStack(alignment: .topLeading) {
             MainChartCanvas(
@@ -166,11 +170,11 @@ struct MainChartView: View {
         .contentShape(Rectangle())
         .simultaneousGesture(panAndInspectGesture)
         .simultaneousGesture(magnifyGesture)
-        .simultaneousGesture(TapGesture(count: 2).onEnded { cycleZoomPreset() })
         .onDisappear {
             momentumTask?.cancel()
             inspectHoldTask?.cancel()
             edgePanTask?.cancel()
+            tapResolveTask?.cancel()
         }
         .onChange(of: scrollPosition) {
             updateRenderWindow()
@@ -458,6 +462,23 @@ extension MainChartView {
         updateRenderWindow(force: true)
     }
 
+    /// Triple-tap recenters the window on `now`, zoom untouched. `clampedLeadingEdge`
+    /// pulls it back to the trailing framing at 12 h and wider, where half a viewport of
+    /// future exceeds the forecast. Snapped, not animated: the render window only covers
+    /// the current neighbourhood, so a glide would draw empty canvas.
+    private func recenterOnNow() {
+        momentumTask?.cancel()
+        inspectHoldTask?.cancel()
+        edgePanTask?.cancel()
+        if selection != nil { selection = nil }
+        isInspectLatched = false
+        panBaseline = nil
+
+        scrollPosition = clampedLeadingEdge(Date.now.addingTimeInterval(-visibleSeconds / 2))
+        updateRenderWindow(force: true)
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+    }
+
     /// Clamps a proposed leading edge so the visible window never leaves the chart's domain.
     private func clampedLeadingEdge(_ proposed: Date) -> Date {
         let earliest = state.startMarker
@@ -493,6 +514,7 @@ extension MainChartView {
                 guard !isPinching else {
                     inspectHoldTask?.cancel()
                     edgePanTask?.cancel()
+                    cancelPendingTaps()
                     if selection != nil { selection = nil }
                     panBaseline = nil
                     touchDownTime = nil
@@ -521,6 +543,7 @@ extension MainChartView {
                 } else {
                     // Finger is travelling: pan. The touch can no longer become an inspect.
                     inspectHoldTask?.cancel()
+                    cancelPendingTaps()
                     if selection != nil { selection = nil }
                     if panBaseline == nil {
                         // Compensate for the distance already travelled inside the
@@ -540,15 +563,60 @@ extension MainChartView {
                 edgePanTask?.cancel()
                 if selection != nil { selection = nil }
                 touchDownTime = nil
+                let wasInspecting = isInspectLatched
                 isInspectLatched = false
                 lastTouchLocation = nil
                 let wasPanning = panBaseline != nil
                 panBaseline = nil
-                guard wasPanning, !isPinching else { return }
+                guard !isPinching else { return }
+
+                // A touch that neither panned nor inspected is a tap.
+                let travelled = hypot(value.translation.width, value.translation.height)
+                if !wasPanning, !wasInspecting,
+                   travelled < MainChartHelper.Config.inspectMovementTolerance
+                {
+                    registerTap()
+                    return
+                }
+
+                guard wasPanning else { return }
                 // Momentum: initial velocity in seconds of chart time per second.
                 let velocity = -timeDelta(forTranslation: value.velocity.width)
                 startMomentum(velocitySecondsPerSecond: velocity)
             }
+    }
+
+    /// Counts taps by hand instead of using `TapGesture`. A 2-tap and a 3-tap gesture side
+    /// by side both fire on a triple, and arbitrating them with `.exclusively` left the
+    /// double-tap unresolvable (the triple never fails) and starved the magnify gesture.
+    /// The drag gesture already sees every touch, so the count is derived from it.
+    ///
+    /// The third tap fires immediately; a double only resolves once the window lapses
+    /// without a third, so cycling the zoom now lags a tap by `Config.multiTapWindow`.
+    private func registerTap() {
+        tapResolveTask?.cancel()
+        pendingTapCount += 1
+        guard pendingTapCount < 3 else {
+            pendingTapCount = 0
+            recenterOnNow()
+            return
+        }
+        let count = pendingTapCount
+        tapResolveTask = Task { @MainActor in
+            try? await Task.sleep(
+                nanoseconds: UInt64(MainChartHelper.Config.multiTapWindow * 1_000_000_000)
+            )
+            guard !Task.isCancelled else { return }
+            pendingTapCount = 0
+            if count == 2 { cycleZoomPreset() }
+        }
+    }
+
+    /// Drops a half-finished tap sequence when the touch turns into a pan or pinch.
+    private func cancelPendingTaps() {
+        tapResolveTask?.cancel()
+        tapResolveTask = nil
+        pendingTapCount = 0
     }
 
     /// Arms the inspect hold: after `Config.inspectHoldDelay`, if the touch is still down

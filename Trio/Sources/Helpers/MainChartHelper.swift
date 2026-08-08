@@ -56,6 +56,9 @@ enum MainChartHelper {
         static let maxVisibleSeconds: TimeInterval = 24 * 3600
         /// Double-tap cycles the visible window through these presets.
         static let zoomPresets: [TimeInterval] = [6 * 3600, 12 * 3600, 24 * 3600]
+        /// How long (s) a finished tap waits for the next one before the chart acts on the
+        /// count — double-tap zoom vs. triple-tap recenter.
+        static let multiTapWindow: TimeInterval = 0.3
         /// When auto-follow re-anchors to `now` at tight zoom, the current reading sits this
         /// fraction from the trailing edge (0.55 makes the crossover land at ~6 h, so the
         /// forecast-anchored framing at 6 h and wider is unchanged; below it, `now` stays on-screen).
