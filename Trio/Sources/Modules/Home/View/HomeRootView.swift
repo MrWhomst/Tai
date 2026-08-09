@@ -99,13 +99,18 @@ extension Home {
             Button {
                 state.isLegendPresented.toggle()
             } label: {
+                // styled to match the alarm bell pill in the meal row
                 Image(systemName: "info")
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(.secondary)
+                    .font(.callout)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.primary)
                     .frame(width: 32, height: 32)
-                    .background(Circle().fill(.ultraThinMaterial))
-                    .overlay(Circle().strokeBorder(Color.primary.opacity(0.12), lineWidth: 1))
+                    .overlay(
+                        Circle()
+                            .stroke(Color.primary.opacity(0.4), lineWidth: 2)
+                    )
             }
+            .buttonStyle(.plain)
             .contentShape(Circle())
             .padding(.bottom, 6)
             .padding(.trailing, 8)
