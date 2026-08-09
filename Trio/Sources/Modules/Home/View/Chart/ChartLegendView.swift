@@ -102,11 +102,11 @@ struct ChartLegendView: View {
                             iconString: "hand.tap"
                         )
 
-                        if state.enableQuickBolus {
+                        if state.enableQuickPickTreatments {
                             DefinitionRow(
                                 term: String(localized: "Hold Trio Button"),
                                 definition: Text(
-                                    "Opens the quick bolus picker with your recent boluses, so a repeat dose takes one slide to confirm."
+                                    "Opens the Quick-Pick Treatments picker with your recent bolus and carb amounts, so a repeat treatment takes one slide to confirm."
                                 ),
                                 color: Color.primary,
                                 iconString: "hand.point.up.left"

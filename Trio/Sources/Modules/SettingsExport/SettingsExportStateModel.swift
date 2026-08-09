@@ -870,7 +870,7 @@ extension SettingsExport {
             if categoriesToExport.contains(.features) {
                 let featuresCategory = String(localized: "Features", comment: "Features menu item in the Settings main view.")
 
-                // Trio Features subcategory - Treatments (Bolus Calculator, Quick-Pick Boluses, Meal Settings)
+                // Trio Features subcategory - Treatments (Bolus Calculator, Quick-Pick Treatments, Meal Settings)
                 let treatmentsSubcategory = String(localized: "Treatments")
                 addSetting(
                     category: featuresCategory,
@@ -924,8 +924,8 @@ extension SettingsExport {
                 addSetting(
                     category: featuresCategory,
                     subcategory: treatmentsSubcategory,
-                    name: String(localized: "Enable Quick-Pick Boluses"),
-                    value: trioSettings.enableQuickBolus ? String(localized: "Enabled") : String(localized: "Disabled")
+                    name: String(localized: "Enable Quick-Pick Treatments"),
+                    value: trioSettings.enableQuickPickTreatments ? String(localized: "Enabled") : String(localized: "Disabled")
                 )
                 addSetting(
                     category: featuresCategory,
