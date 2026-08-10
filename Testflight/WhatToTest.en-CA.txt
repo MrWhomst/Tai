@@ -1,3 +1,7 @@
 based on Trio dev 0.8.4.37
 new glass home view
 Garmin live complication
+perf tests pre pump
+slim the NS uploads and Garmin updates
+more perf logs again, Garmin revert
+FIX TT OR DELETE

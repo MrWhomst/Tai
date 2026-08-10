@@ -49,6 +49,10 @@ extension Adjustments {
         }
 
         var body: some View {
+            tempTargetDeleteConfirmation(overrideDeleteConfirmation(mainContent))
+        }
+
+        private var mainContent: some View {
             VStack {
                 HStack(spacing: 6) {
                     HStack {
