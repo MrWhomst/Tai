@@ -564,6 +564,7 @@ enum DeterminationGenerator {
             deviation: deviation,
             iobActivity: iobData.first?.activity
         )
+        determination.cobProjection = forecastResult.cobProjection
 
         // MARK: - Core dosing logic
 

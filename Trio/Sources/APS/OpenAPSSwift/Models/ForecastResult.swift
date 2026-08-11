@@ -16,6 +16,7 @@ struct ForecastResult {
     public let adjustedCarbRatio: Decimal
     public let profileCarbRatio: Decimal
     public let carbSensitivityFactor: Decimal
+    public let cobProjection: [Decimal]? // remaining grams per step, display-only
 }
 
 struct ForecastSelectionResult {

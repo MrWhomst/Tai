@@ -57,6 +57,10 @@ struct Determination: JSON, Equatable {
     var bgi: Decimal?
     var deviation: Decimal?
     var iobActivity: Decimal?
+
+    /// Remaining COB per 5 min forecast step; display-only,
+    /// not part of CodingKeys so the serialized JSON is unchanged.
+    var cobProjection: [Decimal]? = nil
 }
 
 struct Predictions: JSON, Equatable {
