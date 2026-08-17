@@ -926,12 +926,6 @@ extension Home {
             }
         }
 
-        private func getCurrentGlucoseTarget() async {
-            if let target = bgTargets.currentTarget() {
-                await MainActor.run { currentGlucoseTarget = target }
-            }
-        }
-
         /// Checks if the pump simulator is selected and resets it if Bundle.main.simulatorVisibility.isHidden is true
         private func checkAndResetPumpSimulatorIfNeeded() {
             // Only proceed if simulators should be hidden
