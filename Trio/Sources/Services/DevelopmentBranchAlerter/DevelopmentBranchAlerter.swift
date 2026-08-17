@@ -1,7 +1,7 @@
 import Foundation
 import SwiftUI
 
-/// Drives the startup warning shown when Trio was built from anything other than the released
+/// Drives the startup warning shown when Tai was built from anything other than the released
 /// `main` branch.
 ///
 /// The branch name is recorded at build time by `scripts/capture-build-details.sh` and read back
@@ -69,13 +69,13 @@ import SwiftUI
     var message: String {
         if branch == Self.developmentBranchName {
             return String(
-                localized: "This is the development version of Trio, built from the dev branch.\n\nAny updates on this branch may contain new, lightly tested features, and may be unsafe. If you are not a tester, please do not use this branch, and switch to main.",
+                localized: "This is the development version of Tai, built from the dev branch.\n\nAny updates on this branch may contain new, lightly tested features, and may be unsafe. If you are not a tester, please do not use this branch, and switch to main.",
                 comment: "Body of the warning shown on builds from the dev branch"
             )
         }
 
         return String(
-            localized: "This version of Trio was built from '\(branch)', not the released main branch.\n\nAny updates on this branch may contain new, lightly tested features, and may be unsafe. If you are not a tester, please do not use this branch, and switch to main.",
+            localized: "This version of Tai was built from '\(branch)', not the released main branch.\n\nAny updates on this branch may contain new, lightly tested features, and may be unsafe. If you are not a tester, please do not use this branch, and switch to main.",
             comment: "Body of the warning shown on builds from a branch other than main or dev; the placeholder is the branch name"
         )
     }
@@ -90,7 +90,7 @@ extension View {
     /// documentation on returning to the released version.
     func developmentBranchWarning(_ alerter: DevelopmentBranchAlerter) -> some View {
         alert(
-            Text("Hey Trioneer, watch out!", comment: "Title of the warning shown on builds that are not from the main branch"),
+            Text("Hey Tai user, watch out!", comment: "Title of the warning shown on builds that are not from the main branch"),
             isPresented: Binding(
                 get: { alerter.isPresented },
                 set: { alerter.isPresented = $0 }
