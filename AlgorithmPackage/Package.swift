@@ -63,7 +63,9 @@ let package = Package(
             path: "Sources",
             sources: [
                 "APS/OpenAPSSwift",
-                "APS/Extensions/DecimalExtensions.swift"
+                "APS/Extensions/DecimalExtensions.swift",
+                // feeds Profile.bolusIncrement, which roundBasal turns into the rounding scale
+                "APS/BolusIncrementResolver.swift"
             ] + algorithmModels + algorithmHelpers,
             swiftSettings: [.define("TRIO_ALGORITHM_PACKAGE")]
         ),

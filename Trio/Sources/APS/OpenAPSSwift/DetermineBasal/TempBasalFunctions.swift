@@ -13,15 +13,15 @@ enum TempBasalFunctionError: LocalizedError, Equatable {
 
 enum TempBasalFunctions {
     /// Rounds basal rates to match the basal increment for the pump as the basal rate increases.
-    /// Mirrors JS `round-basal.js`: the low-rate scale derives from `profile.bolus_increment`
-    /// (`1 / bolus_increment`) with Medtronic x23/x54 forced to 40 (0.025 U).
+    /// Rounds basal rates to the increment the pump delivers in. Diverges from JS
+    /// `round-basal.js`, which hardcodes 20 and forces 40 for Medtronic x23/x54: that constant is
+    /// in pump units, while the rate here is in U100 units, so it only holds at U100.
+    /// `bolus_increment` already carries the concentration, and for an x23/x54 it resolves to 40
+    /// at U100 anyway.
     static func roundBasal(profile: Profile, basalRate: Decimal) -> Decimal {
         var lowestRateScale: Decimal = 20
         if profile.bolusIncrement > 0 {
             lowestRateScale = 1 / profile.bolusIncrement
-        }
-        if let model = profile.model, model.hasSuffix("54") || model.hasSuffix("23") {
-            lowestRateScale = 40
         }
 
         let roundedBasal: Decimal

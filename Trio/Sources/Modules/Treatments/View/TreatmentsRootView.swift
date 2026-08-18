@@ -43,20 +43,7 @@ extension Treatments {
         }
 
         private var bolusProgressFormatter: NumberFormatter {
-            let fractionDigits: Int = switch state.settingsManager.preferences.bolusIncrement {
-            case 0.1: 1
-            case 0.025: 3
-            default: 2
-            }
-
-            let formatter = NumberFormatter()
-            formatter.numberStyle = .decimal
-            formatter.minimum = 0
-            formatter.maximumFractionDigits = fractionDigits
-            formatter.minimumFractionDigits = fractionDigits
-            formatter.allowsFloats = true
-            formatter.roundingIncrement = Double(state.settingsManager.preferences.bolusIncrement) as NSNumber
-            return formatter
+            Formatter.bolusProgressFormatter(for: state.settingsManager.preferences.bolusIncrement)
         }
 
         private var mealFormatter: NumberFormatter {

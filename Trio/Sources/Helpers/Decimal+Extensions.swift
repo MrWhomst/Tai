@@ -77,10 +77,14 @@ extension Decimal {
     /// - Returns: Number of maximum fraction digits
     static func maxFractionDigits(for increment: Decimal) -> Int {
         switch increment {
+        case 0.0025:
+            return 4
         case 0.005:
             return 3
         case 0.01:
             return 2
+        case 0.0125:
+            return 4
         case 0.025:
             return 3
         case 0.05:
@@ -89,7 +93,9 @@ extension Decimal {
             return 1
         default:
             // Fallback for any unexpected increment
-            if increment < 0.01 {
+            if increment < 0.005 {
+                return 4
+            } else if increment < 0.01 {
                 return 3
             } else if increment < 0.1 {
                 return 2

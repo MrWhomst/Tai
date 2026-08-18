@@ -117,6 +117,18 @@ extension Formatter {
         return formatter
     }
 
+    /// Live bolus progress, rendered to the increment the pump actually delivers in.
+    static func bolusProgressFormatter(for bolusIncrement: Decimal) -> NumberFormatter {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.minimum = 0
+        formatter.maximumFractionDigits = Decimal.maxFractionDigits(for: bolusIncrement)
+        formatter.minimumFractionDigits = 1
+        formatter.allowsFloats = true
+        formatter.roundingIncrement = Double(bolusIncrement) as NSNumber
+        return formatter
+    }
+
     static func insulinFormatterToIncrement(for bolusIncrement: Decimal) -> NumberFormatter {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal

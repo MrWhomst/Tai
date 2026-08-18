@@ -110,21 +110,16 @@ final class BaseDeviceDataManager: DeviceDataManager, Injectable {
                 pumpName.send(pumpManager.localizedTitle)
 
                 var modifiedPreferences = settingsManager.preferences
-                let supportedPumpIncrement = Decimal(pumpManager.supportedBolusVolumes.first ?? 0.1)
-                var bolusIncrement = Decimal(
-                    pumpManager.supportedBolusVolumes
-                        .first ?? Double(settingsManager.preferences.bolusIncrement)
+                modifiedPreferences.bolusIncrement = BolusIncrementResolver.resolve(
+                    supportedBolusVolumes: pumpManager.supportedBolusVolumes,
+                    currentIncrement: settingsManager.preferences.bolusIncrement,
+                    concentration: concentration
                 )
-                let filteredSupportedIncrement = supportedPumpIncrement != 0.025 ? supportedPumpIncrement : 0.1
-
-                if concentration != 1 { bolusIncrement = filteredSupportedIncrement * concentration }
-                modifiedPreferences
-                    .bolusIncrement = bolusIncrement > 0 ? bolusIncrement : 0.1
                 storage.save(modifiedPreferences, as: OpenAPS.Settings.preferences)
                 settingsManager.preferences = modifiedPreferences
                 debug(
                     .deviceManager,
-                    "Concentration U\(Int(truncating: NSDecimalNumber(decimal: concentration * 100))), Bolus increment set to: \(settingsManager.preferences.bolusIncrement), supported Pump Increment = \(filteredSupportedIncrement)"
+                    "Concentration U\(Int(truncating: NSDecimalNumber(decimal: concentration * 100))), Bolus increment set to: \(settingsManager.preferences.bolusIncrement), supported Pump Increments = \(pumpManager.supportedBolusVolumes.prefix(1))"
                 )
 
                 // Ensure the pump manager's delivery limits always reflect the user's
@@ -217,9 +212,9 @@ final class BaseDeviceDataManager: DeviceDataManager, Injectable {
                 pumpName.send("")
                 // Reset bolusIncrement setting to default value, which is 0.1 U
                 var modifiedPreferences = settingsManager.preferences
-                if concentration != 1 {
-                    modifiedPreferences.bolusIncrement = 0.1 * concentration
-                } else { modifiedPreferences.bolusIncrement = 0.1 }
+                modifiedPreferences.bolusIncrement = BolusIncrementResolver.resolveWithoutPump(
+                    concentration: concentration
+                )
                 debug(
                     .deviceManager,
                     "Concentration U\(Int(truncating: NSDecimalNumber(decimal: settingsManager.settings.insulinConcentration * 100))), Bolus increment reset to: \(modifiedPreferences.bolusIncrement)"
