@@ -5,14 +5,14 @@ import Testing
 @Suite("Round Basal Tests") struct RoundBasalTests {
     private func profile(increment: Decimal, model: String? = "722") -> Profile {
         var profile = Profile()
-        profile.bolusIncrement = increment
+        profile.basalIncrement = increment
         profile.model = model
         return profile
     }
 
     // MARK: - Rates below 1 U/h follow the pump increment
 
-    @Test("A rate below 1 rounds onto the pump's own increment") func lowRateFollowsIncrement() {
+    @Test("A rate below 1 rounds onto the pump's own basal step") func lowRateFollowsIncrement() {
         #expect(TempBasalFunctions.roundBasal(profile: profile(increment: 0.1), basalRate: 0.57) == 0.6)
         #expect(TempBasalFunctions.roundBasal(profile: profile(increment: 0.05), basalRate: 0.57) == 0.55)
         #expect(TempBasalFunctions.roundBasal(profile: profile(increment: 0.025), basalRate: 0.57) == 0.575)
