@@ -222,6 +222,8 @@
 		3B1C5C432D68E269004E9273 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B1C5C3D2D68E269004E9273 /* Extensions.swift */; };
 		3B1C5C442D68E269004E9273 /* IobJsonTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B1C5C3E2D68E269004E9273 /* IobJsonTypes.swift */; };
 		3B1C5C452D68E269004E9273 /* IobTotalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B1C5C382D68E269004E9273 /* IobTotalTests.swift */; };
+		FAB1E00000000000000000E3 /* BolusIncrementResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB1E00000000000000000D3 /* BolusIncrementResolverTests.swift */; };
+		FAB1E00000000000000000E2 /* RoundBasalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB1E00000000000000000D2 /* RoundBasalTests.swift */; };
 		3B1C5C472D68E269004E9273 /* IobCalculateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B1C5C352D68E269004E9273 /* IobCalculateTests.swift */; };
 		3B1C5C482D68E269004E9273 /* IobHistoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B1C5C362D68E269004E9273 /* IobHistoryTests.swift */; };
 		3B1DB90F2E63C14C00BD814B /* DetermineBasalLowEventualGlucoseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B1DB90E2E63C14200BD814B /* DetermineBasalLowEventualGlucoseTests.swift */; };
@@ -1395,6 +1397,8 @@
 		3B1C5C352D68E269004E9273 /* IobCalculateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IobCalculateTests.swift; sourceTree = "<group>"; };
 		3B1C5C362D68E269004E9273 /* IobHistoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IobHistoryTests.swift; sourceTree = "<group>"; };
 		3B1C5C382D68E269004E9273 /* IobTotalTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IobTotalTests.swift; sourceTree = "<group>"; };
+		FAB1E00000000000000000D3 /* BolusIncrementResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BolusIncrementResolverTests.swift; sourceTree = "<group>"; };
+		FAB1E00000000000000000D2 /* RoundBasalTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundBasalTests.swift; sourceTree = "<group>"; };
 		3B1C5C3D2D68E269004E9273 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		3B1C5C3E2D68E269004E9273 /* IobJsonTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IobJsonTypes.swift; sourceTree = "<group>"; };
 		3B1DB90E2E63C14200BD814B /* DetermineBasalLowEventualGlucoseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetermineBasalLowEventualGlucoseTests.swift; sourceTree = "<group>"; };
@@ -3504,6 +3508,8 @@
 				3B1C5C362D68E269004E9273 /* IobHistoryTests.swift */,
 				3BC26E542D7418830066ACD6 /* IobSuspendTests.swift */,
 				3B1C5C382D68E269004E9273 /* IobTotalTests.swift */,
+				FAB1E00000000000000000D3 /* BolusIncrementResolverTests.swift */,
+				FAB1E00000000000000000D2 /* RoundBasalTests.swift */,
 				3BE2F1E92E031951009E2900 /* MealCobBucketingTests.swift */,
 				3BE2F1E72E030E2F009E2900 /* MealCobTests.swift */,
 				3BEF6AB02D9731530076089D /* MealHistoryTests.swift */,
@@ -6414,6 +6420,8 @@
 				DD758EDE2ECC656500EF5D54 /* DetermineBasalSmbMicroBolusTests.swift in Sources */,
 				3B1C5C442D68E269004E9273 /* IobJsonTypes.swift in Sources */,
 				3B1C5C452D68E269004E9273 /* IobTotalTests.swift in Sources */,
+				FAB1E00000000000000000E3 /* BolusIncrementResolverTests.swift in Sources */,
+				FAB1E00000000000000000E2 /* RoundBasalTests.swift in Sources */,
 				3BE2F1EA2E031951009E2900 /* MealCobBucketingTests.swift in Sources */,
 				3B1C5C472D68E269004E9273 /* IobCalculateTests.swift in Sources */,
 				3B2CE68B2E24ADF7005EF782 /* IobGenerateTests.swift in Sources */,

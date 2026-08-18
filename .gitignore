@@ -90,3 +90,5 @@ logs/
 
 #Crashfiles
 crashfiles/
+# parity harness writes these next to the goldens when a comparison fails
+TrioTests/OpenAPSSwiftTests/Parity/goldens/*/actual-*.json

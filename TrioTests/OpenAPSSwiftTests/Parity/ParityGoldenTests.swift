@@ -2,14 +2,14 @@ import Foundation
 import Testing
 @testable import Trio
 
-@Suite("OpenAPSSwift golden parity", .serialized) struct ParityGoldenTests {
-    init() {
-        _ = ParityEnv.pinned
-    }
-
+@Suite(
+    "OpenAPSSwift golden parity",
+    .serialized,
+    .enabled(if: ParityEnv.isPinned, "goldens require the process to run in \(ParityEnv.timeZoneIdentifier)")
+) struct ParityGoldenTests {
     @Test(
         "pipeline output matches golden",
-        arguments: ParityScenarios.allNames
+        arguments: ParityScenarios.goldenNames
     ) func pipelineMatchesGolden(scenarioName: String) throws {
         let scenario = ParityScenarios.build(scenarioName)
         let outputs = try ParityScenarios.runPipeline(scenario)

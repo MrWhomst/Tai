@@ -49,14 +49,40 @@ enum ParityScenarios {
         "winter-standard-time"
     ]
 
+    static let autoISFOffSuffix = "+autoisf-off"
+
+    /// Tai ships autoisf on, so `allNames` records what Tai actually runs. These variants pin it
+    /// off, which reproduces upstream's determinations - an upstream pick that shifts the shared
+    /// algorithm fails here instead of being absorbed into Tai's own goldens.
+    static let autoISFOffNames: [String] = allNames.map { $0 + autoISFOffSuffix }
+
+    static let goldenNames: [String] = allNames + autoISFOffNames
+
     // swiftlint:disable:next cyclomatic_complexity function_body_length
-    static func build(_ name: String) -> ParityScenario {
+    static func build(_ fullName: String) -> ParityScenario {
+        let autoISFOff = fullName.hasSuffix(autoISFOffSuffix)
+        let name = autoISFOff ? String(fullName.dropLast(autoISFOffSuffix.count)) : fullName
         let clock = name == "winter-standard-time" ? winterClock : summerClock
 
         var preferences = Preferences()
         preferences.maxIOB = 6
         preferences.enableSMBAlways = true
         preferences.enableUAM = true
+        // Building Preferences directly bypasses the UI, which enforces this whenever dynISF is
+        // on; without it both the autosens and the dynISF ratio are dropped in calculateSensitivityRatio.
+        preferences.enableAutosens = true
+        // Omnipod, Dana and Medtrum all publish this; in production DeviceDataManager overwrites
+        // the preference from the pump, so a Preferences default would never reach dosing.
+        preferences.bolusIncrement = 0.05
+        // Upstream's algorithm defaults, so the off variant differs from upstream only where the
+        // algorithm does. The increment is a device property and stays as the pump reports it.
+        if autoISFOff {
+            preferences.autoisf = false
+            preferences.smbInterval = 3
+            preferences.smbDeliveryRatio = 0.5
+            preferences.maxSMBBasalMinutes = 30
+            preferences.maxUAMSMBBasalMinutes = 30
+        }
 
         var glucoseValues = ParityInputs.values24h(base: 110, tail: [124, 128, 133, 139, 144, 150])
         var pumpHistory = ParityInputs.densePumpHistory(clock: clock)
@@ -171,7 +197,7 @@ enum ParityScenarios {
         }
 
         return ParityScenario(
-            name: name,
+            name: fullName,
             clock: clock,
             glucose: ParityInputs.trace(endingAt: glucoseClock, values: glucoseValues),
             pumpHistory: pumpHistory,
@@ -186,7 +212,8 @@ enum ParityScenarios {
             basalProfile: ParityInputs.basalProfile(),
             isf: ParityInputs.isf(),
             carbRatios: ParityInputs.carbRatios(),
-            model: "554"
+            // production always reads "722" from settings/model.json, which nothing writes
+            model: "722"
         )
     }
 
@@ -246,18 +273,20 @@ enum ParityScenarios {
         )
 
         guard let mealData = meal else {
-            throw TestError("meal generation returned nil for \(scenario.name)")
+            throw ParityError("meal generation returned nil for \(scenario.name)")
         }
 
         let determination = try DeterminationGenerator.generate(
             profile: profile,
             preferences: scenario.preferences,
+            units: scenario.bgTargets.units,
             currentTemp: scenario.currentTemp,
             iobData: iob,
             mealData: mealData,
             autosensData: autosens,
             reservoirData: scenario.reservoir,
             glucose: scenario.glucose,
+            pumpHistory: scenario.pumpHistory,
             microBolusAllowed: true,
             trioCustomOrefVariables: scenario.orefVariables,
             currentTime: scenario.clock

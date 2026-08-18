@@ -28,7 +28,12 @@ jobs:
   algorithm-package:
     name: Algorithm Package (swift test)
     runs-on: macos-26
-    if: github.repository_owner == 'nightscout'
+    if: github.repository_owner == 'mountrcg'
+
+    # The golden parity suite is gated on this zone and skips silently without it.
+    # `swift test` bypasses the Trio Tests scheme, which is where Xcode gets it from.
+    env:
+      TZ: Europe/Berlin
 
     steps:
       - name: Select Xcode version
