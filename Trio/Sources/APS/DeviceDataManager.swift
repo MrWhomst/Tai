@@ -110,9 +110,13 @@ final class BaseDeviceDataManager: DeviceDataManager, Injectable {
                 pumpName.send(pumpManager.localizedTitle)
 
                 var modifiedPreferences = settingsManager.preferences
-                modifiedPreferences.bolusIncrement = BolusIncrementResolver.resolve(
+                modifiedPreferences.bolusIncrement = PumpIncrementResolver.resolve(
                     supportedBolusVolumes: pumpManager.supportedBolusVolumes,
                     currentIncrement: settingsManager.preferences.bolusIncrement,
+                    concentration: concentration
+                )
+                modifiedPreferences.basalIncrement = PumpIncrementResolver.resolveBasal(
+                    supportedBasalRates: pumpManager.supportedBasalRates,
                     concentration: concentration
                 )
                 storage.save(modifiedPreferences, as: OpenAPS.Settings.preferences)
@@ -212,7 +216,11 @@ final class BaseDeviceDataManager: DeviceDataManager, Injectable {
                 pumpName.send("")
                 // Reset bolusIncrement setting to default value, which is 0.1 U
                 var modifiedPreferences = settingsManager.preferences
-                modifiedPreferences.bolusIncrement = BolusIncrementResolver.resolveWithoutPump(
+                modifiedPreferences.bolusIncrement = PumpIncrementResolver.resolveWithoutPump(
+                    concentration: concentration
+                )
+                modifiedPreferences.basalIncrement = PumpIncrementResolver.resolveBasal(
+                    supportedBasalRates: [],
                     concentration: concentration
                 )
                 debug(
