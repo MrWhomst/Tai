@@ -11,10 +11,13 @@ var cgmOptions: [CGMOption] {
             predicate: { $0.type == .plugin && $0.displayName == "Accu-Chek SmartGuide" }
         ),
         CGMOption(name: "Eversense", predicate: { $0.type == .plugin && $0.displayName == "Eversense" }),
-        CGMOption(name: "FreeStyle Libre", predicate: { $0.type == .plugin && $0.displayName == "FreeStyle Libre" }),
         CGMOption(
-            name: "FreeStyle Libre Demo",
-            predicate: { $0.type == .plugin && $0.displayName == "FreeStyle Libre Demo" }
+            name: "FreeStyle Libre 1 / 2 / 2+",
+            predicate: { $0.type == .plugin && $0.displayName == "FreeStyle Libre 1 / 2 / 2+" }
+        ),
+        CGMOption(
+            name: "FreeStyle Libre 3 / 3+ (Beta)",
+            predicate: { $0.type == .plugin && $0.displayName == "FreeStyle Libre 3 / 3+ (Beta)" }
         ),
         CGMOption(name: "Medtronic Enlite", predicate: { $0.type == .enlite }),
         CGMOption(name: "Nightscout as CGM", predicate: { $0.type == .nightscout }),
