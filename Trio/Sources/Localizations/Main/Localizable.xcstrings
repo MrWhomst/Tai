@@ -88056,6 +88056,9 @@
         }
       }
     },
+    "Current release" : {
+      "comment" : "Marks the release notes entry matching the running build"
+    },
     "Current Sensor is Ending soon! Sensor Life left in %@" : {
       "comment" : "Current Sensor is Ending soon! Sensor Life left in %@",
       "extractionState" : "manual",
@@ -145574,7 +145577,7 @@
       }
     },
     "Got it!" : {
-      "comment" : "Dismiss button for Quick-Pick Treatments info sheet",
+      "comment" : "Dismiss button for Quick-Pick Treatments info sheet\nDismiss button for the release notes sheet",
       "localizations" : {
         "bg" : {
           "stringUnit" : {
@@ -193154,6 +193157,9 @@
         }
       }
     },
+    "New Release v%@" : {
+      "comment" : "Home panel title offering the release notes; the placeholder is a version number"
+    },
     "New Schedule" : {
 
     },
@@ -219121,6 +219127,9 @@
         }
       }
     },
+    "Previous Versions" : {
+
+    },
     "Primary" : {
       "localizations" : {
         "bg" : {
@@ -226123,6 +226132,9 @@
         }
       }
     },
+    "Read the full release notes" : {
+      "comment" : "Link to the complete release notes on GitHub"
+    },
     "Read up on it at:" : {
 
     },
@@ -228635,6 +228647,9 @@
           }
         }
       }
+    },
+    "Release Notes" : {
+
     },
     "Remaining Carbs Cap" : {
       "comment" : "Remaining Carbs Cap",
@@ -237456,6 +237471,9 @@
           }
         }
       }
+    },
+    "See what's new in this version." : {
+
     },
     "Select \"Start Override\" to immediately start using the Override, or select \"Save as Preset\" to be able to easily start the Override at a later time." : {
       "localizations" : {
@@ -312462,6 +312480,12 @@
           }
         }
       }
+    },
+    "What's Changed At A Glance" : {
+      "comment" : "Heading above the release note highlights"
+    },
+    "What's New?" : {
+      "comment" : "Navigation title of the release notes sheet"
     },
     "What's NOT limited:" : {
       "localizations" : {

@@ -221,6 +221,7 @@ extension Home.RootView {
             hasOverride: overrideString != nil,
             hasTempTarget: tempTargetString != nil,
             hasTempProfile: activeProfile.first?.expiresAt != nil,
+            hasUnacknowledgedReleaseNotes: releaseNotesService.hasUnacknowledgedNotes,
             now: state.timerDate
         )
     }
@@ -278,6 +279,9 @@ extension Home.RootView {
         subtitle: String,
         tint: Color,
         isCritical: Bool = false,
+        tintOpacity: Double? = nil,
+        strokeOpacity: Double? = nil,
+        strokeWidth: CGFloat? = nil,
         action: @escaping () -> Void
     ) -> some View {
         Button(action: action) {
@@ -309,9 +313,9 @@ extension Home.RootView {
             .frame(height: HomeLayout.bottomPanelHeight)
             .glassPanel(
                 tint: tint,
-                tintOpacity: isCritical ? 0.30 : 0.12,
-                strokeOpacity: isCritical ? 0.8 : 0.35,
-                strokeWidth: isCritical ? 1.5 : 1
+                tintOpacity: tintOpacity ?? (isCritical ? 0.30 : 0.12),
+                strokeOpacity: strokeOpacity ?? (isCritical ? 0.8 : 0.35),
+                strokeWidth: strokeWidth ?? (isCritical ? 1.5 : 1)
             )
             .contentShape(Rectangle())
         }
@@ -380,6 +384,22 @@ extension Home.RootView {
                     tint: .orange
                 ) {
                     openMaxIOBSetting()
+                }
+                .transition(.blurReplace)
+            case .whatsNew:
+                panelBanner(
+                    systemImage: "sparkles",
+                    title: String(
+                        localized: "New Release v\(releaseNotesService.notes?.version ?? "")",
+                        comment: "Home panel title offering the release notes; the placeholder is a version number"
+                    ),
+                    subtitle: String(localized: "See what's new in this version."),
+                    tint: .insulin,
+                    tintOpacity: 0.24,
+                    strokeOpacity: 0.7,
+                    strokeWidth: 1.5
+                ) {
+                    showReleaseNotes = true
                 }
                 .transition(.blurReplace)
             case .stats:

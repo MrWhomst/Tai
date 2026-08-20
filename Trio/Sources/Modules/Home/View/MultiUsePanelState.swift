@@ -18,6 +18,7 @@ enum MultiUsePanelState: Equatable {
     case cgmStale
     case maxIOBZero
     case adjustments(ActiveAdjustment)
+    case whatsNew
     case stats
 
     /// readings older than this offer manual glucose entry
@@ -32,6 +33,7 @@ enum MultiUsePanelState: Equatable {
         hasOverride: Bool,
         hasTempTarget: Bool,
         hasTempProfile: Bool,
+        hasUnacknowledgedReleaseNotes: Bool,
         now: Date
     ) -> MultiUsePanelState {
         if bolusInProgress { return .bolusProgress }
@@ -45,6 +47,9 @@ enum MultiUsePanelState: Equatable {
         // temporary (expiring) profiles always surface; indefinite ones only
         // via the stats-face setting
         if hasTempProfile { return .adjustments(.profile) }
+        // Informational, so it yields to every warning and adjustment above but still
+        // displaces the stats.
+        if hasUnacknowledgedReleaseNotes { return .whatsNew }
         return .stats
     }
 }

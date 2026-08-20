@@ -16,7 +16,8 @@ import Testing
         maxIOB: Decimal = 10,
         hasOverride: Bool = false,
         hasTempTarget: Bool = false,
-        hasTempProfile: Bool = false
+        hasTempProfile: Bool = false,
+        hasUnacknowledgedReleaseNotes: Bool = false
     ) -> MultiUsePanelState {
         MultiUsePanelState.resolve(
             bolusInProgress: bolusInProgress,
@@ -27,6 +28,7 @@ import Testing
             hasOverride: hasOverride,
             hasTempTarget: hasTempTarget,
             hasTempProfile: hasTempProfile,
+            hasUnacknowledgedReleaseNotes: hasUnacknowledgedReleaseNotes,
             now: now
         )
     }
@@ -84,5 +86,40 @@ import Testing
         #expect(resolve(lastGlucoseDate: fresh, hasOverride: true) == .adjustments(.override))
         #expect(resolve(lastGlucoseDate: fresh, hasTempProfile: true) == .adjustments(.profile))
         #expect(resolve(lastGlucoseDate: fresh) == .stats)
+    }
+
+    @Test("Adjustments outrank release notes") func adjustmentsBeatWhatsNew() {
+        #expect(resolve(
+            lastGlucoseDate: fresh,
+            hasTempTarget: true,
+            hasUnacknowledgedReleaseNotes: true
+        ) == .adjustments(.tempTarget))
+    }
+
+    @Test("Unacknowledged release notes displace the stats") func testWhatsNewOverStats() {
+        #expect(resolve(lastGlucoseDate: fresh, hasUnacknowledgedReleaseNotes: true) == .whatsNew)
+    }
+
+    @Test("Every warning outranks release notes") func testWhatsNewYieldsToWarnings() {
+        #expect(resolve(
+            notificationsDisabled: true,
+            lastGlucoseDate: fresh,
+            hasUnacknowledgedReleaseNotes: true
+        ) == .notificationsDisabled)
+        #expect(resolve(
+            pumpTimeMismatch: true,
+            lastGlucoseDate: fresh,
+            hasUnacknowledgedReleaseNotes: true
+        ) == .pumpTimeMismatch)
+        #expect(resolve(lastGlucoseDate: stale, hasUnacknowledgedReleaseNotes: true) == .cgmStale)
+        #expect(resolve(
+            lastGlucoseDate: fresh,
+            maxIOB: 0,
+            hasUnacknowledgedReleaseNotes: true
+        ) == .maxIOBZero)
+    }
+
+    @Test("Acknowledged release notes fall back to stats") func testAcknowledgedShowsStats() {
+        #expect(resolve(lastGlucoseDate: fresh, hasUnacknowledgedReleaseNotes: false) == .stats)
     }
 }

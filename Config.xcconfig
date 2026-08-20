@@ -24,6 +24,10 @@ APP_DEV_VERSION = 0.8.4.63
 APP_BUILD_NUMBER = 1
 COPYRIGHT_NOTICE = autoISF 3.01
 
+// GitHub repo the in-app release notes are read from. Tai publishes its own
+// releases; pointing this at nightscout/Trio would show Trio's notes instead.
+RELEASE_NOTES_REPO = mountrcg/Tai
+
 // Optional overrides - these can be used to insert your TEAMID into the DEVELOPER_TEAM field
 #include? "../../ConfigOverride.xcconfig"
 #include? "../ConfigOverride.xcconfig"

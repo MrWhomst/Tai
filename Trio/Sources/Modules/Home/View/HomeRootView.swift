@@ -38,7 +38,9 @@ extension Home {
         @State var showSnoozeSheet: Bool = false
         @State var alarmsSnoozeUntil: Date = .distantPast
         @State var showManualGlucose: Bool = false
+        @State var showReleaseNotes: Bool = false
         @State var notificationsDisabled = false
+        @ObservedObject var releaseNotesService = ReleaseNotesService.shared
 
         // Pull-down-to-force-loop (see HomeRootView+Refresh.swift)
         @State var pullOffset: CGFloat = 0
@@ -198,6 +200,9 @@ extension Home {
                 configureView()
                 refreshAlarmsSnooze()
             }
+            .task {
+                await releaseNotesService.load()
+            }
             .navigationTitle("Home")
             .navigationBarHidden(true)
             .blur(radius: state.isLoopStatusPresented ? 3 : 0)
@@ -226,8 +231,16 @@ extension Home {
             .sheet(isPresented: $showSnoozeSheet) {
                 SnoozeAlertsSheetView(resolver: resolver, isPresented: $showSnoozeSheet)
             }
+            // UserDefaults changes don't invalidate views; refresh on sheet dismissal
             .onChange(of: showSnoozeSheet) {
                 if !showSnoozeSheet { refreshAlarmsSnooze() }
+            }
+            .sheet(isPresented: $showReleaseNotes) {
+                if let notes = releaseNotesService.notes {
+                    ReleaseNotesSheetView(notes: notes) {
+                        releaseNotesService.acknowledge()
+                    }
+                }
             }
             .sheet(isPresented: $showManualGlucose) {
                 ManualGlucoseEntryView(units: state.units, isPresented: $showManualGlucose) { amount in
