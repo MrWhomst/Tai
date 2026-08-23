@@ -1,7 +1,6 @@
 import Algorithms
 import Combine
 import CoreData
-import DanaKit
 import Foundation
 import HealthKit
 import LoopKit
@@ -9,6 +8,7 @@ import LoopKitUI
 import MedtrumKit
 import MinimedKit
 import MockKit
+import MockKitUI
 import OmnipodKit
 import ShareClient
 import SwiftDate
@@ -36,22 +36,6 @@ protocol DeviceDataManager: GlucoseSource {
     func createBolusProgressReporter() -> DoseProgressReporter?
     var alertHistoryStorage: AlertHistoryStorage! { get }
 }
-
-private let staticPumpManagers: [PumpManagerUI.Type] = [
-    MinimedPumpManager.self,
-    OmniPumpManager.self,
-    DanaKitPumpManager.self,
-    MedtrumPumpManager.self,
-    MockPumpManager.self
-]
-
-private let staticPumpManagersByIdentifier: [String: PumpManagerUI.Type] = [
-    MinimedPumpManager.pluginIdentifier: MinimedPumpManager.self,
-    OmniPumpManager.pluginIdentifier: OmniPumpManager.self,
-    DanaKitPumpManager.pluginIdentifier: DanaKitPumpManager.self,
-    MedtrumPumpManager.pluginIdentifier: MedtrumPumpManager.self,
-    MockPumpManager.pluginIdentifier: MockPumpManager.self
-]
 
 private let accessLock = NSRecursiveLock(label: "BaseDeviceDataManager.accessLock")
 
@@ -369,6 +353,10 @@ final class BaseDeviceDataManager: DeviceDataManager, Injectable {
         self.recommendsLoop.send()
     }
 
+    public func pumpManagerTypeByIdentifier(_ identifier: String) -> PumpManagerUI.Type? {
+        DeviceCatalog.pumpManagersByIdentifier[identifier]
+    }
+
     private func pumpManagerFromRawValue(_ rawValue: [String: Any]) -> PumpManagerUI? {
         guard let rawState = rawValue["state"] as? PumpManager.RawStateValue,
               let Manager = pumpManagerTypeFromRawValue(rawValue)
@@ -384,7 +372,9 @@ final class BaseDeviceDataManager: DeviceDataManager, Injectable {
             return nil
         }
 
-        return staticPumpManagersByIdentifier[managerIdentifier]
+        /// Falls back to `legacyIdentifierPrefixes`, which is how state persisted by the retired "Omnipod"
+        /// (OmniKit) and "Omnipod-DASH" (OmniBLE) managers still resolves to the universal OmnipodKit manager.
+        return DeviceCatalog.pumpEntry(forPersistedIdentifier: managerIdentifier)?.manager
     }
 
     // MARK: - GlucoseSource

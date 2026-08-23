@@ -620,14 +620,9 @@ struct OnboardingNavigationButtons: View {
                 currentStep = previousStep
                 currentSMBSubstep = .enableSMBAlways
 
-                switch state.pumpOptionForOnboardingUnits {
-                case .dana,
-                     .minimed:
-                    currentAutosensSubstep = .rewindResetsAutosens
-                case .medtrum,
-                     .omni:
-                    currentAutosensSubstep = .autosensMax
-                }
+                currentAutosensSubstep = state.pumpOptionForOnboardingUnits.reportsRewindEvents
+                    ? .rewindResetsAutosens
+                    : .autosensMax
             }
 
         case .targetBehavior:

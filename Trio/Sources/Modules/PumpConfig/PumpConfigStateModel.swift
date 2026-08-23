@@ -12,7 +12,7 @@ extension PumpConfig {
         @Injected() private var tidepoolManager: TidepoolManager!
 
         @Published var setupPump = false
-        private(set) var setupPumpType: PumpType = .minimed
+        private(set) var setupPumpEntry: PumpCatalogEntry?
         @Published var pumpState: PumpDisplayState?
         private(set) var initialSettings: PumpInitialSettings = .default
         @Published var hasUnacknowledgedAlert: Bool = false
@@ -100,8 +100,8 @@ extension PumpConfig {
             }
         }
 
-        func addPump(_ type: PumpType) {
-            setupPumpType = type
+        func addPump(_ entry: PumpCatalogEntry) {
+            setupPumpEntry = entry
             setupPump = true
         }
     }
