@@ -1,6 +1,7 @@
 import Foundation
 import os.log
 import SwiftDate
+import System
 
 final class SimpleLogReporter: IssueReporter {
     // Prevent infinite recursion by never calling debug() from within this reporter
@@ -490,15 +491,13 @@ final class SimpleLogReporter: IssueReporter {
 
 private extension Data {
     func append(fileURL: URL) throws {
-        if let fileHandle = FileHandle(forWritingAtPath: fileURL.path) {
-            defer {
-                fileHandle.closeFile()
-            }
-            fileHandle.seekToEndOfFile()
-            fileHandle.write(self)
-        } else {
-            try write(to: fileURL, options: .atomic)
-        }
+        let descriptor = try FileDescriptor.open(
+            FilePath(fileURL.path),
+            .writeOnly,
+            options: [.append, .create],
+            permissions: [.ownerReadWrite, .groupRead, .otherRead]
+        )
+        try descriptor.closeAfter { _ = try descriptor.writeAll(self) }
     }
 }
 
