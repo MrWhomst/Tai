@@ -23,7 +23,6 @@ extension CGMSettings {
         @Environment(\.colorScheme) var colorScheme
         @Environment(AppState.self) var appState
 
-
         var cgmIntegrationSection: some View {
             Section(
                 header: Text("CGM Integration to Trio"),

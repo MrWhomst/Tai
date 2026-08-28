@@ -134,21 +134,6 @@ extension CGMSettings {
                 }
             }
         }
-
-        /// Checks if the CGM simulator is selected and resets it if Bundle.main.simulatorVisibility.isHidden is true
-        private func checkAndResetCGMSimulatorIfNeeded() {
-            debug(.service, "checkAndResetCGMSimulatorIfNeeded called, isHidden: \(Bundle.main.simulatorVisibility.isHidden)")
-            debug(.service, "Current CGM type: \(cgmCurrent.type), id: \(cgmCurrent.id)")
-
-            // Only proceed if simulators should be hidden
-            guard Bundle.main.simulatorVisibility.isHidden else { return }
-
-            // Check if the current CGM is a simulator
-            if settingsManager.settings.cgm == .simulator {
-                // Reset the CGM
-                deleteCGM()
-            }
-        }
     }
 }
 

@@ -257,16 +257,14 @@ final class BaseFetchGlucoseManager: FetchGlucoseManager, Injectable {
         }
 
         // Persist runtime loop/glucose config (loop interval, filter time, minimum glucose)
-        if !Bundle.main.simulatorVisibility.isHidden {
-            if self.cgmGlucoseSourceType == .simulator {
-                UserDefaults.standard.set(Config.simulatorLoopInterval, forKey: Config.UserDefaultsKey.loopInterval)
-                UserDefaults.standard.set(Config.simulatorFilterTime, forKey: Config.UserDefaultsKey.filterTime)
-                UserDefaults.standard.set(Config.simulatorMinimumGlucose, forKey: Config.UserDefaultsKey.minimumGlucose)
-            } else {
-                UserDefaults.standard.set(Config.defaultLoopInterval, forKey: Config.UserDefaultsKey.loopInterval)
-                UserDefaults.standard.set(Config.defaultFilterTime, forKey: Config.UserDefaultsKey.filterTime)
-                UserDefaults.standard.set(Config.defaultMinimumGlucose, forKey: Config.UserDefaultsKey.minimumGlucose)
-            }
+        if self.cgmGlucoseSourceType == .simulator {
+            UserDefaults.standard.set(Config.simulatorLoopInterval, forKey: Config.UserDefaultsKey.loopInterval)
+            UserDefaults.standard.set(Config.simulatorFilterTime, forKey: Config.UserDefaultsKey.filterTime)
+            UserDefaults.standard.set(Config.simulatorMinimumGlucose, forKey: Config.UserDefaultsKey.minimumGlucose)
+        } else {
+            UserDefaults.standard.set(Config.defaultLoopInterval, forKey: Config.UserDefaultsKey.loopInterval)
+            UserDefaults.standard.set(Config.defaultFilterTime, forKey: Config.UserDefaultsKey.filterTime)
+            UserDefaults.standard.set(Config.defaultMinimumGlucose, forKey: Config.UserDefaultsKey.minimumGlucose)
         }
 
         // Only an active plugin CGM with its own BLE connection can wake the app; otherwise the pump must heartbeat

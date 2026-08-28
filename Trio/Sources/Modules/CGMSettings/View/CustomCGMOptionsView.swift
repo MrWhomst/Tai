@@ -89,10 +89,8 @@ extension CGMSettings {
                             xDripConfigurationSection
                         }
 
-                        if !Bundle.main.simulatorVisibility.isHidden {
-                            if cgmCurrent.type == .simulator {
-                                simulatorConfigurationSection
-                            }
+                        if cgmCurrent.type == .simulator {
+                            simulatorConfigurationSection
                         }
 
                         if let appURL = cgmCurrent.type.appURL {
@@ -150,7 +148,7 @@ extension CGMSettings {
                     }
                 } message: { Text("Are you sure you want to delete \(cgmCurrent.displayName)?") }
                 .onAppear {
-                    if !Bundle.main.simulatorVisibility.isHidden && cgmCurrent.type == .simulator {
+                    if cgmCurrent.type == .simulator {
                         initializeSimulatorSettings()
                     }
                 }
